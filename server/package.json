@@ -1,0 +1,21 @@
+{
+  "name": "sys-affichage-api",
+  "version": "0.0.1",
+  "description": "Api systeme affichage (admin panel and display)",
+  "type": "commonjs",
+  "main": "src/App.js",
+  "scripts": {
+    "dev": "nodemon src/App.js",
+    "start": "node src/App.js"
+  },
+  "author": "Abdelmalek Bouhalassa",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  }
+}
