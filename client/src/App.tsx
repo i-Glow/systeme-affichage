@@ -1,10 +1,10 @@
 
 import { Routes, Route, BrowserRouter } from "react-router-dom"
 
-import HomePage from './Componant/Page/Layout'
-import Home from './Componant/Page/Home'
-import Archive from './Componant/Page/Archive'
-import Brouillons from './Componant/Page/Brouillons'
+import HomePage from './pages/Layout'
+import Home from './pages/Home'
+import Archive from './pages/Archive'
+import Brouillons from './pages/Brouillons'
 function App() {
   return (
     <BrowserRouter>

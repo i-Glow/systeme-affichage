@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Form, Input, DatePicker, Space, Button } from "antd";
 import dayjs from "dayjs";
 
-import NiveauCheckBox from "../CheckboxGroup";
-import axios from "../../api";
+import NiveauCheckBox from "../components/CheckboxGroup";
+import axios from "../api";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 
 export default function Home() {
