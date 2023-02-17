@@ -11,6 +11,7 @@ export const LeftSide = styled.div`
 export const ConatinerFLex = styled.div`
     display:flex;
     min-height: 90vh;
+    width: 100%;
 `
 export const Items = styled.div`
     display: flex;
@@ -19,5 +20,5 @@ export const Items = styled.div`
 `
 export const Main = styled.div`
     display: flex;
-    
+    width: auto;
 `
