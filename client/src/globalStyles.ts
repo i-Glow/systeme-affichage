@@ -6,7 +6,7 @@ export const GlobalStyles = createGlobalStyle`
       --primary-opacity: rgba(255,67,0, 0.6);
       --secondary: #F8F8F8;
       --background: #E5E5E5;
-      --black: #171717;
+      /* --black: #171717; */
       --black-opacity: rgba(23, 23, 23, 0.15);
       --danger: #D0342C;
       --danger-opacity: rgba(208, 52, 44, 0.2);
@@ -54,5 +54,6 @@ export const GlobalStyles = createGlobalStyle`
     }
     body {
       background-color: var(--background);
+      min-height: 100vh;
     }
 `;
