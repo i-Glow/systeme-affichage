@@ -5,20 +5,29 @@ export const Input = styled.input`
 export const LeftSide = styled.div`
     display:flex;
     flex-direction:column;
-    align-items: flex-start;
+    align-items: center;
+    width: 25%;
+    background-color: #001529;
+    color: white;
     gap:20px;
+    padding-top: 2%;
 `
 export const ConatinerFLex = styled.div`
     display:flex;
-    min-height: 90vh;
+    min-height: 100vh;
     width: 100%;
 `
 export const Items = styled.div`
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     width: 100%;
+    margin-top: 2%;
 `
 export const Main = styled.div`
     display: flex;
-    width: auto;
+    width: 100%;
+    padding:0 2% 0 2%;
+`
+export const Div = styled.div`
+    width: 100%;
 `

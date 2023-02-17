@@ -6,7 +6,7 @@ export default function HomePage() {
     <ConatinerFLex >
         <LeftSide>
             <Link to="archive">Archive</Link>
-            <Link to="broulion">broulion</Link>
+            <Link to="Brouillons">Brouillons</Link>
             <Link to="Home">Home</Link>
         </LeftSide>
         <Main >
