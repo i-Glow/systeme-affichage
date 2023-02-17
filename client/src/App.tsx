@@ -1,7 +1,7 @@
 
 import { Routes, Route, BrowserRouter } from "react-router-dom"
 
-import HomePage from './Componant/Page/HomePage'
+import HomePage from './Componant/Page/Layout'
 import Home from './Componant/Page/Home'
 import Archive from './Componant/Page/Archive'
 import Brouillons from './Componant/Page/Brouillons'
