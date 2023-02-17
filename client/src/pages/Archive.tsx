@@ -1,5 +1,5 @@
 import React from "react";
-import { Items,Div } from "../Componant/Style/Style";
+import { Items,Div } from "../components/Style/Style";
 import { Link, Navigate } from "react-router-dom"
 const array = [
   {

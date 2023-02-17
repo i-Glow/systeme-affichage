@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, Outlet } from 'react-router-dom'
-import {ConatinerFLex,LeftSide,Main} from "../Componant/Style/Style"
+import {ConatinerFLex,LeftSide,Main} from "../components/Style/Style"
 export default function HomePage() {
   return (
     <ConatinerFLex >
