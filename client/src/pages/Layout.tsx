@@ -1,17 +1,23 @@
-import React from 'react'
-import { Link, Outlet } from 'react-router-dom'
-import {ConatinerFLex,LeftSide,Main} from "../components/Style/Style"
+import React from "react";
+import { Outlet } from "react-router-dom";
+import { Wrapper, SideBar, Main } from "../components/Style/Style";
+import Link from "../components/shared/Link";
+
+const routes = ["archive", "brouillons"];
+
 export default function HomePage() {
   return (
-    <ConatinerFLex >
-        <LeftSide>
-            <Link to="archive">Archive</Link>
-            <Link to="Brouillons">Brouillons</Link>
-            <Link to="Home">Home</Link>
-        </LeftSide>
-        <Main >
-            <Outlet/>
-        </Main>
-    </ConatinerFLex>
-  )
+    <Wrapper>
+      <SideBar>
+        {routes.map((route, key) => (
+          <Link to={route} key={key}>
+            {route}
+          </Link>
+        ))}
+      </SideBar>
+      <Main>
+        <Outlet />
+      </Main>
+    </Wrapper>
+  );
 }
