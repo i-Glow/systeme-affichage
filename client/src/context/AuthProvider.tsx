@@ -1,5 +1,6 @@
 import { message } from "antd";
 import { createContext, useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "../api";
 
 enum Roles {
@@ -20,34 +21,36 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: any) => {
   const [messageApi, contextHolder] = message.useMessage();
+  const navigate = useNavigate();
 
   const [user, setUser] = useState<user | null>(null);
   const [token, setToken] = useState<string | null>();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = window.localStorage.getItem("auth-key");
+    const token = localStorage.getItem("auth-key");
     setToken(token);
+    setLoading(false);
     // axios.post
   }, []);
 
-  async function login(username: string, password: string): Promise<boolean> {
+  async function login(username: string, password: string) {
     setLoading(true);
     try {
       const res = await axios.post("/auth/signin", {
         username,
         password,
       });
-
-      window.localStorage.setItem("auth-key", res.data.token);
+      localStorage.setItem("auth-key", res.data.token);
+      setToken(res.data.token);
       setUser(res.data.user);
       setLoading(false);
 
-      return true;
+      navigate("/");
     } catch (error: any) {
-      console.error(error);
+      // console.error(error);
       if (error.response.status === 403) {
-        console.log(error.response.data.message);
+        // console.log(error.response.data.message);
         messageApi.open({
           type: "error",
           content: error.response.data.message,

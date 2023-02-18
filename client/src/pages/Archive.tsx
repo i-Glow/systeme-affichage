@@ -1,19 +1,20 @@
-import { Space, Table } from "antd";
+import { useState, useCallback, useEffect } from "react";
+
+import { message, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { useCallback, useEffect } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdOutlinePreview } from "react-icons/md";
 
 import Link from "../components/shared/Link";
 import { Div } from "../components/Style/Style";
-import axios from "../api";
 import { useAuth } from "../context/AuthProvider";
+import axios from "../api";
 
 interface DataType {
-  id: string;
+  article_id: string;
   titre: string;
-  categrie: string;
-  date: string;
+  categorie: string;
+  created_at: string;
 }
 
 const columns: ColumnsType<DataType> = [
@@ -23,13 +24,13 @@ const columns: ColumnsType<DataType> = [
     key: "titre",
   },
   {
-    title: "Categrie",
-    dataIndex: "categrie",
-    key: "categrie",
+    title: "Categorie",
+    dataIndex: "categorie",
+    key: "categorie",
   },
   {
     title: "Date",
-    dataIndex: "date",
+    dataIndex: "created_at",
     key: "date",
   },
   {
@@ -37,10 +38,10 @@ const columns: ColumnsType<DataType> = [
     key: "action",
     render: (_, record) => (
       <Space size="middle">
-        <Link to={`edit/${record.id}`}>
+        <Link to={`edit/${record.article_id}`} state={{ data: record }}>
           <AiOutlineEdit />
         </Link>
-        <Link to={`/archive/${record.id}`}>
+        <Link to={`/archive/${record.article_id}`}>
           <MdOutlinePreview />
         </Link>
       </Space>
@@ -48,77 +49,12 @@ const columns: ColumnsType<DataType> = [
   },
 ];
 
-const data: DataType[] = [
-  {
-    id: "1",
-    titre: "John Brown",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "2",
-    titre: "Jim Green",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-  },
-];
 export default function Archive() {
   //@ts-ignore
   const { token } = useAuth();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [data, setData] = useState<DataType[]>([]);
 
   const getArticles = useCallback(
     async (controller: AbortController) => {
@@ -129,13 +65,22 @@ export default function Archive() {
           signal: controller.signal,
         });
 
-        console.log(res);
+        if (res.status === 200) {
+          const newData = res.data.data.map((el: DataType) => {
+            el.created_at = el.created_at.replace("T", " ").split(".")[0];
+            return el;
+          });
+          setData(newData);
+          // console.log(newData);
+        }
       } catch (error: any) {
         console.log(error);
-        if (error.response.status === 403) {
-          //TODO: handle not authenticated error
-          console.log("auth");
-          console.log(error.response.data.message);
+        if (error.response?.status === 403) {
+          console.log(error.response.data.message === "No token provided");
+          messageApi.open({
+            type: "error",
+            content: "Please log in",
+          });
         }
       }
     },
@@ -151,6 +96,7 @@ export default function Archive() {
 
   return (
     <Div>
+      {contextHolder}
       <Table columns={columns} dataSource={data} />
     </Div>
   );

@@ -10,11 +10,9 @@ export default () => {
   const { user, login, loading, contextHolder } = useAuth();
 
   async function onFinish(values: any) {
-    const redirect = await login(values.username, values.password);
-    if (redirect) navigate("/");
+    // e.preventDefault();
+    login(values.username, values.password);
   }
-
-  console.log(user);
 
   return (
     <Wrapper>
