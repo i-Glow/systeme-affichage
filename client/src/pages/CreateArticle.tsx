@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Input, DatePicker, Button, message } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import dayjs from "dayjs";
@@ -6,6 +6,8 @@ import dayjs from "dayjs";
 import { Form, Wrapper } from "./CreateArticles.styles";
 import NiveauCheckBox from "../components/CheckboxGroup";
 import axios from "../api";
+import { useAuth } from "../context/AuthProvider";
+import { useLocation } from "react-router-dom";
 
 type data = {
   titre: string;
@@ -17,8 +19,12 @@ type data = {
 };
 
 export default function CreateArticle() {
+  const location = useLocation();
+
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
+  //@ts-ignore
+  const { token } = useAuth();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -35,8 +41,6 @@ export default function CreateArticle() {
 
   async function onFinish() {
     setLoading(true);
-    const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJjbGVhNzV3ZHUwMDAwdG02OGllMjkwYjZzIiwiaWF0IjoxNjc2NzUwMjk4LCJleHAiOjE2NzY4Nzk4OTh9.VAdMmQn5RZcPPjnwVgAC1MlGzdAua3Fz61y1Lrl1HD8";
 
     try {
       if (!dateDebut || !dateFin) {
@@ -50,6 +54,7 @@ export default function CreateArticle() {
         date_fin: dateFin,
         niveau: niveau as string[],
         category_id: 1,
+        //TODO: add edit functionality
       };
 
       const res = await axios.post("/articles", data, {
@@ -68,11 +73,40 @@ export default function CreateArticle() {
         type: "error",
         content: "Erreur",
       });
-      console.error(error);
+      // console.error(error);
     } finally {
       setLoading(false);
     }
   }
+
+  const getData = useCallback(async (controller: AbortController) => {
+    const id = location.state?.data?.article_id;
+    if (id) {
+      const url = `/articles/${id}`;
+      const res = await axios.get(url, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
+      });
+
+      console.log(res);
+
+      if (res.status === 200) {
+        setTitre(res.data.data.titre);
+        setContenu(res.data.data.contenu);
+        setNiveau(res.data.data.niveau);
+        setDateDebut(res.data.data.date_debut);
+        setDateFin(res.data.data.date_fin);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getData(controller);
+
+    return () => controller.abort();
+  }, []);
 
   return (
     <Wrapper>
@@ -89,7 +123,11 @@ export default function CreateArticle() {
           rules={[{ required: true }]}
           requiredMark={true}
         >
-          <Input required onChange={(e) => setTitre(e.target.value)} />
+          <Input
+            value={titre}
+            required
+            onChange={(e) => setTitre(e.target.value)}
+          />
         </Form.Item>
         <Form.Item
           label="contenu"
@@ -97,6 +135,7 @@ export default function CreateArticle() {
           requiredMark={true}
         >
           <Input.TextArea
+            value={contenu}
             required
             onChange={(e) => setContenu(e.target.value)}
             style={{ height: 120, resize: "none" }}
@@ -106,19 +145,31 @@ export default function CreateArticle() {
           <NiveauCheckBox checkedList={niveau} setCheckedList={setNiveau} />
         </Form.Item>
         <Form.Item label="Durée">
-          <DatePicker.RangePicker
-            allowEmpty={[false, false]}
-            onChange={(value) => dateChangeHandler(value)}
-            placeholder={["de", "à"]}
-            showTime={{
-              hideDisabledOptions: true,
-              defaultValue: [
-                dayjs("00:00:00", "HH:mm:ss"),
-                dayjs("11:59:59", "HH:mm:ss"),
-              ],
-            }}
-            format="YYYY-MM-DD HH:mm:ss"
-          />
+          {
+            <DatePicker.RangePicker
+              // defaultValue={[
+              //   dayjs(
+              //     dateDebut?.replace("T", " ").split(".")[0],
+              //     "YYYY-MM-DD HH:mm:ss"
+              //   ),
+              //   dayjs(
+              //     dateFin?.replace("T", " ").split(".")[0],
+              //     "YYYY-MM-DD HH:mm:ss"
+              //   ),
+              // ]}
+              allowEmpty={[false, false]}
+              onChange={(value) => dateChangeHandler(value)}
+              placeholder={["de", "à"]}
+              showTime={{
+                hideDisabledOptions: true,
+                defaultValue: [
+                  dayjs("00:00:00", "HH:mm:ss"),
+                  dayjs("11:59:59", "HH:mm:ss"),
+                ],
+              }}
+              format="YYYY-MM-DD HH:mm:ss"
+            />
+          }
         </Form.Item>
         <Form.Item label=" " colon={false}>
           <Button loading={loading} htmlType="submit" type="primary">
