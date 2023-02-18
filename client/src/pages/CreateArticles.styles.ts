@@ -10,7 +10,7 @@ export const Wrapper = styled.div`
   width: 100%;
   height: min-content;
   padding: 20px;
-  margin: 40px 20px;
+  margin: 15px 0 0 0 ;
   border: 1px solid rgb(var(--border));
   border-radius: 8px;
 `;

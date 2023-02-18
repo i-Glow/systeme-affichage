@@ -15,7 +15,7 @@ function App() {
         <Route path="/" element={<HomePage />}>
           <Route path="archive" element={<Archive />}></Route>
           <Route path="archive/:archiveId" element={<ArchiveDetail />}></Route>
-          <Route path="Home" element={<Home />}></Route>
+          <Route path="CreateArticle" element={<CreateArticle />}></Route>
           <Route path="Brouillons" element={<Brouillons />}></Route>
         </Route>
       </Routes>
