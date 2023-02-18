@@ -6,9 +6,18 @@ const getAll = async (_: Request, res: Response) => {
   try {
     const articles = await prisma.article.findMany({
       select: {
+        article_id: true,
         titre: true,
         created_at: true,
         categorie: true,
+      },
+      orderBy: {
+        date_debut: "asc",
+      },
+      where: {
+        date_fin: {
+          gt: new Date().toISOString(),
+        },
       },
     });
 
