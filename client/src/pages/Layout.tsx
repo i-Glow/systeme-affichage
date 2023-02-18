@@ -1,4 +1,6 @@
+
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+
 import { Button } from "antd";
 import { AiOutlinePlusSquare } from "react-icons/ai";
 
@@ -11,9 +13,12 @@ const routes = ["archive", "brouillons"];
 
 export default function HomePage() {
   const navigate = useNavigate();
+
+
   const location = useLocation();
   //@ts-ignore
   const { token } = useAuth();
+
 
   return (
     <Wrapper>

@@ -61,7 +61,7 @@ export default function CreateArticle() {
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      console.log(res)
       if (res.status === 200) {
         messageApi.open({
           type: "success",

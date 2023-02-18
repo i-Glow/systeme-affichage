@@ -41,7 +41,9 @@ const columns: ColumnsType<DataType> = [
         <Link to={`edit/${record.article_id}`} state={{ data: record }}>
           <AiOutlineEdit />
         </Link>
+
         <Link to={`/archive/${record.article_id}`}>
+
           <MdOutlinePreview />
         </Link>
       </Space>

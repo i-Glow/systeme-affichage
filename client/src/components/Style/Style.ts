@@ -84,3 +84,19 @@ export const Main = styled.div`
   width: 100%;
   padding: 0 2% 0 2%;
 `;
+export const Header = styled.div`
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+
+`
+export const DivSpaceAround1 = styled(DivSpaceAround)`
+  width: 30%;
+`
+export const FlexStart = styled.div`
+  width: 100%;
+  justify-content: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+`

@@ -51,7 +51,7 @@ const createArticle = async (req: Request, res: Response) => {
         date_fin,
         creator: {
           connect: {
-            user_id: "cle8qfieu0000uiv01sa4my66",
+            user_id: "clea75wdu0000tm68ie290b6s",
           },
         },
         categorie: {

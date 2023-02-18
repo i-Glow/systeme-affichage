@@ -5,11 +5,14 @@ import Archive from "./pages/Archive";
 import Brouillons from "./pages/Brouillons";
 import ArchiveDetail from "./pages/ArchiveDetail";
 import CreateArticle from "./pages/CreateArticle";
+import ArticalShow from "./pages/ArticalShow";
+import Edit from "./pages/Edit";
 import Signin from "./pages/Signin";
 
 function App() {
   return (
     <BrowserRouter>
+
       <AuthProvider>
         <Routes>
           <Route element={<ProtectedRoute redirectPath="/signin" />}>
@@ -23,6 +26,7 @@ function App() {
               <Route path="Brouillons" element={<Brouillons />}></Route>
               <Route path="archive/edit/:id" element={<CreateArticle />} />
             </Route>
+
           </Route>
           <Route path="/signin" element={<Signin />} />
         </Routes>
