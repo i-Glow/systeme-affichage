@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { DivSpaceBettwen, SvgPosition } from "../components/Style/Style";
 import { Button } from "antd";
@@ -11,6 +11,7 @@ const routes = ["archive", "brouillons"];
 export default function HomePage() {
   const navigate = useNavigate();
   let location = useLocation();
+  
   return (
     <Wrapper>
       <SideBar>

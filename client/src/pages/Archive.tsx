@@ -40,7 +40,7 @@ const columns: ColumnsType<DataType> = [
         <Link to={`edit/${record.id}`}>
           <AiOutlineEdit />
         </Link>
-        <Link to={`/archive/${record.id}`}>
+        <Link to={`${record.id}`}>
           <MdOutlinePreview />
         </Link>
       </Space>

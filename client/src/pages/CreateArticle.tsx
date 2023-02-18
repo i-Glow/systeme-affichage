@@ -36,7 +36,7 @@ export default function CreateArticle() {
   async function onFinish() {
     setLoading(true);
     const token =
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub20iOiJ1c2VyMSIsInByZW5vbSI6ImFmZjEiLCJpYXQiOjE2NzY2NDc0NDMsImV4cCI6MTY3NjY3NjI0M30.bZe4hglR2IBJPPHCC23agVZaNYUq1RthSAFgGVlqBQA";
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1aWQiOiJjbGVhNzV3ZHUwMDAwdG02OGllMjkwYjZzIiwiaWF0IjoxNjc2NzUwMjk4LCJleHAiOjE2NzY4Nzk4OTh9.VAdMmQn5RZcPPjnwVgAC1MlGzdAua3Fz61y1Lrl1HD8";
 
     try {
       if (!dateDebut || !dateFin) {
@@ -56,7 +56,7 @@ export default function CreateArticle() {
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
-
+      console.log(res)
       if (res.status === 200) {
         messageApi.open({
           type: "success",
