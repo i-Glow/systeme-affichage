@@ -1,69 +1,14 @@
-import React from "react";
-
-import { Items, Div, SvgPosition } from "../components/Style/Style";
-import { Link, Navigate, useNavigate } from "react-router-dom";
-
-const array = [
-  {
-    id: 1,
-    titre: "Affichage du 1 er semestre",
-    date: "12:53",
-    categorie: "text",
-  },
-  {
-    id: 2,
-    titre: "Affichage du 1 er semestre",
-    date: "12:53",
-    categorie: "text",
-  },
-  {
-    id: 3,
-    titre: "Affichage du 1 er semestre",
-    date: "12:53",
-    categorie: "text",
-  },
-  {
-    id: 4,
-    titre: "Affichage du 1 er semestre",
-    date: "12:53",
-    categorie: "text",
-  },
-  {
-    id: 5,
-    titre: "Affichage du 1 er semestre",
-    date: "12:53",
-    categorie: "text",
-  },
-  {
-    id: 6,
-    titre: "Affichage du 1 er semestre",
-    date: "12:53",
-    categorie: "text",
-  },
-  {
-    id: 7,
-    titre: "Affichage du 1 er semestre",
-    date: "12:53",
-    categorie: "text",
-  },
-  {
-    id: 8,
-    titre: "Affichage du 1 er semestre",
-    date: "12:53",
-    categorie: "text",
-  },
-  {
-    id: 9,
-    titre: "Affichage du 1 er semestre",
-    date: "12:53",
-    categorie: "text",
-  },
-];
-
 import { Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
+import { useCallback, useEffect } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdOutlinePreview } from "react-icons/md";
+
+import Link from "../components/shared/Link";
+import { Div } from "../components/Style/Style";
+import axios from "../api";
+import { useAuth } from "../context/AuthProvider";
+
 interface DataType {
   id: string;
   titre: string;
@@ -90,14 +35,14 @@ const columns: ColumnsType<DataType> = [
   {
     title: "Action",
     key: "action",
-    render: (_, recorde) => (
+    render: (_, record) => (
       <Space size="middle">
-        <a href={`edit/${recorde.id}`}>
+        <Link to={`edit/${record.id}`}>
           <AiOutlineEdit />
-          </a>
-        <a href={`/archive/${recorde.id}`}>
+        </Link>
+        <Link to={`/archive/${record.id}`}>
           <MdOutlinePreview />
-          </a>
+        </Link>
       </Space>
     ),
   },
@@ -172,7 +117,37 @@ const data: DataType[] = [
   },
 ];
 export default function Archive() {
-  const navigate = useNavigate();
+  //@ts-ignore
+  const { token } = useAuth();
+
+  const getArticles = useCallback(
+    async (controller: AbortController) => {
+      try {
+        const res = await axios.get("/articles", {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        });
+
+        console.log(res);
+      } catch (error: any) {
+        console.log(error);
+        if (error.response.status === 403) {
+          //TODO: handle not authenticated error
+          console.log("auth");
+          console.log(error.response.data.message);
+        }
+      }
+    },
+    [token]
+  );
+
+  useEffect(() => {
+    const controller = new AbortController();
+    getArticles(controller);
+
+    return () => controller.abort();
+  }, []);
 
   return (
     <Div>
