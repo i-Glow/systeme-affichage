@@ -1,10 +1,11 @@
-const express = require("express");
-const router = require("./routes");
-const cors = require("cors");
+import express, { Express } from "express";
+import cors from "cors";
+import * as dotenv from "dotenv";
+import router from "./routes";
 
 //initialisation
-require("dotenv").config();
-const app = express();
+dotenv.config();
+const app: Express = express();
 
 //constants
 const PORT = process.env.PORT || 8080;
@@ -17,9 +18,10 @@ const CORS_OPTIONS = {
 //midllewares
 app.use(cors(CORS_OPTIONS));
 app.use(express.json());
+// app.use(cookieParser());
 app.use(router);
 
 //starting server
-app.listen(PORT, "localhost", () => {
+app.listen(PORT, () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 });

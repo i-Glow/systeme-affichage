@@ -1,10 +1,13 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
 import HomePage from "./pages/Layout";
-import Home from "./pages/Home";
+
 import Archive from "./pages/Archive";
 import Brouillons from "./pages/Brouillons";
 import ArchiveDetail from "./pages/ArchiveDetail";
+
+import CreateArticle from "./pages/CreateArticle";
+
 function App() {
   return (
     <BrowserRouter>

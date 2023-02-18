@@ -1,6 +1,8 @@
 import React from "react";
+
 import { Items, Div, SvgPosition } from "../components/Style/Style";
 import { Link, Navigate, useNavigate } from "react-router-dom";
+
 const array = [
   {
     id: 1,
@@ -174,6 +176,7 @@ export default function Archive() {
 
   return (
     <Div>
+
       <Table columns={columns} dataSource={data} />
       {/* {array.map((item) => (
         <div
@@ -183,14 +186,7 @@ export default function Archive() {
           }}
         >
           <Items>
-            <p>
-              <b>{item.titre}</b>
-            </p>
-            <p>{item.categorie}</p>
-            <p>{item.date}</p>
-          </Items>
-        </div>
-      ))} */}
+
     </Div>
   );
 }
