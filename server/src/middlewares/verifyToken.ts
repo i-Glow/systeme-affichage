@@ -10,8 +10,8 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
 
   jwt.verify(token, key, (err, decoded) => {
     if (err) {
-      console.error(err);
-      return res.status(500).send({ message: "Server error" });
+      // console.error(err);
+      return res.status(403).send(err);
     } else {
       //@ts-ignore
       if (decoded) req.user = decoded.uid;

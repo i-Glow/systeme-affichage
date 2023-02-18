@@ -87,8 +87,11 @@ const deleteArticle = async (req: Request, res: Response) => {
     });
 
     res.sendStatus(204);
-  } catch (error) {
-    console.error(error);
+  } catch (error: any) {
+    console.error(error.code);
+    if (error.code === "P2025") {
+      return res.status(404).send({ message: "article n'existe pas" });
+    }
     res.status(500).send({ message: "Server error" });
   }
 };

@@ -2,7 +2,7 @@ import React from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
 import { DivSpaceBettwen, SvgPosition } from "../components/Style/Style";
 import { Button } from "antd";
-import { AiOutlinePlusSquare, AiOutlineUnorderedList } from "react-icons/ai";
+import { AiOutlinePlusSquare } from "react-icons/ai";
 
 import { Wrapper, SideBar, Main1 } from "../components/Style/Style";
 
@@ -25,13 +25,13 @@ export default function HomePage() {
           <h2>{location.pathname.replace("/", "")}</h2>
           <Button
             onClick={() => {
-              navigate("CreateArticle");
+              navigate("nouveau");
             }}
           >
             <SvgPosition>
               <AiOutlinePlusSquare />
             </SvgPosition>
-            <span>Home</span>
+            <span>Créer</span>
           </Button>
         </DivSpaceBettwen>
         <Outlet />
