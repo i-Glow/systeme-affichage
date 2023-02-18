@@ -20,7 +20,6 @@ export const ConatinerFLex = styled.div`
   width: 100%;
 `;
 
-
 export const Wrapper = styled.div`
   display: flex;
   width: 100%;
@@ -73,19 +72,15 @@ export const DivSpaceBettwen = styled.div`
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin-bottom: 1.4%;
+  
 `;
 export const SvgPosition = styled.span`
   margin-right: 5px;
   transform: translateY(1.5px);
 `;
 
-
 export const Main = styled.div`
   display: flex;
   width: 100%;
   padding: 0 2% 0 2%;
 `;
-
-
-

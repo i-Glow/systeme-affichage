@@ -1,23 +1,17 @@
 import React from "react";
 import { Link, Outlet, useNavigate, useLocation } from "react-router-dom";
-import {
-  DivSpaceBettwen,
-  SvgPosition,
-} from "../components/Style/Style";
+import { DivSpaceBettwen, SvgPosition } from "../components/Style/Style";
 import { Button } from "antd";
-import { AiOutlinePlusSquare , AiOutlineUnorderedList} from "react-icons/ai";
+import { AiOutlinePlusSquare, AiOutlineUnorderedList } from "react-icons/ai";
 
-import { Wrapper, SideBar, Main } from "../components/Style/Style";
-
+import { Wrapper, SideBar, Main1 } from "../components/Style/Style";
 
 const routes = ["archive", "brouillons"];
-
 
 export default function HomePage() {
   const navigate = useNavigate();
   let location = useLocation();
   return (
-
     <Wrapper>
       <SideBar>
         {routes.map((route, key) => (
@@ -26,12 +20,12 @@ export default function HomePage() {
           </Link>
         ))}
       </SideBar>
-      <Main>
+      <Main1>
         <DivSpaceBettwen>
-          <h2>{location.pathname.replace("/","")}</h2>
+          <h2>{location.pathname.replace("/", "")}</h2>
           <Button
             onClick={() => {
-              navigate("Home");
+              navigate("CreateArticle");
             }}
           >
             <SvgPosition>
@@ -41,8 +35,7 @@ export default function HomePage() {
           </Button>
         </DivSpaceBettwen>
         <Outlet />
-      </Main>
+      </Main1>
     </Wrapper>
-
   );
 }

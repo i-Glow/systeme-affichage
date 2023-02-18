@@ -176,17 +176,7 @@ export default function Archive() {
 
   return (
     <Div>
-
       <Table columns={columns} dataSource={data} />
-      {/* {array.map((item) => (
-        <div
-          key={item.id}
-          onClick={() => {
-            navigate(`${item.id}`);
-          }}
-        >
-          <Items>
-
     </Div>
   );
 }
