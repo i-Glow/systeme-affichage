@@ -61,12 +61,13 @@ export default function CreateArticle() {
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(res)
+      console.log(res);
       if (res.status === 200) {
         messageApi.open({
           type: "success",
           content: "Article créé",
         });
+        form.resetFields();
       }
     } catch (error) {
       messageApi.open({
@@ -89,8 +90,6 @@ export default function CreateArticle() {
         signal: controller.signal,
       });
 
-      console.log(res);
-
       if (res.status === 200) {
         setTitre(res.data.data.titre);
         setContenu(res.data.data.contenu);
@@ -107,7 +106,7 @@ export default function CreateArticle() {
 
     return () => controller.abort();
   }, []);
-
+  //TODO: reset form after validating
   return (
     <Wrapper>
       <Form
@@ -119,6 +118,7 @@ export default function CreateArticle() {
       >
         {contextHolder}
         <Form.Item
+          name="titre"
           label="titre"
           rules={[{ required: true }]}
           requiredMark={true}
@@ -130,6 +130,7 @@ export default function CreateArticle() {
           />
         </Form.Item>
         <Form.Item
+          name="contenu"
           label="contenu"
           rules={[{ required: true }]}
           requiredMark={true}
@@ -141,10 +142,10 @@ export default function CreateArticle() {
             style={{ height: 120, resize: "none" }}
           />
         </Form.Item>
-        <Form.Item label="Niveaux">
+        <Form.Item label="Niveaux" name="niveaux">
           <NiveauCheckBox checkedList={niveau} setCheckedList={setNiveau} />
         </Form.Item>
-        <Form.Item label="Durée">
+        <Form.Item label="Durée" name="date">
           {
             <DatePicker.RangePicker
               // defaultValue={[

@@ -12,12 +12,11 @@ import Signin from "./pages/Signin";
 function App() {
   return (
     <BrowserRouter>
-
       <AuthProvider>
         <Routes>
           <Route element={<ProtectedRoute redirectPath="/signin" />}>
             <Route path="/" element={<HomePage />}>
-              <Route path="archive" element={<Archive />}></Route>
+              <Route index element={<Archive />}></Route>
               <Route
                 path="archive/:archiveId"
                 element={<ArchiveDetail />}
@@ -26,7 +25,6 @@ function App() {
               <Route path="Brouillons" element={<Brouillons />}></Route>
               <Route path="archive/edit/:id" element={<CreateArticle />} />
             </Route>
-
           </Route>
           <Route path="/signin" element={<Signin />} />
         </Routes>
