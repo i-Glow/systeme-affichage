@@ -28,11 +28,24 @@ export const AuthProvider = ({ children }: any) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem("auth-key");
-    setToken(token);
-    setLoading(false);
-    // axios.post
+    refreshToken();
   }, []);
+
+  async function refreshToken() {
+    const token = localStorage.getItem("auth-key");
+    try {
+      const res = await axios.get("/auth/refresh", {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      setToken(res.data.token);
+      setLoading(false);
+    } catch (error) {
+      setToken(null);
+      setLoading(false);
+    }
+  }
 
   async function login(username: string, password: string) {
     setLoading(true);

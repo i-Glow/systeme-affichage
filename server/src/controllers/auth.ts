@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import prisma from "../db";
 import bcrypt from "bcrypt";
 import { createAccessToken } from "../utils/auth";
+import jwt, { Secret } from "jsonwebtoken";
 
 const signin = async (req: Request, res: Response) => {
   try {
@@ -67,4 +68,17 @@ const creatUser = async (req: Request, res: Response) => {
   }
 };
 
-export { signin, creatUser };
+const refreshToken = async (req: Request, res: Response) => {
+  try {
+    //@ts-ignore
+    const payload = { uid: req.user };
+    const accessToken = createAccessToken(payload);
+
+    res.status(200).send({ token: accessToken });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+
+export { signin, creatUser, refreshToken };

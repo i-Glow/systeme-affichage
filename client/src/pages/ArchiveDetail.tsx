@@ -75,7 +75,10 @@ export default function ArchiveDetail() {
             <Flex gap="10px">
               <Tag>text</Tag>
               <p style={{ fontSize: ".9em" }}>{data.created_at}</p>
-              <Tooltip arrow={false} title="2 edits">
+              <Tooltip
+                arrow={false}
+                title={data?.edited_at?.replace("T", " ").split(".")[0]}
+              >
                 <TbHistory style={{ fontSize: "22px", cursor: "pointer" }} />
               </Tooltip>
             </Flex>

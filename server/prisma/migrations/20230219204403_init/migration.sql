@@ -26,7 +26,7 @@ CREATE TABLE "version_article" (
     "contenu" TEXT NOT NULL,
     "niveau" VARCHAR(2)[],
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "edited_at" TIMESTAMP(3) NOT NULL,
+    "edited_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "date_debut" TIMESTAMP(3) NOT NULL,
     "date_fin" TIMESTAMP(3) NOT NULL,
     "brouillon" BOOLEAN NOT NULL DEFAULT false,
