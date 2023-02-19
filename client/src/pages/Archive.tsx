@@ -3,7 +3,7 @@ import { useState, useCallback, useEffect } from "react";
 import { message, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { AiOutlineEdit } from "react-icons/ai";
-import { MdOutlinePreview } from "react-icons/md";
+import { MdOutlineDelete, MdOutlinePreview } from "react-icons/md";
 
 import Link from "../components/shared/Link";
 import { Div } from "../components/Style/Style";
@@ -38,14 +38,15 @@ const columns: ColumnsType<DataType> = [
     key: "action",
     render: (_, record) => (
       <Space size="middle">
-        <Link to={`edit/${record.article_id}`} state={{ data: record }}>
-          <AiOutlineEdit />
+        <Link to={`archive/edit/${record.article_id}`} state={{ data: record }}>
+          <AiOutlineEdit style={{ fontSize: "18px" }} />
         </Link>
-
         <Link to={`/archive/${record.article_id}`}>
-
           <MdOutlinePreview />
         </Link>
+        <div onClick={() => {}}>
+          <MdOutlineDelete />
+        </div>
       </Space>
     ),
   },

@@ -50,8 +50,6 @@ const createArticle = async (req: Request, res: Response) => {
     const { titre, contenu, date_debut, date_fin, niveau, category_id } =
       req.body;
 
-    console.log(date_debut, date_fin);
-
     const newArticle: article = await prisma.article.create({
       data: {
         titre,
@@ -60,7 +58,8 @@ const createArticle = async (req: Request, res: Response) => {
         date_fin,
         creator: {
           connect: {
-            user_id: "clea75wdu0000tm68ie290b6s",
+            //@ts-ignore
+            user_id: req.user,
           },
         },
         categorie: {

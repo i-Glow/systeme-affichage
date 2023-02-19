@@ -1,4 +1,3 @@
-
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
 import { Button } from "antd";
@@ -8,24 +7,21 @@ import { DivSpaceBettwen, SvgPosition } from "../components/Style/Style";
 import { Wrapper, SideBar, Main1 } from "../components/Style/Style";
 import Link from "../components/shared/Link";
 import { useAuth } from "../context/AuthProvider";
-
-const routes = ["archive", "brouillons"];
+import routes from "../lib/routes";
 
 export default function HomePage() {
   const navigate = useNavigate();
-
 
   const location = useLocation();
   //@ts-ignore
   const { token } = useAuth();
 
-
   return (
     <Wrapper>
       <SideBar>
         {routes.map((route, key) => (
-          <Link to={route} key={key}>
-            <h4>{route}</h4>
+          <Link to={route.link} key={key}>
+            <h4>{route.name}</h4>
           </Link>
         ))}
         {!token ? (
@@ -36,8 +32,9 @@ export default function HomePage() {
       </SideBar>
       <Main1>
         <DivSpaceBettwen>
-          <h2>{location.pathname.replace("/", "")}</h2>
+          <p>{location.pathname.replaceAll("/", " > ")}</p>
           <Button
+            type="default"
             onClick={() => {
               navigate("nouveau");
             }}
