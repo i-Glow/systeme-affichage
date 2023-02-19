@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import axios from "../api/"
+import axios from "../api/";
 import {
   MainContainer,
   Div,
@@ -11,6 +11,12 @@ import {
 import { Wrapper } from "./CreateArticles.styles";
 import { useLocation } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
+import { BottomBar, Content, TopBar } from "./ArchiveDetail.styles";
+import { TbHistory } from "react-icons/tb";
+import { AiOutlineSwapRight } from "react-icons/ai";
+import { Tag, Tooltip } from "antd";
+
+import Flex from "../components/shared/Flex";
 
 const array = [
   {
@@ -39,14 +45,12 @@ array[0].date_debut = array[0].date_debut.split(".")[0];
 array[0].date_fin = array[0].date_fin.replace("T", " ");
 array[0].date_fin = array[0].date_fin.split(".")[0];
 
-
-
 export default function ArchiveDetail() {
   //@ts-ignore
   const { token } = useAuth();
   const location = useLocation();
 
-const [data , setData] = useState();
+  const [data, setData] = useState();
 
   const getData = useCallback(async (controller: AbortController) => {
     const id = location.state?.data?.article_id;
@@ -58,10 +62,7 @@ const [data , setData] = useState();
         signal: controller.signal,
       });
 
-      
-
       if (res.status === 200) {
-        
       }
     }
   }, []);
@@ -74,32 +75,53 @@ const [data , setData] = useState();
   }, []);
 
   return (
-    <Wrapper>
-      {array.map((item) => (
-        <MainContainer key={item.id}>
-          <Header>
-            <h4>
-              <b>{item.creator_name}</b>
-            </h4>
-            <DivSpaceAround1>
-              <p>cree le: {item.created_at}</p>
-              <p>{item.version}</p>
-            </DivSpaceAround1>
-          </Header>
-          <h2>{item.titre}</h2>
-          <FlexStart>
-            <p>
-              Categorie : <b> {item.categorie}</b>
-            </p>
-            <p>{item.contenu}</p>
-          </FlexStart>
-          <DivSpaceAround>
-            <p>Publie le : {item.date_debut}</p>
-            <p>Fin de publiment le : {item.date_fin}</p>
-          </DivSpaceAround>
-          <p>Niveau : {item.niveau}</p>
-        </MainContainer>
-      ))}
+    <Wrapper style={{ padding: 0 }}>
+      <TopBar>
+        <h4>user</h4>
+        <Flex gap="10px">
+          <Tag>text</Tag>
+          <p style={{ fontSize: ".9em" }}>17-23-2022</p>
+          <Tooltip arrow={false} title="2 edits">
+            <TbHistory style={{ fontSize: "22px", cursor: "pointer" }} />
+          </Tooltip>
+        </Flex>
+      </TopBar>
+      <Flex direction="v" gap="15px" p="20px 50px">
+        <h2>Title</h2>
+        <p>
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta,
+          praesentium nesciunt. Placeat quam officiis natus doloremque accusamus
+          tempora recusandae ex rerum beatae, consectetur ipsum incidunt eveniet
+          exercitationem, perspiciatis sint aliquam! Lorem ipsum dolor sit amet
+          consectetur adipisicing elit. Consequuntur, natus? Ducimus culpa, eos
+          ex voluptate nesciunt, minima porro ea, obcaecati neque architecto
+          consectetur veritatis nostrum libero nulla sunt inventore distinctio.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta,
+          praesentium nesciunt. Placeat quam officiis natus doloremque accusamus
+          tempora recusandae ex rerum beatae, consectetur ipsum incidunt eveniet
+          exercitationem, perspiciatis sint aliquam! Lorem ipsum dolor sit amet
+          consectetur adipisicing elit. Consequuntur, natus? Ducimus culpa, eos
+          ex voluptate nesciunt, minima porro ea, obcaecati neque architecto
+          consectetur veritatis nostrum libero nulla sunt inventore distinctio.
+          Lorem ipsum dolor sit amet consectetur adipisicing elit. Dicta,
+          praesentium nesciunt. Placeat quam officiis natus doloremque accusamus
+          tempora recusandae ex rerum beatae, consectetur ipsum incidunt eveniet
+          exercitationem, perspiciatis sint aliquam! Lorem ipsum dolor sit amet
+          consectetur adipisicing elit. Consequuntur, natus? Ducimus culpa, eos
+          ex voluptate nesciunt, minima porro ea, obcaecati neque architecto
+          consectetur veritatis nostrum libero nulla sunt inventore distinctio.
+        </p>
+        <Flex style={{ marginLeft: "auto" }} gap="7px">
+          <h4>l1</h4>
+          <h4>l2</h4>
+          <h4>m1</h4>
+        </Flex>
+      </Flex>
+      <BottomBar>
+        <p style={{ fontSize: ".9em" }}>17-23-2022</p>
+        <AiOutlineSwapRight />
+        <p style={{ fontSize: ".9em" }}>18-23-2022</p>
+      </BottomBar>
     </Wrapper>
   );
 }
