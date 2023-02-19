@@ -3,8 +3,8 @@ import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "antd";
 import { AiOutlinePlusSquare } from "react-icons/ai";
 
-import { DivSpaceBettwen, SvgPosition } from "../components/Style/Style";
-import { Wrapper, SideBar, Main1 } from "../components/Style/Style";
+import { DivSpaceBettwen, SvgPosition , Wrapper, SideBar, Main1 } from "./styles/Layout.style";
+
 import Link from "../components/shared/Link";
 import { useAuth } from "../context/AuthProvider";
 import routes from "../lib/routes";

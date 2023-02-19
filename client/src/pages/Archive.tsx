@@ -6,7 +6,7 @@ import { AiOutlineEdit } from "react-icons/ai";
 import { MdOutlineDelete, MdOutlinePreview } from "react-icons/md";
 
 import Link from "../components/shared/Link";
-import { Div } from "../components/Style/Style";
+import { Div } from "./styles/Archive.style";
 import { useAuth } from "../context/AuthProvider";
 import axios from "../api";
 

@@ -1,6 +1,9 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { Carousel } from "antd";
+import {  useEffect, useCallback } from "react";
+import axios from "../api";
+import { useAuth } from "../context/AuthProvider";
+import {} from "./styles/ArticalShow.style"
+import { useLocation } from "react-router-dom";
 
 const contentStyle: React.CSSProperties = {
   height: "160px",
@@ -9,57 +12,42 @@ const contentStyle: React.CSSProperties = {
   textAlign: "center",
   background: "#364d79",
 };
-const Data = [
-  {
-    id: "1",
-    titre: "John Brown",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-    contenu:
-      "this is a garbage collecteur plz dont mind it tkdsf dsfkds jsdlfnsd kdf lsnfd lsd knfsdl kndfls knfdk nsldkfnsdkfn lsdf",
-  },
-  {
-    id: "2",
-    titre: "Jim Green",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-    contenu:
-      "this is a garbage collecteur plz dont mind it tkdsf dsfkds jsdlfnsd kdf lsnfd lsd knfsdl kndfls knfdk nsldkfnsdkfn lsdf",
-  },
-  {
-    id: "3",
-    titre: "Joe Black",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-    contenu:
-      "this is a garbage collecteur plz dont mind it tkdsf dsfkds jsdlfnsd kdf lsnfd lsd knfsdl kndfls knfdk nsldkfnsdkfn lsdf",
-  },
-  {
-    id: "3",
-    titre: "Joe gree",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-    contenu:
-      "this is a garbage collecteur plz dont mind it tkdsf dsfkds jsdlfnsd kdf lsnfd lsd knfsdl kndfls knfdk nsldkfnsdkfn lsdf",
-  },
-  {
-    id: "3",
-    titre: "Joe thic",
-    categrie: "text",
-    date: "20-12-2023 20:20:00",
-    contenu:
-      "this is a garbage collecteur plz dont mind it tkdsf dsfkds jsdlfnsd kdf lsnfd lsd knfsdl kndfls knfdk nsldkfnsdkfn lsdf",
-  },
-];
-
+type data = {
+  titre: string;
+  contenu: string;
+  date_debut: string;
+  date_fin: string;
+  niveau: string[];
+  category_id: number;
+};
 export default function ArticalShow() {
-  return (
-    <Carousel autoplay >
-      {Data.map((item)=>(
-        <div>
-            <h2>{item.titre}</h2>
-            <p>{item.contenu}</p>
-        </div>))}
-    </Carousel>
-  );
+  const location = useLocation();
+  //@ts-ignore
+  const { token } = useAuth();
+
+  const getData = useCallback(async (controller: AbortController) => {
+    const id = location.state?.data?.article_id;
+    console.log("this is "+ location.state?.data?.article_id);
+    if (id) {
+      const url = `/show`;
+      const res = await axios.get(url, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
+      });
+
+      if (res.status === 200) {
+        
+        const data = res.data;
+        console.log(data);
+      }
+    }
+  }, []);
+  useEffect(() => {
+    const controller = new AbortController();
+    getData(controller);
+
+    return () => controller.abort();
+  }, []);
+  return <div></div>;
 }
