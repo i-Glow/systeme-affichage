@@ -1,7 +1,7 @@
 import { Button, Form, Input } from "antd";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
-import { Wrapper } from "./Signin.styles";
+import { Wrapper } from "./styles/Signin.styles";
 
 export default () => {
   const navigate = useNavigate();

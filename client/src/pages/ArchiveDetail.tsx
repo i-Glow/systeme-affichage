@@ -4,9 +4,9 @@ import { Skeleton, Tag, Tooltip } from "antd";
 import { TbHistory } from "react-icons/tb";
 import { AiOutlineSwapRight } from "react-icons/ai";
 
-import { Wrapper } from "./CreateArticles.styles";
+import { Wrapper } from "./styles/CreateArticles.styles";
 import { useAuth } from "../context/AuthProvider";
-import { BottomBar, TopBar } from "./ArchiveDetail.styles";
+import { BottomBar, TopBar } from "./styles/ArchiveDetail.styles";
 import Flex from "../components/shared/Flex";
 import axios from "../api/";
 

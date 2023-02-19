@@ -3,7 +3,7 @@ import { Input, DatePicker, Button, message } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import dayjs from "dayjs";
 
-import { Form, Wrapper } from "./CreateArticles.styles";
+import { Form, Wrapper } from "./styles/CreateArticles.styles";
 import NiveauCheckBox from "../components/CheckboxGroup";
 import axios from "../api";
 import { useAuth } from "../context/AuthProvider";

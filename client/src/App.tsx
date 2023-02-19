@@ -6,7 +6,6 @@ import Brouillons from "./pages/Brouillons";
 import ArchiveDetail from "./pages/ArchiveDetail";
 import CreateArticle from "./pages/CreateArticle";
 import ArticalShow from "./pages/ArticalShow";
-import Edit from "./pages/Edit";
 import Signin from "./pages/Signin";
 
 function App() {
@@ -22,6 +21,7 @@ function App() {
                 element={<ArchiveDetail />}
               ></Route>
               <Route path="nouveau" element={<CreateArticle />}></Route>
+              <Route path="show" element={<ArticalShow />}></Route>
               <Route path="Brouillons" element={<Brouillons />}></Route>
               <Route path="archive/edit/:id" element={<CreateArticle />} />
             </Route>
