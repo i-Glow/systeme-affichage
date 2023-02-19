@@ -1,9 +1,13 @@
 import Router from "express";
-import { creatUser, signin } from "../controllers/auth";
+import { creatUser, refreshToken, signin } from "../controllers/auth";
+import verifyToken from "../middlewares/verifyToken";
 
 const router = Router();
 
 router.post("/signin", signin);
 router.post("/create-user", creatUser);
+
+router.use(verifyToken);
+router.get("/refresh", refreshToken);
 
 export default router;

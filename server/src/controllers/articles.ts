@@ -85,6 +85,31 @@ const createArticle = async (req: Request, res: Response) => {
   }
 };
 
+const editArticle = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { titre, contenu, date_debut, date_fin } = req.body;
+
+    await prisma.article.update({
+      data: {
+        titre,
+        contenu,
+        date_debut,
+        date_fin,
+        edited_at: new Date().toISOString(),
+      },
+      where: {
+        article_id: id,
+      },
+    });
+
+    res.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+
 const deleteArticle = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
@@ -104,4 +129,4 @@ const deleteArticle = async (req: Request, res: Response) => {
   }
 };
 
-export { getAll, getArticle, createArticle, deleteArticle };
+export { getAll, getArticle, createArticle, deleteArticle, editArticle };

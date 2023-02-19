@@ -33,7 +33,7 @@ model version_article {
   contenu            String
   niveau             String[]  @db.VarChar(2)
   created_at         DateTime  @default(now())
-  edited_at          DateTime
+  edited_at          DateTime  @default(now())
   date_debut         DateTime
   date_fin           DateTime
   brouillon          Boolean   @default(false)
