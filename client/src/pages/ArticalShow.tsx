@@ -1,8 +1,8 @@
 import React from "react";
-import {  useEffect, useCallback } from "react";
+import { useEffect, useCallback } from "react";
 import axios from "../api";
 import { useAuth } from "../context/AuthProvider";
-import {} from "./styles/ArticalShow.style"
+import {} from "./styles/ArticalShow.style";
 import { useLocation } from "react-router-dom";
 
 const contentStyle: React.CSSProperties = {
@@ -26,21 +26,15 @@ export default function ArticalShow() {
   const { token } = useAuth();
 
   const getData = useCallback(async (controller: AbortController) => {
-    const id = location.state?.data?.article_id;
-    
-    if (id) {
-      const url = `/show`;
-      const res = await axios.get(url, {
-        withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
-        signal: controller.signal,
-      });
+    const url = `/show`;
+    const res = await axios.get(url, {
+      withCredentials: true,
+      headers: { Authorization: `Bearer ${token}` },
+      signal: controller.signal,
+    });
 
-      if (res.status === 200) {
-        
-        const data = res.data;
-       
-      }
+    if (res.status === 200) {
+      const data = res.data;
     }
   }, []);
   useEffect(() => {
@@ -49,5 +43,8 @@ export default function ArticalShow() {
 
     return () => controller.abort();
   }, []);
-  return <div></div>;
+  return (
+  <div>
+
+  </div>);
 }
