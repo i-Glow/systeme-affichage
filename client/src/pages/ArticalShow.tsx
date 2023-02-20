@@ -27,7 +27,7 @@ export default function ArticalShow() {
 
   const getData = useCallback(async (controller: AbortController) => {
     const id = location.state?.data?.article_id;
-    console.log("this is "+ location.state?.data?.article_id);
+    
     if (id) {
       const url = `/show`;
       const res = await axios.get(url, {
@@ -39,7 +39,7 @@ export default function ArticalShow() {
       if (res.status === 200) {
         
         const data = res.data;
-        console.log(data);
+       
       }
     }
   }, []);

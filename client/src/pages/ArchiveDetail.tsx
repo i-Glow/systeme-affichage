@@ -55,7 +55,7 @@ export default function ArchiveDetail() {
         }
       }
     } catch (error) {
-      console.log(error);
+      
     }
   }, []);
 

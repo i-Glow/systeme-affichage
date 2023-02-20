@@ -74,12 +74,12 @@ export default function Archive() {
             return el;
           });
           setData(newData);
-          // console.log(newData);
+          
         }
       } catch (error: any) {
-        console.log(error);
+        
         if (error.response?.status === 403) {
-          console.log(error.response.data.message === "No token provided");
+          
           messageApi.open({
             type: "error",
             content: "Please log in",

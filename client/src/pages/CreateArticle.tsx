@@ -7,7 +7,7 @@ import { Form, Wrapper } from "./styles/CreateArticles.styles";
 import NiveauCheckBox from "../components/CheckboxGroup";
 import axios from "../api";
 import { useAuth } from "../context/AuthProvider";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 
 type data = {
   titre: string;
@@ -20,7 +20,7 @@ type data = {
 
 export default function CreateArticle() {
   const location = useLocation();
-
+  const navigate = useNavigate();
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
   //@ts-ignore
@@ -61,13 +61,21 @@ export default function CreateArticle() {
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(res);
+
       if (res.status === 200) {
         messageApi.open({
           type: "success",
           content: "Article créé",
         });
-        form.resetFields();
+        if (location.pathname.includes("/archive/edit")) {
+          navigate("/");
+        } else {
+          setTitre("");
+          setContenu("");
+          setNiveau([""]);
+          setDateDebut("");
+          setDateFin("");
+        }
       }
     } catch (error) {
       messageApi.open({
@@ -107,6 +115,7 @@ export default function CreateArticle() {
     return () => controller.abort();
   }, []);
   //TODO: reset form after validating
+
   return (
     <Wrapper>
       <Form
@@ -118,7 +127,6 @@ export default function CreateArticle() {
       >
         {contextHolder}
         <Form.Item
-          name="titre"
           label="titre"
           rules={[{ required: true }]}
           requiredMark={true}
@@ -130,7 +138,6 @@ export default function CreateArticle() {
           />
         </Form.Item>
         <Form.Item
-          name="contenu"
           label="contenu"
           rules={[{ required: true }]}
           requiredMark={true}
@@ -142,22 +149,36 @@ export default function CreateArticle() {
             style={{ height: 120, resize: "none" }}
           />
         </Form.Item>
-        <Form.Item label="Niveaux" name="niveaux">
+        <Form.Item label="Niveaux">
           <NiveauCheckBox checkedList={niveau} setCheckedList={setNiveau} />
         </Form.Item>
-        <Form.Item label="Durée" name="date">
-          {
+        <Form.Item label="Durée">
+          {location.pathname.includes("/archive/edit") ? (
+            dateDebut && dateFin ? <DatePicker.RangePicker
+              defaultValue={[
+                dayjs(
+                  dateDebut?.replace("T", " ").split(".")[0],
+                  "YYYY-MM-DD HH:mm:ss"
+                ),
+                dayjs(
+                  dateFin?.replace("T", " ").split(".")[0],
+                  "YYYY-MM-DD HH:mm:ss"
+                ),
+              ]}
+              allowEmpty={[false, false]}
+              onChange={(value) => dateChangeHandler(value)}
+              placeholder={["de", "à"]}
+              showTime={{
+                hideDisabledOptions: true,
+                defaultValue: [
+                  dayjs("00:00:00", "HH:mm:ss"),
+                  dayjs("11:59:59", "HH:mm:ss"),
+                ],
+              }}
+              format="YYYY-MM-DD HH:mm:ss"
+            /> : null
+          ) : (
             <DatePicker.RangePicker
-              // defaultValue={[
-              //   dayjs(
-              //     dateDebut?.replace("T", " ").split(".")[0],
-              //     "YYYY-MM-DD HH:mm:ss"
-              //   ),
-              //   dayjs(
-              //     dateFin?.replace("T", " ").split(".")[0],
-              //     "YYYY-MM-DD HH:mm:ss"
-              //   ),
-              // ]}
               allowEmpty={[false, false]}
               onChange={(value) => dateChangeHandler(value)}
               placeholder={["de", "à"]}
@@ -170,7 +191,7 @@ export default function CreateArticle() {
               }}
               format="YYYY-MM-DD HH:mm:ss"
             />
-          }
+          )}
         </Form.Item>
         <Form.Item label=" " colon={false}>
           <Button loading={loading} htmlType="submit" type="primary">
