@@ -1,9 +1,15 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 
-import { Button } from "antd";
+import { Breadcrumb, Button } from "antd";
 import { AiOutlinePlusSquare } from "react-icons/ai";
 
-import { DivSpaceBettwen, SvgPosition , Wrapper, SideBar, Main1 } from "./styles/Layout.style";
+import {
+  DivSpaceBettwen,
+  SvgPosition,
+  Wrapper,
+  SideBar,
+  Main1,
+} from "./styles/Layout.style";
 
 import Link from "../components/shared/Link";
 import { useAuth } from "../context/AuthProvider";
@@ -32,7 +38,11 @@ export default function HomePage() {
       </SideBar>
       <Main1>
         <DivSpaceBettwen>
-          <p>{location.pathname.replaceAll("/", " > ")}</p>
+          <Breadcrumb>
+            {location.pathname.split("/").map((bc, key) => (
+              <Breadcrumb.Item>{bc}</Breadcrumb.Item>
+            ))}
+          </Breadcrumb>
           <Button
             type="default"
             onClick={() => {

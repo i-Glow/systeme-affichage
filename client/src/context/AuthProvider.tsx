@@ -40,6 +40,7 @@ export const AuthProvider = ({ children }: any) => {
       });
 
       setToken(res.data.token);
+      localStorage.setItem("auth-key", res.data.token);
       setLoading(false);
     } catch (error) {
       setToken(null);

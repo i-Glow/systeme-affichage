@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Skeleton, Tag, Tooltip } from "antd";
+import { message, Skeleton, Tag, Tooltip } from "antd";
 import { TbHistory } from "react-icons/tb";
 import { AiOutlineSwapRight } from "react-icons/ai";
 
@@ -27,6 +27,7 @@ export default function ArchiveDetail() {
   //@ts-ignore
   const { token } = useAuth();
   const location = useLocation();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [data, setData] = useState<Article | undefined>();
 
@@ -54,8 +55,13 @@ export default function ArchiveDetail() {
           setData(dataObj);
         }
       }
-    } catch (error) {
-      
+    } catch (error: any) {
+      if (error.response?.status === 403) {
+        messageApi.open({
+          type: "error",
+          content: "Please log in",
+        });
+      }
     }
   }, []);
 
@@ -67,46 +73,49 @@ export default function ArchiveDetail() {
   }, []);
 
   return (
-    <Wrapper style={{ padding: 0 }}>
-      {data ? (
-        <>
-          <TopBar>
-            <h4>{data.creator_id}</h4>
-            <Flex gap="10px">
-              <Tag>text</Tag>
-              <p style={{ fontSize: ".9em" }}>{data.created_at}</p>
-              <Tooltip
-                arrow={false}
-                title={data?.edited_at?.replace("T", " ").split(".")[0]}
-              >
-                <TbHistory style={{ fontSize: "22px", cursor: "pointer" }} />
-              </Tooltip>
+    <>
+      {contextHolder}
+      <Wrapper style={{ padding: 0 }}>
+        {data ? (
+          <>
+            <TopBar>
+              <h4>{data.creator_id}</h4>
+              <Flex gap="10px">
+                <Tag>text</Tag>
+                <p style={{ fontSize: ".9em" }}>{data.created_at}</p>
+                <Tooltip
+                  arrow={false}
+                  title={data?.edited_at?.replace("T", " ").split(".")[0]}
+                >
+                  <TbHistory style={{ fontSize: "22px", cursor: "pointer" }} />
+                </Tooltip>
+              </Flex>
+            </TopBar>
+            <Flex direction="v" gap="15px" p="20px 50px">
+              <h2>{data.titre}</h2>
+              <p>{data.contenu}</p>
+              <Flex style={{ marginLeft: "auto" }} gap="7px">
+                {data.niveau.map((el, key) => (
+                  <h4 key={key}>{el}</h4>
+                ))}
+              </Flex>
             </Flex>
-          </TopBar>
-          <Flex direction="v" gap="15px" p="20px 50px">
-            <h2>Title</h2>
-            <p>{data.contenu}</p>
-            <Flex style={{ marginLeft: "auto" }} gap="7px">
-              {data.niveau.map((el, key) => (
-                <h4 key={key}>{el}</h4>
-              ))}
+            <BottomBar>
+              <p style={{ fontSize: ".9em" }}>{data.date_debut}</p>
+              <AiOutlineSwapRight />
+              <p style={{ fontSize: ".9em" }}>{data.date_fin}</p>
+            </BottomBar>
+          </>
+        ) : (
+          <>
+            <TopBar />
+            <Flex p="20px 50px">
+              <Skeleton active />
             </Flex>
-          </Flex>
-          <BottomBar>
-            <p style={{ fontSize: ".9em" }}>{data.date_debut}</p>
-            <AiOutlineSwapRight />
-            <p style={{ fontSize: ".9em" }}>{data.date_fin}</p>
-          </BottomBar>
-        </>
-      ) : (
-        <>
-          <TopBar />
-          <Flex p="20px 50px">
-            <Skeleton active />
-          </Flex>
-          <BottomBar />
-        </>
-      )}
-    </Wrapper>
+            <BottomBar />
+          </>
+        )}
+      </Wrapper>
+    </>
   );
 }
