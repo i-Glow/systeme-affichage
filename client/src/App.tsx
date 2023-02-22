@@ -21,10 +21,11 @@ function App() {
                 element={<ArchiveDetail />}
               ></Route>
               <Route path="nouveau" element={<CreateArticle />}></Route>
-              <Route path="show" element={<ArticalShow />}></Route>
+              
               <Route path="Brouillons" element={<Brouillons />}></Route>
               <Route path="archive/edit/:id" element={<CreateArticle />} />
             </Route>
+            <Route path="show" element={<ArticalShow />}></Route>
           </Route>
           <Route path="/signin" element={<Signin />} />
         </Routes>
