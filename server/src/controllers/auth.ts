@@ -71,10 +71,28 @@ const creatUser = async (req: Request, res: Response) => {
 const refreshToken = async (req: Request, res: Response) => {
   try {
     //@ts-ignore
-    const payload = { uid: req.user };
+    const userid = req.user;
+
+    const payload = { uid: userid };
     const accessToken = createAccessToken(payload);
 
-    res.status(200).send({ token: accessToken });
+    //@ts-ignore
+    const user: user = await prisma.user.findUnique({
+      where: {
+        user_id: userid,
+      },
+    });
+
+    res.status(200).send({
+      token: accessToken,
+      user: {
+        user_id: user.user_id,
+        username: user.username,
+        nom: user.nom,
+        prenom: user.prenom,
+        role: user.role,
+      },
+    });
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Server error" });
