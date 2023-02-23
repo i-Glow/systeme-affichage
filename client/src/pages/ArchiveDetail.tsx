@@ -8,7 +8,7 @@ import { Wrapper } from "./styles/CreateArticles.styles";
 import { useAuth } from "../context/AuthProvider";
 import { BottomBar, TopBar } from "./styles/ArchiveDetail.styles";
 import Flex from "../components/shared/Flex";
-import axios from "../api/";
+import useAxios from "../hooks/useAxios";
 
 type Article = {
   titre: string;
@@ -26,6 +26,7 @@ type Article = {
 export default function ArchiveDetail() {
   //@ts-ignore
   const { token } = useAuth();
+  const axios = useAxios();
   const location = useLocation();
   const [messageApi, contextHolder] = message.useMessage();
 

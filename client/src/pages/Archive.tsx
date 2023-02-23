@@ -3,48 +3,58 @@ import { useState, useCallback, useEffect } from "react";
 import { message, Popconfirm, Space, Table } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import { AiOutlineEdit } from "react-icons/ai";
-import { MdOutlineDelete, MdOutlinePreview } from "react-icons/md";
+import { MdOutlinePreview } from "react-icons/md";
 
 import Link from "../components/shared/Link";
 import { DeleteIcon, Div } from "./styles/Archive.style";
 import { useAuth } from "../context/AuthProvider";
-import axios from "../api";
+import useAxios from "../hooks/useAxios";
 
-interface DataType {
+type article = {
   article_id: string;
   titre: string;
-  categorie: string;
+  niveau: string;
   created_at: string;
-}
+};
 
 export default function Archive() {
   //@ts-ignore
   const { token } = useAuth();
+  const axios = useAxios();
   const [messageApi, contextHolder] = message.useMessage();
 
   const [confirmLoading, setConfirmLoading] = useState(false);
 
-  const [data, setData] = useState<DataType[]>([]);
+  const [data, setData] = useState<article[]>([]);
 
-  const columns: ColumnsType<DataType> = [
+  const columns: ColumnsType<article> = [
     {
       title: "Titre",
       dataIndex: "titre",
-      key: "titre",
+      key: "article_id",
     },
     {
-      title: "Categorie",
-      dataIndex: "categorie",
-      key: "categorie",
+      title: "niveau",
+      dataIndex: "niveau",
+      key: "article_id",
+      filters: [
+        { text: "License 1", value: "l1" },
+        { text: "License 2", value: "l2" },
+        { text: "License 3", value: "l3" },
+        { text: "Master 1", value: "m1" },
+        { text: "Master 2", value: "m2" },
+      ],
+      onFilter: (value, record) => record.niveau.includes(value as string),
+      sorter: (a, b) => a.niveau[0].localeCompare(b.niveau[0]),
     },
     {
       title: "Date",
       dataIndex: "created_at",
-      key: "date",
+      key: "article_id",
     },
     {
       title: "Action",
-      key: "action",
+      key: "article_id",
       render: (_, record) => (
         <Space size="middle">
           <Link
@@ -108,7 +118,7 @@ export default function Archive() {
         });
 
         if (res.status === 200) {
-          const newData = res.data.data.map((el: DataType) => {
+          const newData = res.data.data.map((el: article) => {
             el.created_at = el.created_at.replace("T", " ").split(".")[0];
             return el;
           });
@@ -136,7 +146,12 @@ export default function Archive() {
   return (
     <Div>
       {contextHolder}
-      <Table columns={columns} dataSource={data} />
+      <Table
+        columns={columns}
+        dataSource={data}
+        loading={!data.length}
+        pagination={{ position: ["bottomCenter"] }}
+      />
     </Div>
   );
 }

@@ -1,8 +1,11 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../context/AuthProvider";
+import routes from "../utils/routes";
+
+import Link from "../components/shared/Link";
 
 import { Breadcrumb, Button } from "antd";
 import { AiOutlinePlusSquare } from "react-icons/ai";
-
 import {
   DivSpaceBettwen,
   SvgPosition,
@@ -11,13 +14,8 @@ import {
   Main1,
 } from "./styles/Layout.style";
 
-import Link from "../components/shared/Link";
-import { useAuth } from "../context/AuthProvider";
-import routes from "../lib/routes";
-
 export default function HomePage() {
   const navigate = useNavigate();
-
   const location = useLocation();
   //@ts-ignore
   const { token } = useAuth();

@@ -9,7 +9,7 @@ const getAll = async (_: Request, res: Response) => {
         article_id: true,
         titre: true,
         created_at: true,
-        categorie: true,
+        niveau: true,
       },
       orderBy: {
         date_debut: "asc",

@@ -5,9 +5,10 @@ import dayjs from "dayjs";
 
 import { Form, Wrapper } from "./styles/CreateArticles.styles";
 import NiveauCheckBox from "../components/CheckboxGroup";
-import axios from "../api";
 import { useAuth } from "../context/AuthProvider";
-import { Navigate, useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
+import useAxios from "../hooks/useAxios";
+import { AxiosRequestConfig } from "axios";
 
 type data = {
   titre: string;
@@ -19,12 +20,12 @@ type data = {
 };
 
 export default function CreateArticle() {
-  const location = useLocation();
-  const navigate = useNavigate();
-  const [form] = Form.useForm();
-  const [messageApi, contextHolder] = message.useMessage();
   //@ts-ignore
   const { token } = useAuth();
+  const axios = useAxios();
+  const location = useLocation();
+  const [form] = Form.useForm();
+  const [messageApi, contextHolder] = message.useMessage();
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -42,9 +43,26 @@ export default function CreateArticle() {
   async function onFinish() {
     setLoading(true);
 
+    if (!dateDebut || !dateFin) {
+      //TODO: alert the user
+      return;
+    }
+
     try {
-      if (!dateDebut || !dateFin) {
-        return;
+      let config: AxiosRequestConfig;
+
+      if (location.pathname.includes("/archive/edit")) {
+        const id = location.pathname.split("/").at(-1);
+
+        config = {
+          method: "put",
+          url: `/articles/${id}`,
+        };
+      } else {
+        config = {
+          method: "post",
+          url: `/articles`,
+        };
       }
 
       const data: data = {
@@ -54,10 +72,11 @@ export default function CreateArticle() {
         date_fin: dateFin,
         niveau: niveau as string[],
         category_id: 1,
-        //TODO: add edit functionality
       };
 
-      const res = await axios.post("/articles", data, {
+      const res = await axios({
+        ...config,
+        data,
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -67,22 +86,24 @@ export default function CreateArticle() {
           type: "success",
           content: "Article créé",
         });
-        if (location.pathname.includes("/archive/edit")) {
-          navigate("/");
-        } else {
-          setTitre("");
-          setContenu("");
-          setNiveau([""]);
-          setDateDebut("");
-          setDateFin("");
-        }
+
+        //empty fields
+        setTitre("");
+        setContenu("");
+        setNiveau([]);
+        setDateDebut("");
+        setDateFin("");
+      } else if (res.status === 204) {
+        messageApi.open({
+          type: "success",
+          content: "Article édité",
+        });
       }
     } catch (error) {
       messageApi.open({
         type: "error",
         content: "Erreur",
       });
-      // console.error(error);
     } finally {
       setLoading(false);
     }
@@ -114,10 +135,10 @@ export default function CreateArticle() {
 
     return () => controller.abort();
   }, []);
-  //TODO: reset form after validating
 
   return (
     <Wrapper>
+      {contextHolder}
       <Form
         form={form}
         labelAlign={"left"}
@@ -125,7 +146,6 @@ export default function CreateArticle() {
         wrapperCol={{ span: 16 }}
         onFinish={onFinish}
       >
-        {contextHolder}
         <Form.Item
           label="titre"
           rules={[{ required: true }]}
@@ -154,29 +174,31 @@ export default function CreateArticle() {
         </Form.Item>
         <Form.Item label="Durée">
           {location.pathname.includes("/archive/edit") ? (
-            dateDebut && dateFin ? <DatePicker.RangePicker
-              defaultValue={[
-                dayjs(
-                  dateDebut?.replace("T", " ").split(".")[0],
-                  "YYYY-MM-DD HH:mm:ss"
-                ),
-                dayjs(
-                  dateFin?.replace("T", " ").split(".")[0],
-                  "YYYY-MM-DD HH:mm:ss"
-                ),
-              ]}
-              allowEmpty={[false, false]}
-              onChange={(value) => dateChangeHandler(value)}
-              placeholder={["de", "à"]}
-              showTime={{
-                hideDisabledOptions: true,
-                defaultValue: [
-                  dayjs("00:00:00", "HH:mm:ss"),
-                  dayjs("11:59:59", "HH:mm:ss"),
-                ],
-              }}
-              format="YYYY-MM-DD HH:mm:ss"
-            /> : null
+            dateDebut && dateFin ? (
+              <DatePicker.RangePicker
+                defaultValue={[
+                  dayjs(
+                    dateDebut?.replace("T", " ").split(".")[0],
+                    "YYYY-MM-DD HH:mm:ss"
+                  ),
+                  dayjs(
+                    dateFin?.replace("T", " ").split(".")[0],
+                    "YYYY-MM-DD HH:mm:ss"
+                  ),
+                ]}
+                allowEmpty={[false, false]}
+                onChange={(value) => dateChangeHandler(value)}
+                placeholder={["de", "à"]}
+                showTime={{
+                  hideDisabledOptions: true,
+                  defaultValue: [
+                    dayjs("00:00:00", "HH:mm:ss"),
+                    dayjs("11:59:59", "HH:mm:ss"),
+                  ],
+                }}
+                format="YYYY-MM-DD HH:mm:ss"
+              />
+            ) : null
           ) : (
             <DatePicker.RangePicker
               allowEmpty={[false, false]}
