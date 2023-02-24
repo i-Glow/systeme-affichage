@@ -9,6 +9,7 @@ import Link from "../components/shared/Link";
 import { DeleteIcon, Div } from "./styles/Archive.style";
 import { useAuth } from "../context/AuthProvider";
 import useAxios from "../hooks/useAxios";
+import Column from "antd/es/table/Column";
 
 type article = {
   article_id: string;
@@ -27,60 +28,27 @@ export default function Archive() {
 
   const [data, setData] = useState<article[]>([]);
 
-  const columns: ColumnsType<article> = [
-    {
-      title: "Titre",
-      dataIndex: "titre",
-      key: "article_id",
-    },
-    {
-      title: "niveau",
-      dataIndex: "niveau",
-      key: "article_id",
-      filters: [
-        { text: "License 1", value: "l1" },
-        { text: "License 2", value: "l2" },
-        { text: "License 3", value: "l3" },
-        { text: "Master 1", value: "m1" },
-        { text: "Master 2", value: "m2" },
-      ],
-      onFilter: (value, record) => record.niveau.includes(value as string),
-      sorter: (a, b) => a.niveau[0].localeCompare(b.niveau[0]),
-    },
-    {
-      title: "Date",
-      dataIndex: "created_at",
-      key: "article_id",
-    },
-    {
-      title: "Action",
-      key: "article_id",
-      render: (_, record) => (
-        <Space size="middle">
-          <Link
-            to={`archive/edit/${record.article_id}`}
-            state={{ data: record }}
-          >
-            <AiOutlineEdit style={{ fontSize: "18px" }} />
-          </Link>
-          <Link to={`/archive/${record.article_id}`}>
-            <MdOutlinePreview />
-          </Link>
-          <Popconfirm
-            title="supprimer"
-            description="Voulez-vous supprimer ce article?"
-            okText="Supprimer"
-            okType="danger"
-            cancelText="Annuler"
-            okButtonProps={{ loading: confirmLoading }}
-            onConfirm={() => deleteArticle(record.article_id)}
-          >
-            <DeleteIcon />
-          </Popconfirm>
-        </Space>
-      ),
-    },
-  ];
+  const columnActionsRenderer = (_: any, record: article) => (
+    <Space size="middle">
+      <Link to={`archive/edit/${record.article_id}`} state={{ data: record }}>
+        <AiOutlineEdit style={{ fontSize: "18px" }} />
+      </Link>
+      <Link to={`/archive/${record.article_id}`}>
+        <MdOutlinePreview />
+      </Link>
+      <Popconfirm
+        title="supprimer"
+        description="Voulez-vous supprimer ce article?"
+        okText="Supprimer"
+        okType="danger"
+        cancelText="Annuler"
+        okButtonProps={{ loading: confirmLoading }}
+        onConfirm={() => deleteArticle(record.article_id)}
+      >
+        <DeleteIcon />
+      </Popconfirm>
+    </Space>
+  );
 
   const deleteArticle = useCallback(async (id: string) => {
     try {
@@ -108,6 +76,7 @@ export default function Archive() {
       }
     }
   }, []);
+
   const getArticles = useCallback(
     async (controller: AbortController) => {
       try {
@@ -147,11 +116,34 @@ export default function Archive() {
     <Div>
       {contextHolder}
       <Table
-        columns={columns}
         dataSource={data}
         loading={!data.length}
         pagination={{ position: ["bottomCenter"] }}
-      />
+      >
+        <Column title="Title" key="titre" dataIndex="titre" ellipsis={true} />
+        <Column
+          title="Niveau"
+          key="niveau"
+          dataIndex="niveau"
+          ellipsis={true}
+          filters={[
+            { text: "License 1", value: "l1" },
+            { text: "License 2", value: "l2" },
+            { text: "License 3", value: "l3" },
+            { text: "Master 1", value: "m1" },
+            { text: "Master 2", value: "m2" },
+          ]}
+          onFilter={(value, record: article) =>
+            record.niveau.includes(value as string)
+          }
+        />
+        <Column title="Date" dataIndex="created_at" key="article_id" />
+        <Column
+          title="Action"
+          key="article_id"
+          render={columnActionsRenderer}
+        ></Column>
+      </Table>
     </Div>
   );
 }
