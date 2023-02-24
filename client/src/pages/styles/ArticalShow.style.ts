@@ -1,12 +1,13 @@
 import styled from "styled-components";
-
-/* export const Div = styled.div`
+/* 
+export const Div = styled.div`
   display: flex;
   flex-wrap: wrap;
   width: 100%;
   height: 100%;
   justify-content: center;
 `;
+
 export const Items = styled.div`
   display: flex;
   min-height: 50%;
@@ -42,28 +43,34 @@ export const CenterDiv = styled.div`
   height: 100vh;
   justify-content: center;
   align-items: center;
+  flex-wrap: wrap;
+  /* row-gap: 5%; */
+  column-gap: 3%;
+  padding-left: 0.3%;
+  padding-right: 0.3%;
 `;
 export const Card = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 70px;
-  width: 70%;
-  height: 80%;
+  gap: 50px;
+  width: 31%;
+  height: 48%;
   background-color: #f7f7f7;
   border-radius: 15px;
-  padding: 2%;
   align-items: center;
   box-shadow: 7px 7px 3px black;
+  justify-content: center;
+  padding: 2%;
 `;
 export const Title = styled.h1`
-  font-size: 60px;
+  /* font-size: 60px; */
   letter-spacing: 1, 7px;
 `;
 export const Parag = styled.p`
-  font-size: 40px;
+  /* font-size: 40px; */
 `;
 export const Niveau = styled.p`
-  margin: 0 0 0 80%;
-  font-size: 29px;
+  margin: 0 0 0 70%;
+  /* font-size: 29px; */
   font-weight: bolder;
 `;
