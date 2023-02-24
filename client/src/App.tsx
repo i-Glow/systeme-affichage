@@ -6,7 +6,7 @@ import ArchiveDetail from "./pages/ArchiveDetail";
 import CreateArticle from "./pages/CreateArticle";
 import ArticalShow from "./pages/ArticalShow";
 import Signin from "./pages/Signin";
-
+import TEST from "./pages/TEST";
 function App() {
   return (
     <BrowserRouter>
@@ -23,6 +23,8 @@ function App() {
               <Route path="archive/edit/:id" element={<CreateArticle />} />
             </Route>
             <Route path="show" element={<ArticalShow />}></Route>
+            <Route path="Test" element={<TEST />}></Route>
+            
           </Route>
           <Route path="/signin" element={<Signin />} />
         </Routes>
