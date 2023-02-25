@@ -64,10 +64,14 @@ export default function ArticalShow() {
   }, [data]);
 
   useEffect(() => {
-    // const controller = new AbortController();
     getData();
 
-    // return () => controller.abort();
+    //short polling
+    const interval = setInterval(() => {
+      getData(); // Fetch data at regular intervals
+    }, 300000); // Polling interval is 5 minutes in milliseconds
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
