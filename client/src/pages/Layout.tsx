@@ -38,7 +38,7 @@ export default function HomePage() {
         <DivSpaceBettwen>
           <Breadcrumb>
             {location.pathname.split("/").map((bc, key) => (
-              <Breadcrumb.Item>{bc}</Breadcrumb.Item>
+              <Breadcrumb.Item key={key}>{bc}</Breadcrumb.Item>
             ))}
           </Breadcrumb>
           <Button

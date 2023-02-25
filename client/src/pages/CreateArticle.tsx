@@ -1,14 +1,21 @@
 import { useState, useEffect, useCallback } from "react";
-import { Input, DatePicker, Button, message } from "antd";
-import { CheckboxValueType } from "antd/es/checkbox/Group";
+import { useLocation } from "react-router-dom";
+import { AxiosRequestConfig } from "axios";
 import dayjs from "dayjs";
 
+import { Input, DatePicker, Button, message, Select } from "antd";
+import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { Form, Wrapper } from "./styles/CreateArticles.styles";
 import NiveauCheckBox from "../components/CheckboxGroup";
 import { useAuth } from "../context/AuthProvider";
-import { useLocation, useNavigate } from "react-router-dom";
 import useAxios from "../hooks/useAxios";
-import { AxiosRequestConfig } from "axios";
+import { BsPlusLg } from "react-icons/bs";
+import Flex from "../components/shared/Flex";
+
+type Categorie = {
+  category_id: number | null;
+  nom: string;
+};
 
 type data = {
   titre: string;
@@ -16,7 +23,7 @@ type data = {
   date_debut: string;
   date_fin: string;
   niveau: string[];
-  category_id: number;
+  categoryName: string;
 };
 
 export default function CreateArticle() {
@@ -27,10 +34,14 @@ export default function CreateArticle() {
   const [form] = Form.useForm();
   const [messageApi, contextHolder] = message.useMessage();
 
+  //control state
   const [loading, setLoading] = useState<boolean>(false);
+  const [isInputShow, setIsInputShow] = useState<boolean>(false);
 
+  const [categories, setCategories] = useState<Categorie[]>();
   const [titre, setTitre] = useState<string>("");
   const [contenu, setContenu] = useState<string>("");
+  const [category, setCategory] = useState<string>();
   const [niveau, setNiveau] = useState<CheckboxValueType[]>([]);
   const [dateDebut, setDateDebut] = useState<string>();
   const [dateFin, setDateFin] = useState<string>();
@@ -68,14 +79,13 @@ export default function CreateArticle() {
           url: `/articles`,
         };
       }
-
       const data: data = {
         titre,
         contenu,
         date_debut: dateDebut,
         date_fin: dateFin,
         niveau: niveau as string[],
-        category_id: 1,
+        categoryName: category,
       };
 
       const res = await axios({
@@ -131,17 +141,26 @@ export default function CreateArticle() {
         setNiveau(res.data.data.niveau);
         setDateDebut(res.data.data.date_debut);
         setDateFin(res.data.data.date_fin);
-        
+        setCategory(res.data.data.categorie.nom);
       }
     }
   }, []);
-/*   useEffect(() => {
-    setBoolean(false);
-  }, [boolean]); */
+
+  const getCategories = useCallback(async () => {
+    const res = await axios.get("/categorie", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (res.status === 200) {
+      setCategories(res.data.data);
+      setCategory(res.data.data[0].nom);
+    }
+  }, []);
+
   useEffect(() => {
     const controller = new AbortController();
     getData(controller);
-    return () => controller.abort();
+    getCategories();
   }, []);
 
   return (
@@ -162,6 +181,8 @@ export default function CreateArticle() {
         >
           <Input
             value={titre}
+            showCount
+            maxLength={100}
             required
             onChange={(e) => setTitre(e.target.value)}
           />
@@ -176,7 +197,50 @@ export default function CreateArticle() {
             required
             onChange={(e) => setContenu(e.target.value)}
             style={{ height: 120, resize: "none" }}
+            showCount
+            maxLength={500}
           />
+        </Form.Item>
+        <Form.Item label="categorie">
+          <Flex jc="start" gap="5px">
+            {!isInputShow && categories ? (
+              <Select
+                defaultValue={categories[0].nom}
+                style={{ width: 120 }}
+                onChange={(value) => setCategory(value)}
+                options={categories.map((cat) => {
+                  return {
+                    label: cat.nom,
+                    value: cat.nom,
+                  };
+                })}
+              />
+            ) : (
+              <Input
+                style={{ width: "120px" }}
+                onChange={(e) => setCategory(e.target.value)}
+              />
+            )}
+            <Button
+              type="dashed"
+              icon={
+                <BsPlusLg
+                  style={{
+                    transform: `rotate(${isInputShow ? "45" : "0"}deg)`,
+                    transition: "0.1s",
+                  }}
+                />
+              }
+              onClick={() => {
+                if (isInputShow && categories) {
+                  setCategory(categories[0].nom);
+                } else {
+                  setCategory("");
+                }
+                setIsInputShow(!isInputShow);
+              }}
+            />
+          </Flex>
         </Form.Item>
         <Form.Item label="Niveaux">
           <NiveauCheckBox checkedList={niveau} setCheckedList={setNiveau} />
