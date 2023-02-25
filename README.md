@@ -47,7 +47,7 @@ _client_
 _server_
 
 ```bash
-  tsc
+  npx tsc
 ```
 
 # Run the build

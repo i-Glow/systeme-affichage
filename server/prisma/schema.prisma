@@ -12,53 +12,33 @@ datasource db {
 
 model article {
   article_id   String    @id @default(cuid())
-  titre        String
-  contenu      String
-  niveau       String[]
+  titre        String    @db.VarChar(100)
+  contenu      String    @db.VarChar(1000)
+  niveau       String[]  @db.Char(2)
   created_at   DateTime  @default(now())
   edited_at    DateTime?
   date_debut   DateTime
   date_fin     DateTime
-  brouillon    Boolean   @default(false)
   creator      user      @relation(fields: [creator_id], references: [user_id])
   creator_id   String
   categorie    categorie @relation(fields: [categorie_id], references: [category_id])
   categorie_id Int
 }
 
-model version_article {
-  version_article_id String    @id @default(cuid())
-  article_id         String    @default(cuid())
-  titre              String
-  contenu            String
-  niveau             String[]  @db.VarChar(2)
-  created_at         DateTime  @default(now())
-  edited_at          DateTime  @default(now())
-  date_debut         DateTime
-  date_fin           DateTime
-  brouillon          Boolean   @default(false)
-  creator            user      @relation(fields: [creator_id], references: [user_id])
-  creator_id         String
-  categorie          categorie @relation(fields: [categorie_id], references: [category_id])
-  categorie_id       Int
-}
-
 model categorie {
-  category_id     Int               @id @default(autoincrement())
-  nom             String
-  article         article[]
-  version_article version_article[]
+  category_id Int       @id @default(autoincrement())
+  nom         String    @unique
+  article     article[]
 }
 
 model user {
-  user_id         String            @id @default(cuid())
-  nom             String
-  prenom          String
-  username        String            @unique
-  password        String
-  role            Role
-  article         article[]
-  version_article version_article[]
+  user_id  String    @id @default(cuid())
+  nom      String
+  prenom   String
+  username String    @unique
+  password String
+  role     Role
+  article  article[]
 }
 
 enum Role {

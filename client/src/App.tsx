@@ -1,6 +1,6 @@
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 
-import HomePage from "./pages/Layout";
+import Layout from "./pages/Layout";
 import Archive from "./pages/Archive";
 import ArchiveDetail from "./pages/ArchiveDetail";
 import CreateArticle from "./pages/CreateArticle";
@@ -13,7 +13,7 @@ function App() {
       <AuthProvider>
         <Routes>
           <Route element={<ProtectedRoute redirectPath="/signin" />}>
-            <Route path="/" element={<HomePage />}>
+            <Route path="/" element={<Layout />}>
               <Route index element={<Archive />}></Route>
               <Route
                 path="archive/:archiveId"

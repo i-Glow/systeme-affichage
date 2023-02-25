@@ -10,17 +10,26 @@ import { BottomBar, TopBar } from "./styles/ArchiveDetail.styles";
 import Flex from "../components/shared/Flex";
 import useAxios from "../hooks/useAxios";
 
+type Categorie = {
+  categorie_id: number;
+  nom: string;
+};
+
+type user = {
+  nom: string;
+  prenom: string;
+};
+
 type Article = {
   titre: string;
   contenu: string;
-  creator_id: string;
+  creator: user;
   niveau: string[];
   date_debut: string;
   date_fin: string;
   created_at: string;
   edited_at: string | null;
-  brouillon: boolean;
-  categorie_id: number;
+  categorie: Categorie;
 };
 
 export default function ArchiveDetail() {
@@ -63,6 +72,7 @@ export default function ArchiveDetail() {
           content: "Please log in",
         });
       }
+      console.log(error);
     }
   }, []);
 
@@ -80,9 +90,12 @@ export default function ArchiveDetail() {
         {data ? (
           <>
             <TopBar>
-              <h4>{data.creator_id}</h4>
+              <Flex gap="7px">
+                <h4>{data.creator.nom}</h4>
+                <h4>{data.creator.prenom}</h4>
+              </Flex>
               <Flex gap="10px">
-                <Tag>text</Tag>
+                <Tag>{data.categorie.nom}</Tag>
                 <p style={{ fontSize: ".9em" }}>{data.created_at}</p>
                 <Tooltip
                   arrow={false}
