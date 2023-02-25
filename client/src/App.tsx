@@ -5,6 +5,7 @@ import Archive from "./pages/Archive";
 import ArchiveDetail from "./pages/ArchiveDetail";
 import CreateArticle from "./pages/CreateArticle";
 import ArticalShow from "./pages/ArticalShow";
+import ArticleShow1 from "./pages/ArticleShow1";
 import Signin from "./pages/Signin";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             </Route>
           </Route>
           <Route path="/show" element={<ArticalShow />}></Route>
+          <Route path="/show1" element={<ArticleShow1 />}></Route>
           <Route path="/signin" element={<Signin />} />
         </Routes>
       </AuthProvider>

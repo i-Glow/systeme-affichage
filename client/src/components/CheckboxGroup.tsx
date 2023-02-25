@@ -1,4 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
+import React, { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Checkbox, Divider } from "antd";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import type { CheckboxValueType } from "antd/es/checkbox/Group";
@@ -9,11 +9,21 @@ type Props = {
 
 const CheckboxGroup = Checkbox.Group;
 
-const plainOptions = ["L1", "L2", "L3", "M1", "M2"];
+const plainOptions = ["L1", "L2", "L3", "M1", "M2", "D"];
 
 const NiveauCheckBox = ({ checkedList, setCheckedList }: Props) => {
   const [indeterminate, setIndeterminate] = useState(false);
   const [checkAll, setCheckAll] = useState(false);
+  useEffect(() => {
+    console.log(checkedList.length);
+    if (!checkedList.length) {
+      setCheckAll(false);
+    } else if (checkedList.length === 6) {
+      setCheckAll(true);
+    } else {
+      setIndeterminate(true);
+    }
+  }, [checkedList]);
 
   const onChange = (list: CheckboxValueType[]) => {
     setCheckedList(list);
