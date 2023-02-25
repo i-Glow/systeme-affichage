@@ -34,20 +34,24 @@ export default function CreateArticle() {
   const [niveau, setNiveau] = useState<CheckboxValueType[]>([]);
   const [dateDebut, setDateDebut] = useState<string>();
   const [dateFin, setDateFin] = useState<string>();
-
+  const [boolean, setBoolean] = useState(false);
   function dateChangeHandler(value: any) {
+    console.log(value[0]);
+    console.log(value[1]);
     setDateDebut(value[0].$d.toISOString());
     setDateFin(value[1].$d.toISOString());
   }
 
   async function onFinish() {
     setLoading(true);
-
+    console.log("finish function");
     if (!dateDebut || !dateFin) {
+      console.log("this is dateDebut" + dateDebut);
+      console.log("this is dateFin" + dateFin);
       //TODO: alert the user
       return;
     }
-
+    console.log("after if conditon");
     try {
       let config: AxiosRequestConfig;
 
@@ -86,20 +90,21 @@ export default function CreateArticle() {
           type: "success",
           content: "Article créé",
         });
-
+        console.log("im in 200");
         //empty fields
         setTitre("");
         setContenu("");
         setNiveau([]);
-        setDateDebut("");
-        setDateFin("");
+        console.log("i got erased");
       } else if (res.status === 204) {
         messageApi.open({
           type: "success",
           content: "Article édité",
         });
+        console.log("im in edit");
       }
     } catch (error) {
+      console.log(error);
       messageApi.open({
         type: "error",
         content: "Erreur",
@@ -107,8 +112,9 @@ export default function CreateArticle() {
     } finally {
       setLoading(false);
     }
+   
   }
-
+  
   const getData = useCallback(async (controller: AbortController) => {
     const id = location.state?.data?.article_id;
     if (id) {
@@ -125,14 +131,16 @@ export default function CreateArticle() {
         setNiveau(res.data.data.niveau);
         setDateDebut(res.data.data.date_debut);
         setDateFin(res.data.data.date_fin);
+        
       }
     }
   }, []);
-
+/*   useEffect(() => {
+    setBoolean(false);
+  }, [boolean]); */
   useEffect(() => {
     const controller = new AbortController();
     getData(controller);
-
     return () => controller.abort();
   }, []);
 
@@ -145,10 +153,11 @@ export default function CreateArticle() {
         labelCol={{ span: 3 }}
         wrapperCol={{ span: 16 }}
         onFinish={onFinish}
+        onSubmitCapture={() => {}}
       >
         <Form.Item
           label="titre"
-          rules={[{ required: true }]}
+          rules={[{ required: true, message: "Please input your name" }]}
           requiredMark={true}
         >
           <Input
