@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { message, Skeleton, Tag, Tooltip } from "antd";
-import { TbHistory } from "react-icons/tb";
 import { AiOutlineSwapRight } from "react-icons/ai";
 
 import { Wrapper } from "./styles/CreateArticles.styles";

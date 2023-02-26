@@ -1,17 +1,27 @@
-
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Input, DatePicker, Button, message ,Select } from "antd";
-import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { useLocation } from "react-router-dom";
+import dayjs from "dayjs";
+
 import { AxiosRequestConfig } from "axios";
 
-import dayjs from "dayjs";
-import { Form, Wrapper } from "./styles/CreateArticles.styles";
+import {
+  Input,
+  DatePicker,
+  Button,
+  message,
+  Select,
+  Form,
+  Segmented,
+} from "antd";
+import { CheckboxValueType } from "antd/es/checkbox/Group";
+import { BsPlusLg } from "react-icons/bs";
+import { FormWrapper, Wrapper } from "./styles/CreateArticles.styles";
 import NiveauCheckBox from "../components/CheckboxGroup";
 import { useAuth } from "../context/AuthProvider";
 import useAxios from "../hooks/useAxios";
-import { BsPlusLg } from "react-icons/bs";
 import Flex from "../components/shared/Flex";
+import LatestArticles from "../components/LatestArticles";
 
 type Categorie = {
   category_id: number | null;
@@ -38,6 +48,9 @@ export default function CreateArticle() {
   //control state
   const [loading, setLoading] = useState<boolean>(false);
   const [isInputShow, setIsInputShow] = useState<boolean>(false);
+  const [direction, setDirection] = useState<"ltr" | "rtl">("rtl");
+  const [checkBoxMessageError, setCheckBoxMessageError] = useState(false);
+  const [dateMessageError, setDateMessageError] = useState(false);
 
   const [categories, setCategories] = useState<Categorie[]>();
   const [titre, setTitre] = useState<string>("");
@@ -47,12 +60,15 @@ export default function CreateArticle() {
   const [dateDebut, setDateDebut] = useState<string>();
   const [dateFin, setDateFin] = useState<string>();
 
+  function directionChangeHandler() {
+    direction === "rtl" ? setDirection("ltr") : setDirection("rtl");
+  }
+
   function dateChangeHandler(value: any) {
     setDateDebut(value[0].$d.toISOString());
     setDateFin(value[1].$d.toISOString());
   }
-  const [checkBoxMessageError, setCheckBoxMessageError] = useState(false);
-  const [dateMessageError, setDateMessageError] = useState(false);
+
   async function onFinish() {
     setLoading(true);
     if (niveau.length === 0) {
@@ -64,7 +80,7 @@ export default function CreateArticle() {
     if (!dateDebut || !dateFin || !category) {
       setDateMessageError(true);
       setLoading(false);
-      
+
       return;
     }
     setDateMessageError(false);
@@ -159,7 +175,6 @@ export default function CreateArticle() {
     }
   }, []);
 
-
   useEffect(() => {
     const controller = new AbortController();
     getData(controller);
@@ -168,103 +183,127 @@ export default function CreateArticle() {
 
   return (
     <Wrapper>
-      {contextHolder}
-      <Form
-        form={form}
-        labelAlign={"left"}
-        labelCol={{ span: 3 }}
-        wrapperCol={{ span: 16 }}
-        onFinish={onFinish}
-        onSubmitCapture={() => {}}
-      >
-        <Form.Item
-          label="titre"
-          rules={[{ required: true, message: "Please input your name" }]}
-          requiredMark={true}
+      <FormWrapper>
+        {contextHolder}
+        <Form
+          form={form}
+          labelAlign={"left"}
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 16 }}
+          onFinish={onFinish}
+          onSubmitCapture={() => {}}
         >
-          <Input
-            value={titre}
-            showCount
-            maxLength={100}
-            required
-            onChange={(e) => setTitre(e.target.value)}
-          />
-        </Form.Item>
-        <Form.Item
-          label="contenu"
-          rules={[{ required: true }]}
-          requiredMark={true}
-        >
-          <Input.TextArea
-            value={contenu}
-            required
-            onChange={(e) => setContenu(e.target.value)}
-            style={{ height: 120, resize: "none" }}
-            showCount
-            maxLength={500}
-          />
-        </Form.Item>
-        <Form.Item label="categorie">
-          <Flex jc="start" gap="5px">
-            {!isInputShow && categories ? (
-              <Select
-                defaultValue={category}
-                style={{ width: 120 }}
-                onChange={(value) => setCategory(value)}
-                options={categories.map((cat) => {
-                  return {
-                    label: cat.nom,
-                    value: cat.nom,
-                  };
-                })}
-              />
-            ) : (
-              <Input
-                style={{ width: "120px" }}
-                onChange={(e) => setCategory(e.target.value)}
-              />
-            )}
-            <Button
-              type="dashed"
-              icon={
-                <BsPlusLg
-                  style={{
-                    transform: `rotate(${isInputShow ? "45" : "0"}deg)`,
-                    transition: "0.1s",
-                  }}
-                />
-              }
-              onClick={() => {
-                if (isInputShow && categories) {
-                  setCategory(categories[0].nom);
-                } else {
-                  setCategory("");
-                }
-                setIsInputShow(!isInputShow);
-              }}
+          <Form.Item label="language">
+            <Segmented
+              onChange={directionChangeHandler}
+              style={{ color: "rgb(200, 200, 200)" }}
+              options={["عربية", "foreign"]}
             />
-          </Flex>
-        </Form.Item>
-        <Form.Item label="Niveaux">
-          <NiveauCheckBox checkedList={niveau} setCheckedList={setNiveau} />
-          <p style={{ color: "red" }}>
-            {checkBoxMessageError ? "pick a level" : null}
-          </p>
-        </Form.Item>
-        <Form.Item label="Durée">
-          {location.pathname.includes("/archive/edit") ? (
-            dateDebut && dateFin ? (
+          </Form.Item>
+          <Form.Item
+            label="titre"
+            rules={[{ required: true, message: "Please input your name" }]}
+            requiredMark={true}
+          >
+            <Input
+              style={{ direction }}
+              value={titre}
+              showCount
+              maxLength={100}
+              required
+              onChange={(e) => setTitre(e.target.value)}
+            />
+          </Form.Item>
+          <Form.Item
+            label="contenu"
+            rules={[{ required: true }]}
+            requiredMark={true}
+          >
+            <Input.TextArea
+              value={contenu}
+              required
+              onChange={(e) => setContenu(e.target.value)}
+              style={{ height: 120, resize: "none", direction }}
+              showCount
+              maxLength={500}
+            />
+          </Form.Item>
+          <Form.Item label="categorie">
+            <Flex jc="start" gap="5px">
+              {!isInputShow && categories ? (
+                <Select
+                  defaultValue={categories[0].nom}
+                  style={{ width: 120 }}
+                  onChange={(value) => setCategory(value)}
+                  options={categories.map((cat) => {
+                    return {
+                      label: cat.nom,
+                      value: cat.nom,
+                    };
+                  })}
+                />
+              ) : (
+                <Input
+                  style={{ width: "120px" }}
+                  onChange={(e) => setCategory(e.target.value)}
+                />
+              )}
+              <Button
+                type="dashed"
+                icon={
+                  <BsPlusLg
+                    style={{
+                      transform: `rotate(${isInputShow ? "45" : "0"}deg)`,
+                      transition: "0.1s",
+                    }}
+                  />
+                }
+                onClick={() => {
+                  if (isInputShow && categories) {
+                    setCategory(categories[0].nom);
+                  } else {
+                    setCategory("");
+                  }
+                  setIsInputShow(!isInputShow);
+                }}
+              />
+            </Flex>
+          </Form.Item>
+          <Form.Item label="Niveaux">
+            <NiveauCheckBox checkedList={niveau} setCheckedList={setNiveau} />
+            <p style={{ color: "red" }}>
+              {checkBoxMessageError ? "pick a level" : null}
+            </p>
+          </Form.Item>
+          <Form.Item label="Durée">
+            {location.pathname.includes("/archive/edit") ? (
+              dateDebut && dateFin ? (
+                <DatePicker.RangePicker
+                  defaultValue={[
+                    dayjs(
+                      dateDebut?.replace("T", " ").split(".")[0],
+                      "YYYY-MM-DD HH:mm:ss"
+                    ),
+                    dayjs(
+                      dateFin?.replace("T", " ").split(".")[0],
+                      "YYYY-MM-DD HH:mm:ss"
+                    ),
+                  ]}
+                  allowEmpty={[false, false]}
+                  onChange={(value) => dateChangeHandler(value)}
+                  placeholder={["de", "à"]}
+                  showTime={{
+                    hideDisabledOptions: true,
+                    defaultValue: [
+                      dayjs("00:00:00", "HH:mm:ss"),
+                      dayjs("11:59:59", "HH:mm:ss"),
+                    ],
+                  }}
+                  format="YYYY-MM-DD HH:mm:ss"
+                />
+              ) : null
+            ) : (
               <DatePicker.RangePicker
-                defaultValue={[
-                  dayjs(
-                    dateDebut?.replace("T", " ").split(".")[0],
-                    "YYYY-MM-DD HH:mm:ss"
-                  ),
-                  dayjs(
-                    dateFin?.replace("T", " ").split(".")[0],
-                    "YYYY-MM-DD HH:mm:ss"
-                  ),
-                ]}
                 allowEmpty={[false, false]}
                 onChange={(value) => dateChangeHandler(value)}
                 placeholder={["de", "à"]}
@@ -277,32 +316,19 @@ export default function CreateArticle() {
                 }}
                 format="YYYY-MM-DD HH:mm:ss"
               />
-            ) : null
-          ) : (
-            <DatePicker.RangePicker
-              allowEmpty={[false, false]}
-              onChange={(value) => dateChangeHandler(value)}
-              placeholder={["de", "à"]}
-              showTime={{
-                hideDisabledOptions: true,
-                defaultValue: [
-                  dayjs("00:00:00", "HH:mm:ss"),
-                  dayjs("11:59:59", "HH:mm:ss"),
-                ],
-              }}
-              format="YYYY-MM-DD HH:mm:ss"
-            />
-          )}
-          <p style={{ color: "red" }}>
-            {dateMessageError ? "pick a Date" : null}
-          </p>
-        </Form.Item>
-        <Form.Item label=" " colon={false}>
-          <Button loading={loading} htmlType="submit" type="primary">
-            Valider
-          </Button>
-        </Form.Item>
-      </Form>
+            )}
+            <p style={{ color: "red" }}>
+              {dateMessageError ? "pick a Date" : null}
+            </p>
+          </Form.Item>
+          <Form.Item label=" " colon={false}>
+            <Button loading={loading} htmlType="submit" type="primary">
+              Valider
+            </Button>
+          </Form.Item>
+        </Form>
+      </FormWrapper>
+      <LatestArticles />
     </Wrapper>
   );
 }
