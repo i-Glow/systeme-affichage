@@ -1,6 +1,8 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Input, DatePicker, Button, message ,Select } from "antd";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
+
 import { AxiosRequestConfig } from "axios";
 
 import {
@@ -169,7 +171,7 @@ export default function CreateArticle() {
 
     if (res.status === 200) {
       setCategories(res.data.data);
-      setCategory(res.data.data[0].nom);
+      setCategory(res.data.data[0]?.nom);
     }
   }, []);
 
