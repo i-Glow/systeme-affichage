@@ -4,8 +4,7 @@ import Layout from "./pages/Layout";
 import Archive from "./pages/Archive";
 import ArchiveDetail from "./pages/ArchiveDetail";
 import CreateArticle from "./pages/CreateArticle";
-import ArticalShow from "./pages/ArticalShow";
-import ArticleShow1 from "./pages/ArticleShow1";
+import ArticleShow from "./pages/ArticleShow";
 import Signin from "./pages/Signin";
 
 function App() {
@@ -24,8 +23,8 @@ function App() {
               <Route path="archive/edit/:id" element={<CreateArticle />} />
             </Route>
           </Route>
-          <Route path="/show" element={<ArticalShow />}></Route>
-          <Route path="/show1" element={<ArticleShow1 />}></Route>
+          
+          <Route path="/show" element={<ArticleShow />}></Route>
           <Route path="/signin" element={<Signin />} />
         </Routes>
       </AuthProvider>

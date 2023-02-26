@@ -1,14 +1,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Input, DatePicker, Button, message } from "antd";
+import { Input, DatePicker, Button, message ,Select } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { useLocation } from "react-router-dom";
 import { AxiosRequestConfig } from "axios";
 
 import dayjs from "dayjs";
-
-import { Input, DatePicker, Button, message, Select } from "antd";
-import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { Form, Wrapper } from "./styles/CreateArticles.styles";
 import NiveauCheckBox from "../components/CheckboxGroup";
 import { useAuth } from "../context/AuthProvider";
@@ -64,7 +61,7 @@ export default function CreateArticle() {
       return;
     }
     setCheckBoxMessageError(false);
-    if (!dateDebut || !dateFin) {
+    if (!dateDebut || !dateFin || !category) {
       setDateMessageError(true);
       setLoading(false);
       return;

@@ -13,7 +13,7 @@ import {
   CardBottom,
   CardVoidBottom,
   CardVoidTop,
-} from "./styles/ArticalShow1.style";
+} from "./styles/ArticleShow.style";
 
 type article = {
   titre: string;
@@ -30,7 +30,7 @@ type allArticles = {
   D: article[] | undefined;
 };
 
-export default function ArticalShow1() {
+export default function ArticalShow() {
   const [articles, setArticles] = useState<allArticles | undefined>();
   const [data, setData] = useState<article[]>();
   const [count, setCount] = useState([0, 0, 0, 0, 0, 0]);
