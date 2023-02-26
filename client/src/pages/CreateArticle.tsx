@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Input, DatePicker, Button, message } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import dayjs from "dayjs";
@@ -36,22 +36,25 @@ export default function CreateArticle() {
   const [dateFin, setDateFin] = useState<string>();
   const [boolean, setBoolean] = useState(false);
   function dateChangeHandler(value: any) {
-    console.log(value[0]);
-    console.log(value[1]);
     setDateDebut(value[0].$d.toISOString());
     setDateFin(value[1].$d.toISOString());
   }
-
+  const [checkBoxMessageError, setCheckBoxMessageError] = useState(false);
+  const [dateMessageError, setDateMessageError] = useState(false);
   async function onFinish() {
     setLoading(true);
-    console.log("finish function");
-    if (!dateDebut || !dateFin) {
-      console.log("this is dateDebut" + dateDebut);
-      console.log("this is dateFin" + dateFin);
-      //TODO: alert the user
+    if (niveau.length === 0) {
+      setCheckBoxMessageError(true);
+      setLoading(false);
       return;
     }
-    console.log("after if conditon");
+    setCheckBoxMessageError(false);
+    if (!dateDebut || !dateFin) {
+      setDateMessageError(true);
+      setLoading(false);
+      return;
+    }
+    setDateMessageError(false);
     try {
       let config: AxiosRequestConfig;
 
@@ -90,18 +93,16 @@ export default function CreateArticle() {
           type: "success",
           content: "Article créé",
         });
-        console.log("im in 200");
+
         //empty fields
         setTitre("");
         setContenu("");
         setNiveau([]);
-        console.log("i got erased");
       } else if (res.status === 204) {
         messageApi.open({
           type: "success",
           content: "Article édité",
         });
-        console.log("im in edit");
       }
     } catch (error) {
       console.log(error);
@@ -112,9 +113,8 @@ export default function CreateArticle() {
     } finally {
       setLoading(false);
     }
-   
   }
-  
+
   const getData = useCallback(async (controller: AbortController) => {
     const id = location.state?.data?.article_id;
     if (id) {
@@ -131,11 +131,10 @@ export default function CreateArticle() {
         setNiveau(res.data.data.niveau);
         setDateDebut(res.data.data.date_debut);
         setDateFin(res.data.data.date_fin);
-        
       }
     }
   }, []);
-/*   useEffect(() => {
+  /*   useEffect(() => {
     setBoolean(false);
   }, [boolean]); */
   useEffect(() => {
@@ -180,6 +179,9 @@ export default function CreateArticle() {
         </Form.Item>
         <Form.Item label="Niveaux">
           <NiveauCheckBox checkedList={niveau} setCheckedList={setNiveau} />
+          <p style={{ color: "red" }}>
+            {checkBoxMessageError ? "pick a level" : null}
+          </p>
         </Form.Item>
         <Form.Item label="Durée">
           {location.pathname.includes("/archive/edit") ? (
@@ -223,6 +225,9 @@ export default function CreateArticle() {
               format="YYYY-MM-DD HH:mm:ss"
             />
           )}
+          <p style={{ color: "red" }}>
+            {dateMessageError ? "pick a Date" : null}
+          </p>
         </Form.Item>
         <Form.Item label=" " colon={false}>
           <Button loading={loading} htmlType="submit" type="primary">

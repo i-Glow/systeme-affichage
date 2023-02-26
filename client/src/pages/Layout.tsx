@@ -12,13 +12,14 @@ import {
   Wrapper,
   SideBar,
   Main1,
+  Buton,
 } from "./styles/Layout.style";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
   //@ts-ignore
-  const { token } = useAuth();
+  const { token,setToken } = useAuth();
 
   return (
     <Wrapper>
@@ -33,6 +34,16 @@ export default function HomePage() {
             <h4>login</h4>
           </Link>
         ) : null}
+        <Buton
+          mt={"auto"}
+          onClick={() => {
+            console.log(localStorage);
+            localStorage.removeItem("auth-key");
+            setToken(null);
+          }}
+        >
+          logout
+        </Buton>
       </SideBar>
       <Main1>
         <DivSpaceBettwen>

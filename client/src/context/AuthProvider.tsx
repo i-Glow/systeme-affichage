@@ -82,6 +82,7 @@ export const AuthProvider = ({ children }: any) => {
     login,
     loading,
     contextHolder,
+    setToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
