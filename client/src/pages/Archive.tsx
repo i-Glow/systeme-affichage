@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect } from "react";
 
-import { message, Popconfirm, Space, Table } from "antd";
-import type { ColumnsType } from "antd/es/table";
+import { message, Popconfirm, Row, Space, Table } from "antd";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdOutlinePreview } from "react-icons/md";
 
@@ -120,19 +119,26 @@ export default function Archive() {
         dataSource={data}
         loading={!data.length}
         pagination={{ position: ["bottomCenter"] }}
+        rowKey="article_id"
       >
-        <Column title="Title" key="titre" dataIndex="titre" ellipsis={true} />
+        <Column
+          title="Title"
+          key="article_id"
+          dataIndex="titre"
+          ellipsis={true}
+        />
         <Column
           title="Niveau"
-          key="niveau"
+          key="article_id"
           dataIndex="niveau"
           ellipsis={true}
           filters={[
-            { text: "License 1", value: "l1" },
-            { text: "License 2", value: "l2" },
-            { text: "License 3", value: "l3" },
-            { text: "Master 1", value: "m1" },
-            { text: "Master 2", value: "m2" },
+            { text: "License 1", value: "L1" },
+            { text: "License 2", value: "L2" },
+            { text: "License 3", value: "L3" },
+            { text: "Master 1", value: "M1" },
+            { text: "Master 2", value: "M2" },
+            { text: "Doctorat", value: "D" },
           ]}
           onFilter={(value, record: article) =>
             record.niveau.includes(value as string)

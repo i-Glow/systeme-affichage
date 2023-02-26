@@ -1,4 +1,4 @@
-import { article } from "@prisma/client";
+import { article, categorie } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../db";
 
@@ -36,6 +36,22 @@ const getArticle = async (req: Request, res: Response) => {
       where: {
         article_id: id,
       },
+      select: {
+        article_id: true,
+        titre: true,
+        niveau: true,
+        contenu: true,
+        date_debut: true,
+        date_fin: true,
+        categorie: true,
+        created_at: true,
+        creator: {
+          select: {
+            nom: true,
+            prenom: true,
+          },
+        },
+      },
     });
 
     res.status(200).send({ data: article });
@@ -47,7 +63,7 @@ const getArticle = async (req: Request, res: Response) => {
 
 const createArticle = async (req: Request, res: Response) => {
   try {
-    const { titre, contenu, date_debut, date_fin, niveau, category_id } =
+    const { titre, contenu, date_debut, date_fin, niveau, categoryName } =
       req.body;
 
     const newArticle: article = await prisma.article.create({
@@ -63,18 +79,16 @@ const createArticle = async (req: Request, res: Response) => {
           },
         },
         categorie: {
-          //FIXME: make categories dynamic
           connectOrCreate: {
             create: {
-              nom: "text",
+              nom: categoryName,
             },
             where: {
-              category_id: 1,
+              nom: categoryName,
             },
           },
         },
         niveau,
-        brouillon: false,
       },
     });
 
@@ -88,7 +102,8 @@ const createArticle = async (req: Request, res: Response) => {
 const editArticle = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { titre, contenu, date_debut, date_fin } = req.body;
+    const { titre, contenu, date_debut, date_fin, niveau, categoryName } =
+      req.body;
 
     await prisma.article.update({
       data: {
@@ -97,6 +112,17 @@ const editArticle = async (req: Request, res: Response) => {
         date_debut,
         date_fin,
         edited_at: new Date().toISOString(),
+        niveau,
+        categorie: {
+          connectOrCreate: {
+            create: {
+              nom: categoryName,
+            },
+            where: {
+              nom: categoryName,
+            },
+          },
+        },
       },
       where: {
         article_id: id,
