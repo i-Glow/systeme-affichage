@@ -34,3 +34,11 @@ export const Main1 = styled.div`
   padding: 24px;
   flex-direction: column;
 `;
+type params = {
+  mt?: string;
+}
+export const Buton = styled.p`
+  margin-top: ${({ mt }: params) => mt};
+  color: gray;
+  cursor: pointer;
+`
