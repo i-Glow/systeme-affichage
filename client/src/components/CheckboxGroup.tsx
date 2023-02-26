@@ -15,7 +15,6 @@ const NiveauCheckBox = ({ checkedList, setCheckedList }: Props) => {
   const [indeterminate, setIndeterminate] = useState(false);
   const [checkAll, setCheckAll] = useState(false);
   useEffect(() => {
-    console.log(checkedList.length);
     if (!checkedList.length) {
       setCheckAll(false);
     } else if (checkedList.length === 6) {
