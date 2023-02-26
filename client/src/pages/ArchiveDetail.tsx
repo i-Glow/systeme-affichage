@@ -6,7 +6,7 @@ import { AiOutlineSwapRight } from "react-icons/ai";
 
 import { Wrapper } from "./styles/CreateArticles.styles";
 import { useAuth } from "../context/AuthProvider";
-import { BottomBar, TopBar } from "./styles/ArchiveDetail.styles";
+import { BottomBar, HistoryIcon, TopBar } from "./styles/ArchiveDetail.styles";
 import Flex from "../components/shared/Flex";
 import useAxios from "../hooks/useAxios";
 
@@ -82,7 +82,7 @@ export default function ArchiveDetail() {
 
     return () => controller.abort();
   }, []);
-
+  console.log(data);
   return (
     <>
       {contextHolder}
@@ -98,10 +98,15 @@ export default function ArchiveDetail() {
                 <Tag>{data.categorie.nom}</Tag>
                 <p style={{ fontSize: ".9em" }}>{data.created_at}</p>
                 <Tooltip
+                  placement="topRight"
                   arrow={false}
                   title={data?.edited_at?.replace("T", " ").split(".")[0]}
                 >
-                  <TbHistory style={{ fontSize: "22px", cursor: "pointer" }} />
+                  <HistoryIcon
+                    style={
+                      data?.edited_at ? {} : { cursor: "default", opacity: 0.3 }
+                    }
+                  />
                 </Tooltip>
               </Flex>
             </TopBar>

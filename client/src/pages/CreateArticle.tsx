@@ -45,7 +45,7 @@ export default function CreateArticle() {
   const [niveau, setNiveau] = useState<CheckboxValueType[]>([]);
   const [dateDebut, setDateDebut] = useState<string>();
   const [dateFin, setDateFin] = useState<string>();
-  const [boolean, setBoolean] = useState(false);
+
   function dateChangeHandler(value: any) {
     console.log(value[0]);
     console.log(value[1]);
@@ -56,7 +56,7 @@ export default function CreateArticle() {
   async function onFinish() {
     setLoading(true);
     console.log("finish function");
-    if (!dateDebut || !dateFin) {
+    if (!dateDebut || !dateFin || !category) {
       console.log("this is dateDebut" + dateDebut);
       console.log("this is dateFin" + dateFin);
       //TODO: alert the user
@@ -122,9 +122,8 @@ export default function CreateArticle() {
     } finally {
       setLoading(false);
     }
-   
   }
-  
+
   const getData = useCallback(async (controller: AbortController) => {
     const id = location.state?.data?.article_id;
     if (id) {

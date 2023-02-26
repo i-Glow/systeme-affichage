@@ -24,6 +24,7 @@ export default function Archive() {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [confirmLoading, setConfirmLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(true);
 
   const [data, setData] = useState<article[]>([]);
 
@@ -78,6 +79,7 @@ export default function Archive() {
 
   const getArticles = useCallback(
     async (controller: AbortController) => {
+      setDataLoading(true);
       try {
         const res = await axios.get("/articles", {
           withCredentials: true,
@@ -91,6 +93,7 @@ export default function Archive() {
             return el;
           });
           setData(newData);
+          setDataLoading(false);
         }
       } catch (error: any) {
         if (error.response?.status === 403) {
@@ -98,6 +101,13 @@ export default function Archive() {
             type: "error",
             content: "Please log in",
           });
+          setDataLoading(false);
+        } else if (error.code === "ERR_NETWORK") {
+          messageApi.open({
+            type: "error",
+            content: "network error",
+          });
+          setDataLoading(false);
         }
       }
     },
@@ -116,7 +126,7 @@ export default function Archive() {
       {contextHolder}
       <Table
         dataSource={data}
-        loading={!data.length}
+        loading={dataLoading}
         pagination={{ position: ["bottomCenter"] }}
         rowKey="article_id"
       >

@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { Empty } from "antd";
 import { useState } from "react";
 import { useEffect, useCallback } from "react";
 import axios from "../api";
@@ -120,7 +121,7 @@ export default function ArticalShow1() {
           ) : (
             <CardVoid>
               <CardVoidTop>
-                <Title>Pas D'affichage</Title>
+                <Empty />
               </CardVoidTop>
               <CardVoidBottom>
                 <Niveau>
