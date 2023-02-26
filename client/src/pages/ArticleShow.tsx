@@ -26,7 +26,7 @@ type allArticles = {
   D: article[] | undefined;
 };
 
-export default function ArticalShow() {
+export default function ArticleShow() {
   const [articles, setArticles] = useState<allArticles | undefined>();
   const [data, setData] = useState<article[]>();
   const [count, setCount] = useState([0, 0, 0, 0, 0, 0]);
@@ -89,7 +89,6 @@ export default function ArticalShow() {
             if (!articles[niveaux[idx] as keyof typeof articles]?.length)
               return 0;
             return el !==
-              //@ts-ignore
               articles[niveaux[idx] as keyof typeof articles].length - 1
               ? el + 1
               : 0;

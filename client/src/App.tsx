@@ -1,11 +1,19 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import {
+  Outlet,
+  Navigate,
+  Routes,
+  Route,
+  BrowserRouter,
+} from "react-router-dom";
+import { Spin } from "antd";
+import Flex from "./components/shared/Flex";
+import { AuthProvider, useAuth } from "./context/AuthProvider";
 
 import Layout from "./pages/Layout";
 import Archive from "./pages/Archive";
 import ArchiveDetail from "./pages/ArchiveDetail";
 import CreateArticle from "./pages/CreateArticle";
-import ArticalShow from "./pages/ArticalShow";
-import ArticleShow1 from "./pages/ArticleShow1";
+import ArticleShow from "./pages/ArticleShow1";
 import Signin from "./pages/Signin";
 
 function App() {
@@ -24,8 +32,7 @@ function App() {
               <Route path="archive/edit/:id" element={<CreateArticle />} />
             </Route>
           </Route>
-          <Route path="/show" element={<ArticalShow />}></Route>
-          <Route path="/show1" element={<ArticleShow1 />}></Route>
+          <Route path="/affichage" element={<ArticleShow />}></Route>
           <Route path="/signin" element={<Signin />} />
         </Routes>
       </AuthProvider>
@@ -33,14 +40,16 @@ function App() {
   );
 }
 
-import { Outlet, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/AuthProvider";
-
 function ProtectedRoute({ redirectPath = "/" }) {
   //@ts-ignore
   const { token, loading } = useAuth();
 
-  if (loading) return <p>loading</p>;
+  if (loading)
+    return (
+      <Flex h="100vh">
+        <Spin />
+      </Flex>
+    );
 
   return token ? <Outlet /> : <Navigate to={redirectPath} replace />;
 }

@@ -49,7 +49,7 @@ export default function CreateArticle() {
   const [niveau, setNiveau] = useState<CheckboxValueType[]>([]);
   const [dateDebut, setDateDebut] = useState<string>();
   const [dateFin, setDateFin] = useState<string>();
-  const [boolean, setBoolean] = useState(false);
+
   function dateChangeHandler(value: any) {
     setDateDebut(value[0].$d.toISOString());
     setDateFin(value[1].$d.toISOString());
@@ -64,9 +64,10 @@ export default function CreateArticle() {
       return;
     }
     setCheckBoxMessageError(false);
-    if (!dateDebut || !dateFin) {
+    if (!dateDebut || !dateFin || !category) {
       setDateMessageError(true);
       setLoading(false);
+      
       return;
     }
     setDateMessageError(false);

@@ -1,3 +1,4 @@
+import { TbHistory } from "react-icons/tb";
 import styled from "styled-components";
 
 const Bar = styled.div`
@@ -23,4 +24,9 @@ export const BottomBar = styled(Bar)`
 
 export const Content = styled.div`
   padding: 20px;
+`;
+
+export const HistoryIcon = styled(TbHistory)`
+  font-size: 22px;
+  cursor: pointer;
 `;
