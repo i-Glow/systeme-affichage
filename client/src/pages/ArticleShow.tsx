@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { Empty } from "antd";
 import { useState } from "react";
 import { useEffect, useCallback } from "react";
 import axios from "../api";
@@ -9,7 +10,11 @@ import {
   Parag,
   Niveau,
   CardVoid,
-} from "./styles/ArticalShow.style";
+  CardTop,
+  CardBottom,
+  CardVoidBottom,
+  CardVoidTop,
+} from "./styles/ArticleShow.style";
 
 type article = {
   titre: string;
@@ -89,12 +94,13 @@ export default function ArticleShow() {
             if (!articles[niveaux[idx] as keyof typeof articles]?.length)
               return 0;
             return el !==
+              //@ts-ignore
               articles[niveaux[idx] as keyof typeof articles].length - 1
               ? el + 1
               : 0;
           })
         );
-      }, 15000);
+      }, 5000);
     }
 
     return () => clearTimeout(slideTimer);
@@ -106,13 +112,26 @@ export default function ArticleShow() {
         Object.keys(articles).map((art, key) => {
           return articles[art as keyof allArticles][count[key]] ? (
             <Card>
-              <Title>{articles[art][count[key]].titre}</Title>
-              <Parag>{articles[art][count[key]].contenu}</Parag>
-              <Niveau>{articles[art][count[key]].niveau}</Niveau>
+              <CardTop>
+                <Title>{articles[art][count[key]].titre}</Title>
+                <Parag>{articles[art][count[key]].contenu}</Parag>
+              </CardTop>
+              <CardBottom>
+                <Niveau>
+                  {key < 3 ? "L" + (key + 1) : key < 5 ? "M" + (key - 2) : "D"}
+                </Niveau>
+              </CardBottom>
             </Card>
           ) : (
             <CardVoid>
-              <Title>Pas D'affichage</Title>
+              <CardVoidTop>
+                <Empty />
+              </CardVoidTop>
+              <CardVoidBottom>
+                <Niveau>
+                  {key < 3 ? "L" + (key + 1) : key < 5 ? "M" + (key - 2) : "D"}
+                </Niveau>
+              </CardVoidBottom>
             </CardVoid>
           );
         })}

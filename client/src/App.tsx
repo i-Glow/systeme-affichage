@@ -13,7 +13,7 @@ import Layout from "./pages/Layout";
 import Archive from "./pages/Archive";
 import ArchiveDetail from "./pages/ArchiveDetail";
 import CreateArticle from "./pages/CreateArticle";
-import ArticleShow from "./pages/ArticleShow1";
+import ArticleShow from "./pages/ArticleShow";
 import Signin from "./pages/Signin";
 
 function App() {

@@ -1,14 +1,11 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Input, DatePicker, Button, message } from "antd";
+import { Input, DatePicker, Button, message ,Select } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { useLocation } from "react-router-dom";
 import { AxiosRequestConfig } from "axios";
 
 import dayjs from "dayjs";
-
-import { Input, DatePicker, Button, message, Select } from "antd";
-import { CheckboxValueType } from "antd/es/checkbox/Group";
 import { Form, Wrapper } from "./styles/CreateArticles.styles";
 import NiveauCheckBox from "../components/CheckboxGroup";
 import { useAuth } from "../context/AuthProvider";
@@ -158,7 +155,7 @@ export default function CreateArticle() {
 
     if (res.status === 200) {
       setCategories(res.data.data);
-      setCategory(res.data.data[0].nom);
+      setCategory(res.data.data[0]?.nom);
     }
   }, []);
 
@@ -211,7 +208,7 @@ export default function CreateArticle() {
           <Flex jc="start" gap="5px">
             {!isInputShow && categories ? (
               <Select
-                defaultValue={categories[0].nom}
+                defaultValue={category}
                 style={{ width: 120 }}
                 onChange={(value) => setCategory(value)}
                 options={categories.map((cat) => {
