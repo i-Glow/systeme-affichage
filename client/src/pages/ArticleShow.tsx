@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { Empty } from "antd";
 import { useState } from "react";
 import { useEffect, useCallback } from "react";
 import axios from "../api";
@@ -30,7 +31,7 @@ type allArticles = {
   D: article[] | undefined;
 };
 
-export default function ArticalShow() {
+export default function ArticleShow() {
   const [articles, setArticles] = useState<allArticles | undefined>();
   const [data, setData] = useState<article[]>();
   const [count, setCount] = useState([0, 0, 0, 0, 0, 0]);
@@ -68,10 +69,14 @@ export default function ArticalShow() {
   }, [data]);
 
   useEffect(() => {
-    // const controller = new AbortController();
     getData();
 
-    // return () => controller.abort();
+    //short polling
+    const interval = setInterval(() => {
+      getData(); // Fetch data at regular intervals
+    }, 300000); // Polling interval is 5 minutes in milliseconds
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -95,7 +100,7 @@ export default function ArticalShow() {
               : 0;
           })
         );
-      }, 3000);
+      }, 5000);
     }
 
     return () => clearTimeout(slideTimer);
@@ -120,7 +125,7 @@ export default function ArticalShow() {
           ) : (
             <CardVoid>
               <CardVoidTop>
-                <Title>Pas D'affichage</Title>
+                <Empty />
               </CardVoidTop>
               <CardVoidBottom>
                 <Niveau>

@@ -1,4 +1,13 @@
-import { Routes, Route, BrowserRouter } from "react-router-dom";
+import {
+  Outlet,
+  Navigate,
+  Routes,
+  Route,
+  BrowserRouter,
+} from "react-router-dom";
+import { Spin } from "antd";
+import Flex from "./components/shared/Flex";
+import { AuthProvider, useAuth } from "./context/AuthProvider";
 
 import Layout from "./pages/Layout";
 import Archive from "./pages/Archive";
@@ -23,8 +32,7 @@ function App() {
               <Route path="archive/edit/:id" element={<CreateArticle />} />
             </Route>
           </Route>
-          
-          <Route path="/show" element={<ArticleShow />}></Route>
+          <Route path="/affichage" element={<ArticleShow />}></Route>
           <Route path="/signin" element={<Signin />} />
         </Routes>
       </AuthProvider>
@@ -32,14 +40,16 @@ function App() {
   );
 }
 
-import { Outlet, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/AuthProvider";
-
 function ProtectedRoute({ redirectPath = "/" }) {
   //@ts-ignore
   const { token, loading } = useAuth();
 
-  if (loading) return <p>loading</p>;
+  if (loading)
+    return (
+      <Flex h="100vh">
+        <Spin />
+      </Flex>
+    );
 
   return token ? <Outlet /> : <Navigate to={redirectPath} replace />;
 }

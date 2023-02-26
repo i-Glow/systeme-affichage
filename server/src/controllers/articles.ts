@@ -45,6 +45,7 @@ const getArticle = async (req: Request, res: Response) => {
         date_fin: true,
         categorie: true,
         created_at: true,
+        edited_at: true,
         creator: {
           select: {
             nom: true,
