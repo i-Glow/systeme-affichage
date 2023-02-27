@@ -125,7 +125,12 @@ export default function ArticleShow() {
               </CardBottom>
 
               <CardTop>
-                <Title>{articles[art][count[key]].titre}</Title>
+                <Title style={{
+                    
+                    fontSize: isArabic(articles[art][count[key]].titre)
+                    ? "24px"
+                    : "18px",
+                  }}>{articles[art][count[key]].titre}</Title>
                 <Parag
                   style={{
                     direction: isArabic(articles[art][count[key]].titre)
@@ -134,6 +139,9 @@ export default function ArticleShow() {
                     fontFamily: isArabic(articles[art][count[key]].titre)
                       ? "'Inter', sans-serif"
                       : "'ReadexPro', sans-serif;",
+                    fontSize: isArabic(articles[art][count[key]].titre)
+                    ? "22px"
+                    : "18px",
                   }}
                 >
                   {articles[art][count[key]].contenu}
