@@ -1,24 +1,44 @@
-import { Collapse } from "antd";
+import { Collapse, Tag } from "antd";
 import { Heading, Wrapper } from "./Style/LatestArticles.style";
+import isArabic from "../utils/isArabic";
 
-export default function LatestArticles() {
+//types
+import { article } from "../types";
+import Flex from "./shared/Flex";
+import { AiOutlineSwapRight } from "react-icons/ai";
+
+type props = {
+  newArticles: article[];
+};
+
+export default function LatestArticles({ newArticles }: props) {
   return (
     <Wrapper>
-      <Heading>Article recement crees</Heading>
-      <Collapse
-        style={{ backgroundColor: "white" }}
-        defaultActiveKey={["1"]}
-        onChange={() => {}}
-      >
-        <Collapse.Panel header="This is panel header 1" key="1">
-          <p>text</p>
-        </Collapse.Panel>
-        <Collapse.Panel header="This is panel header 2" key="2">
-          <p>text</p>
-        </Collapse.Panel>
-        <Collapse.Panel header="This is panel header 3" key="3">
-          <p>text</p>
-        </Collapse.Panel>
+      <Heading style={{ padding: "10px" }}>Articles récemment créés</Heading>
+      <Collapse style={{ backgroundColor: "white" }} onChange={() => {}}>
+        {newArticles.map((article) => (
+          <Collapse.Panel
+            extra={<Tag>{article.categorie.nom}</Tag>}
+            header={<p>{article.titre}</p>}
+            style={{
+              direction: isArabic(article.titre) ? "rtl" : "ltr",
+            }}
+            key={article.article_id}
+          >
+            <h4>{article.contenu}</h4>
+            <Flex jc="flex-end" gap="7px">
+              <h4>{article.date_debut.replace("T", " ").split(".")[0]}</h4>
+              <AiOutlineSwapRight />
+              <h4>{article.date_fin.replace("T", " ").split(".")[0]}</h4>
+              <h3>-</h3>
+              {article.niveau.map((niv, key) => (
+                <p style={{ fontWeight: 600 }} key={key}>
+                  {niv}
+                </p>
+              ))}
+            </Flex>
+          </Collapse.Panel>
+        ))}
       </Collapse>
     </Wrapper>
   );

@@ -1,5 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
-import { Input, DatePicker, Button, message ,Select } from "antd";
+import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
 
@@ -52,6 +51,7 @@ export default function CreateArticle() {
   const [checkBoxMessageError, setCheckBoxMessageError] = useState(false);
   const [dateMessageError, setDateMessageError] = useState(false);
 
+  //article
   const [categories, setCategories] = useState<Categorie[]>();
   const [titre, setTitre] = useState<string>("");
   const [contenu, setContenu] = useState<string>("");
@@ -59,6 +59,8 @@ export default function CreateArticle() {
   const [niveau, setNiveau] = useState<CheckboxValueType[]>([]);
   const [dateDebut, setDateDebut] = useState<string>();
   const [dateFin, setDateFin] = useState<string>();
+  //new articles
+  const [newArticles, setNewArticles] = useState<data[] | undefined>([]);
 
   function directionChangeHandler() {
     direction === "rtl" ? setDirection("ltr") : setDirection("rtl");
@@ -121,6 +123,9 @@ export default function CreateArticle() {
           type: "success",
           content: "Article créé",
         });
+
+        //update new articles list
+        setNewArticles((prev: any) => [...prev, res.data.data]);
 
         //empty fields
         setTitre("");
@@ -191,7 +196,6 @@ export default function CreateArticle() {
           labelCol={{ span: 3 }}
           wrapperCol={{ span: 16 }}
           onFinish={onFinish}
-          onSubmitCapture={() => {}}
         >
           <Form.Item label="language">
             <Segmented
@@ -328,7 +332,9 @@ export default function CreateArticle() {
           </Form.Item>
         </Form>
       </FormWrapper>
-      <LatestArticles />
+      {newArticles?.length ? (
+        <LatestArticles newArticles={newArticles} />
+      ) : null}
     </Wrapper>
   );
 }

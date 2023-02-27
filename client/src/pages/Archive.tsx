@@ -9,6 +9,7 @@ import { DeleteIcon, Div } from "./styles/Archive.style";
 import { useAuth } from "../context/AuthProvider";
 import useAxios from "../hooks/useAxios";
 import Column from "antd/es/table/Column";
+import PageHeader from "../components/PageHeader";
 
 type article = {
   article_id: string;
@@ -47,7 +48,6 @@ export default function Archive() {
       >
         <DeleteIcon />
       </Popconfirm>
-      
     </Space>
   );
 
@@ -123,44 +123,47 @@ export default function Archive() {
   }, []);
 
   return (
-    <Div>
-      {contextHolder}
-      <Table
-        dataSource={data}
-        loading={dataLoading}
-        pagination={{ position: ["bottomCenter"] }}
-        rowKey="article_id"
-      >
-        <Column
-          title="Title"
-          key="article_id"
-          dataIndex="titre"
-          ellipsis={true}
-        />
-        <Column
-          title="Niveau"
-          key="article_id"
-          dataIndex="niveau"
-          ellipsis={true}
-          filters={[
-            { text: "License 1", value: "L1" },
-            { text: "License 2", value: "L2" },
-            { text: "License 3", value: "L3" },
-            { text: "Master 1", value: "M1" },
-            { text: "Master 2", value: "M2" },
-            { text: "Doctorat", value: "D" },
-          ]}
-          onFilter={(value, record: article) =>
-            record.niveau.includes(value as string)
-          }
-        />
-        <Column title="Date" dataIndex="created_at" key="article_id" />
-        <Column
-          title="Action"
-          key="article_id"
-          render={columnActionsRenderer}
-        ></Column>
-      </Table>
-    </Div>
+    <>
+      <PageHeader />
+      <Div>
+        {contextHolder}
+        <Table
+          dataSource={data}
+          loading={dataLoading}
+          pagination={{ position: ["bottomCenter"] }}
+          rowKey="article_id"
+        >
+          <Column
+            title="Title"
+            key="article_id"
+            dataIndex="titre"
+            ellipsis={true}
+          />
+          <Column
+            title="Niveau"
+            key="article_id"
+            dataIndex="niveau"
+            ellipsis={true}
+            filters={[
+              { text: "License 1", value: "L1" },
+              { text: "License 2", value: "L2" },
+              { text: "License 3", value: "L3" },
+              { text: "Master 1", value: "M1" },
+              { text: "Master 2", value: "M2" },
+              { text: "Doctorat", value: "D" },
+            ]}
+            onFilter={(value, record: article) =>
+              record.niveau.includes(value as string)
+            }
+          />
+          <Column title="Date" dataIndex="created_at" key="article_id" />
+          <Column
+            title="Action"
+            key="article_id"
+            render={columnActionsRenderer}
+          ></Column>
+        </Table>
+      </Div>
+    </>
   );
 }
