@@ -1,6 +1,14 @@
 import { createGlobalStyle } from "styled-components";
 
 export const GlobalStyles = createGlobalStyle`
+    @font-face {
+      font-family: 'Inter';
+      src: local('Inter'), url(./fonts/Inter/Inter.ttf) format('truetype');
+    }
+    @font-face {
+      font-family: 'ReadexPro';
+      src: local('ReadexPro'), url(./fonts/Readex_Pro/ReadexPro.ttf) format('truetype');
+    }
     :root {
       --border: 217, 217, 217;
       --background: 250, 250, 250;

@@ -6,7 +6,7 @@ CREATE TABLE "article" (
     "article_id" TEXT NOT NULL,
     "titre" VARCHAR(100) NOT NULL,
     "contenu" VARCHAR(1000) NOT NULL,
-    "niveau" CHAR(2)[],
+    "niveau" VARCHAR(2)[],
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "edited_at" TIMESTAMP(3),
     "date_debut" TIMESTAMP(3) NOT NULL,

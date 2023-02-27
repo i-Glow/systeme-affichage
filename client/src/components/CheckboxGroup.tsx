@@ -19,6 +19,8 @@ const NiveauCheckBox = ({ checkedList, setCheckedList }: Props) => {
       setCheckAll(false);
     } else if (checkedList.length === 6) {
       setCheckAll(true);
+    } else if (checkedList.length <= 6 && checkedList.length >= 1) {
+      setIndeterminate(false);
     } else {
       setIndeterminate(true);
     }
