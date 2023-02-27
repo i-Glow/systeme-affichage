@@ -2,18 +2,7 @@ import { message } from "antd";
 import { createContext, useState, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "../api";
-
-enum Roles {
-  responsable_affichage,
-  super_user,
-}
-type user = {
-  user_id: string;
-  username: string;
-  nom: string;
-  prenom: string;
-  role: Roles.responsable_affichage;
-};
+import { user } from "../types";
 
 const AuthContext = createContext(null);
 
@@ -40,6 +29,7 @@ export const AuthProvider = ({ children }: any) => {
       });
 
       setToken(res.data.token);
+      setUser(res.data.user);
       localStorage.setItem("auth-key", res.data.token);
       setLoading(false);
     } catch (error) {

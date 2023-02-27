@@ -14,21 +14,25 @@ import {
   Main1,
   Buton,
 } from "./styles/Layout.style";
+import { roles } from "../utils/roles";
+import PageHeader from "../components/PageHeader";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const location = useLocation();
   //@ts-ignore
-  const { token,setToken } = useAuth();
+  const { user, token, setToken } = useAuth();
 
   return (
     <Wrapper>
       <SideBar>
-        {routes.map((route, key) => (
-          <Link to={route.link} key={key}>
-            <h4>{route.name}</h4>
-          </Link>
-        ))}
+        {routes.map((route, key) =>
+          user.role === route.authorization || user.role === roles.admin ? (
+            <Link to={route.link} key={key}>
+              <h4>{route.name}</h4>
+            </Link>
+          ) : null
+        )}
         {!token ? (
           <Link to="/signin" style={{ marginTop: "auto" }}>
             <h4>login</h4>
@@ -46,24 +50,6 @@ export default function HomePage() {
         </Buton>
       </SideBar>
       <Main1>
-        <DivSpaceBettwen>
-          <Breadcrumb>
-            {location.pathname.split("/").map((bc, key) => (
-              <Breadcrumb.Item key={key}>{bc}</Breadcrumb.Item>
-            ))}
-          </Breadcrumb>
-          <Button
-            type="default"
-            onClick={() => {
-              navigate("nouveau");
-            }}
-          >
-            <SvgPosition>
-              <AiOutlinePlusSquare />
-            </SvgPosition>
-            <span>Créer</span>
-          </Button>
-        </DivSpaceBettwen>
         <Outlet />
       </Main1>
     </Wrapper>
