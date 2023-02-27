@@ -20,24 +20,27 @@ export const Card = styled.div`
   max-width: 33.3%;
   max-height: 50vh;
   background-color: white;
-  justify-content: space-between;
   overflow: hidden;
-  /* border-radius: 15px; */
-  /* box-shadow: 7px 7px 3px black; */
-  padding: 30px;
+  & > * {
+    padding: 2px 20px;
+  }
 `;
 export const CardTop = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   max-width: 100%;
   overflow-wrap: break-word;
+  padding-top: 10px;
 `;
 export const CardBottom = styled.div`
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   overflow-wrap: break-word;
-  max-width: 100%;
+  /* max-width: 100%; */
+  line-height: 32px;
+  border-bottom: 1px solid gray;
+  width: calc(100% +20px);
 `;
 
 export const Title = styled.h1`
@@ -46,18 +49,20 @@ export const Title = styled.h1`
   overflow-wrap: break-word;
   max-width: 100ch;
   overflow: hidden;
+  text-align: center;
+  font-weight: 700;
 `;
+
 export const Parag = styled.p`
   font-size: 18px;
   font-weight: 500;
   overflow-wrap: break-word;
   max-width: 500ch;
   overflow: hidden;
-  
+  font-weight: 600;
 `;
 export const Niveau = styled.p`
-  /* margin: 0 0 0 70%; */
-  font-weight: bolder;
+  font-size: 20px;
 `;
 
 export const CardVoid = styled(Card)`

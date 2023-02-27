@@ -1,9 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
 import dayjs from "dayjs";
-
 import { AxiosRequestConfig } from "axios";
-
 import {
   Input,
   DatePicker,
@@ -70,7 +68,7 @@ export default function CreateArticle() {
     setDateDebut(value[0].$d.toISOString());
     setDateFin(value[1].$d.toISOString());
   }
-
+  
   async function onFinish() {
     setLoading(true);
     if (niveau.length === 0) {
@@ -236,7 +234,7 @@ export default function CreateArticle() {
             <Flex jc="start" gap="5px">
               {!isInputShow && categories ? (
                 <Select
-                  defaultValue={categories[0].nom}
+                  defaultValue={category}
                   style={{ width: 120 }}
                   onChange={(value) => setCategory(value)}
                   options={categories.map((cat) => {
