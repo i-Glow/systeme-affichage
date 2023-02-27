@@ -91,6 +91,9 @@ const createArticle = async (req: Request, res: Response) => {
         },
         niveau,
       },
+      include: {
+        categorie: true,
+      },
     });
 
     res.status(200).send({ data: newArticle });

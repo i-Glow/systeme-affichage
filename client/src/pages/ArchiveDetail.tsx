@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { message, Skeleton, Tag, Tooltip } from "antd";
 import { AiOutlineSwapRight } from "react-icons/ai";
 
-import { Wrapper } from "./styles/CreateArticles.styles";
+import { Wrapper } from "./styles/ArchiveDetail.styles";
 import { useAuth } from "../context/AuthProvider";
 import { BottomBar, HistoryIcon, TopBar } from "./styles/ArchiveDetail.styles";
 import Flex from "../components/shared/Flex";
@@ -81,7 +81,7 @@ export default function ArchiveDetail() {
 
     return () => controller.abort();
   }, []);
-  console.log(data);
+
   return (
     <>
       {contextHolder}
