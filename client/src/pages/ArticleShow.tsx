@@ -3,6 +3,7 @@ import { Empty } from "antd";
 import { useState } from "react";
 import { useEffect, useCallback } from "react";
 import axios from "../api";
+import isArabic from "../utils/isArabic";
 import {
   CenterDiv,
   Card,
@@ -30,7 +31,7 @@ type allArticles = {
   M2: article[] | undefined;
   D: article[] | undefined;
 };
-
+const arabic = /[\u0600-\u06FF]/;
 export default function ArticleShow() {
   const [articles, setArticles] = useState<allArticles | undefined>();
   const [data, setData] = useState<article[]>();
@@ -86,6 +87,7 @@ export default function ArticleShow() {
   useEffect(() => {
     let slideTimer: any;
     if (articles) {
+      console.log(articles);
       slideTimer = setTimeout(() => {
         const niveaux = ["L1", "L2", "L3", "M1", "M2", "D"];
 
@@ -112,20 +114,36 @@ export default function ArticleShow() {
         Object.keys(articles).map((art, key) => {
           return articles[art as keyof allArticles][count[key]] ? (
             <Card>
-              <CardTop>
-                <Title>{articles[art][count[key]].titre}</Title>
-                <Parag>{articles[art][count[key]].contenu}</Parag>
-              </CardTop>
               <CardBottom>
                 <Niveau>
-                  {key < 3 ? "L" + (key + 1) : key < 5 ? "M" + (key - 2) : "D"}
+                  {key < 3
+                    ? "License " + (key + 1)
+                    : key < 5
+                    ? "Master " + (key - 2)
+                    : "Doctorat"}
                 </Niveau>
               </CardBottom>
+
+              <CardTop>
+                <Title>{articles[art][count[key]].titre}</Title>
+                <Parag
+                  style={{
+                    direction: isArabic(articles[art][count[key]].titre)
+                      ? "rtl"
+                      : "ltr",
+                    fontFamily: isArabic(articles[art][count[key]].titre)
+                      ? "'Inter', sans-serif"
+                      : "'ReadexPro', sans-serif;",
+                  }}
+                >
+                  {articles[art][count[key]].contenu}
+                </Parag>
+              </CardTop>
             </Card>
           ) : (
             <CardVoid>
               <CardVoidTop>
-                <Empty />
+                <Empty description={"Pas D'affichage"}></Empty>
               </CardVoidTop>
               <CardVoidBottom>
                 <Niveau>

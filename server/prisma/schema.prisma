@@ -14,7 +14,7 @@ model article {
   article_id   String    @id @default(cuid())
   titre        String    @db.VarChar(100)
   contenu      String    @db.VarChar(1000)
-  niveau       String[]  @db.Char(2)
+  niveau       String[]  @db.VarChar(2)
   created_at   DateTime  @default(now())
   edited_at    DateTime?
   date_debut   DateTime
