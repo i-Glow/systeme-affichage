@@ -1,52 +1,129 @@
 import { useState } from "react";
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, message, Select } from "antd";
 import { FormWrapper } from "./styles/CreateArticles.styles";
 import useAxios from "../hooks/useAxios";
 import { useAuth } from "../context/AuthProvider";
+import { roles } from "../utils/roles";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateUser() {
-  const axios = useAxios();
   //@ts-ignore
   const { token } = useAuth();
+  const axios = useAxios();
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const [userDeatils, setUserDetails] = useState();
+  const [userDeatils, setUserDetails] = useState({
+    username: "",
+    password: "",
+    nom: "",
+    prenom: "",
+    role: roles.affichage,
+  });
 
-  async function onFinish(values: any) {
-    console.log(values);
+  async function onFinish() {
+    try {
+      const res = await axios.post("/auth/create-user", userDeatils, {
+        withCredentials: true,
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    const res = await axios.post("/create-user", userDeatils, {
-      withCredentials: true,
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    console.log(res);
+      if (res.status === 200) {
+        messageApi.open({
+          type: "success",
+          content: "Utilisateur créé",
+        });
+      }
+      navigate("/users");
+    } catch (error) {
+      console.log(error);
+      messageApi.open({
+        type: "error",
+        content: "Erreur",
+      });
+    }
   }
 
   return (
     <FormWrapper>
+      {contextHolder}
       <Form
         onFinish={onFinish}
         labelAlign={"left"}
         labelCol={{ span: 3 }}
-        wrapperCol={{ span: 16 }}
+        wrapperCol={{ span: 12 }}
       >
-        <Form.Item name="username" label="username">
-          <Input />
+        <Form.Item
+          rules={[{ required: true, message: "username must be specified" }]}
+          required={false}
+          name="username"
+          label="username"
+        >
+          <Input
+            onChange={(e) =>
+              setUserDetails((prev) => ({ ...prev, username: e.target.value }))
+            }
+          />
         </Form.Item>
-        <Form.Item name="password" label="password">
-          <Input.Password />
+        <Form.Item
+          rules={[
+            {
+              required: true,
+              message: "password must contain at least 8 characters",
+              min: 8,
+            },
+          ]}
+          required={false}
+          name="password"
+          label="password"
+        >
+          <Input.Password
+            onChange={(e) =>
+              setUserDetails((prev) => ({ ...prev, password: e.target.value }))
+            }
+          />
         </Form.Item>
-        <Form.Item name="nom" label="nom">
-          <Input />
+        <Form.Item
+          rules={[{ required: true, message: "nom must be specified" }]}
+          required={false}
+          name="nom"
+          label="nom"
+        >
+          <Input
+            onChange={(e) =>
+              setUserDetails((prev) => ({ ...prev, nom: e.target.value }))
+            }
+          />
         </Form.Item>
-        <Form.Item name="prenom" label="prenom">
-          <Input />
+        <Form.Item
+          rules={[{ required: true, message: "prenom must be specified" }]}
+          required={false}
+          name="prenom"
+          label="prenom"
+        >
+          <Input
+            onChange={(e) =>
+              setUserDetails((prev) => ({ ...prev, prenom: e.target.value }))
+            }
+          />
         </Form.Item>
         <Form.Item label="role">
-          <Select style={{ maxWidth: "120px" }} />
+          <Select
+            defaultValue={roles.affichage}
+            options={Object.entries(roles).map((role: any) => ({
+              label: role[0],
+              value: role[1],
+            }))}
+            style={{ maxWidth: "120px" }}
+            onChange={(value) =>
+              setUserDetails((prev) => ({ ...prev, role: value }))
+            }
+          />
         </Form.Item>
         <Form.Item label=" " colon={false}>
-          <Button type="primary">Créer</Button>
+          <Button type="primary" htmlType="submit">
+            Créer
+          </Button>
         </Form.Item>
       </Form>
     </FormWrapper>

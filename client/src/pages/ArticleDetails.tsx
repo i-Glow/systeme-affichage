@@ -8,6 +8,7 @@ import { useAuth } from "../context/AuthProvider";
 import { BottomBar, HistoryIcon, TopBar } from "./styles/ArchiveDetail.styles";
 import Flex from "../components/shared/Flex";
 import useAxios from "../hooks/useAxios";
+import PageHeader from "../components/PageHeader";
 
 type Categorie = {
   categorie_id: number;
@@ -84,6 +85,7 @@ export default function ArchiveDetail() {
 
   return (
     <>
+      <h3>Articles</h3>
       {contextHolder}
       <Wrapper style={{ padding: 0 }}>
         {data ? (

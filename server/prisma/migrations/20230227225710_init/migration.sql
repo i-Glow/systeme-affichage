@@ -32,6 +32,7 @@ CREATE TABLE "user" (
     "prenom" TEXT NOT NULL,
     "username" TEXT NOT NULL,
     "password" TEXT NOT NULL,
+    "suspended" BOOLEAN NOT NULL DEFAULT false,
     "role" "Role" NOT NULL,
 
     CONSTRAINT "user_pkey" PRIMARY KEY ("user_id")

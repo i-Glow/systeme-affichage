@@ -21,6 +21,10 @@ const signin = async (req: Request, res: Response) => {
     if (!validPassword)
       return res.status(403).send({ message: "wrong password" });
 
+    if (user.suspended) {
+      return res.status(401).send({ message: "Account suspended" });
+    }
+
     const payload = { uid: user.user_id };
 
     const accessToken = createAccessToken(payload);

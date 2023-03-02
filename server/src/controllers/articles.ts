@@ -1,4 +1,4 @@
-import { article, categorie } from "@prisma/client";
+import { article, categorie, Prisma, Role } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../db";
 
@@ -59,6 +59,65 @@ const getArticle = async (req: Request, res: Response) => {
   } catch (error) {
     console.error(error);
     res.status(500).send({ message: "Server error" });
+  }
+};
+
+const getArchive = async (req: Request, res: Response) => {
+  try {
+    // Check if user is an admin
+    //@ts-ignore
+    // if (req.user.role !== Role.super_user) {
+    //   return res
+    //     .status(401)
+    //     .send({ message: "You are not authorized to perform this action" });
+    // }
+
+    // Get pagination parameters from query string
+    const { page = 1, pageSize = 10, search = "" } = req.query;
+    const skip: number = (Number(page) - 1) * Number(pageSize);
+
+    const searchQuery: Prisma.articleWhereInput = {
+      OR: [
+        { titre: { contains: search as string, mode: "insensitive" } },
+        { contenu: { contains: search as string, mode: "insensitive" } },
+      ],
+    };
+
+    // Fetch articles using pagination
+    const articles = await prisma.article.findMany({
+      skip,
+      take: Number(pageSize),
+      orderBy: {
+        created_at: "desc",
+      },
+      where: searchQuery,
+      include: {
+        creator: {
+          select: {
+            password: false,
+            username: true,
+            article: true,
+            nom: true,
+            prenom: true,
+            role: true,
+            suspended: true,
+            user_id: true,
+          },
+        },
+      },
+    });
+
+    const totalCount = await prisma.article.count({
+      where: searchQuery,
+    });
+
+    res.status(200).send({
+      data: articles,
+      count: totalCount,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error fetching articles" });
   }
 };
 
@@ -159,4 +218,11 @@ const deleteArticle = async (req: Request, res: Response) => {
   }
 };
 
-export { getAll, getArticle, createArticle, deleteArticle, editArticle };
+export {
+  getAll,
+  getArticle,
+  createArticle,
+  deleteArticle,
+  editArticle,
+  getArchive,
+};

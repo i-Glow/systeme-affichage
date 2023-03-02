@@ -1,17 +1,5 @@
 import styled from "styled-components";
-import Link from "../../components/shared/Link";
-import NativeLink from "../../components/shared/Link";
-
-export const DivSpaceBettwen = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-export const SvgPosition = styled.span`
-  margin-right: 5px;
-  transform: translateY(1.5px);
-`;
+import Link from "../shared/Link";
 
 export const Wrapper = styled.div`
   display: flex;
@@ -37,10 +25,11 @@ export const LinkContainer = styled(Link)`
   padding: 10px 20px;
   margin: 0 10px;
   border-radius: 6px;
-  border: 1px solid transparent;
   transition: 0.15s ease-in-out;
   cursor: pointer;
   position: relative;
+  background-color: ${<T>({ isFocused }) =>
+    isFocused ? "rgba(var(--blue), 0.09)" : "transparent"};
 
   &:hover {
     background-color: rgba(var(--blue), 0.09);
@@ -49,27 +38,23 @@ export const LinkContainer = styled(Link)`
   &::before {
     content: "";
     width: 4px;
-    height: 45px;
+    height: 46px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
-    background-color: rgba(var(--blue));
+    background-color: ${<T>({ isFocused }) =>
+      isFocused ? "rgba(var(--blue))" : "transparent"};
     position: absolute;
     left: -11px;
-    top: -1px;
+    top: -2px;
   }
 `;
 
-export const Main1 = styled.div`
-  width: 100%;
-  margin-left: 15%;
-  padding: 24px;
-`;
-
-type params = {
-  mt?: string;
-};
-export const Buton = styled.p`
-  margin-top: ${({ mt }: params) => mt};
+export const Logout = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: auto;
+  padding-left: 25px;
   color: gray;
   cursor: pointer;
 `;
