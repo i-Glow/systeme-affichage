@@ -80,7 +80,7 @@ export default function PendingArticle() {
 
   return (
     <>
-      <PageHeader />
+      <PageHeader page="Pending articles" />
       <Div>
         {contextHolder}
         <Table

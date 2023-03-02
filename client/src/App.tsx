@@ -39,7 +39,7 @@ function App() {
               <Route element={<AuthorizedRoute />}>
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/nouveau" element={<CreateUser />} />
-              </Route> */}
+              </Route>
               <Route
                 path="/PendingArticle"
                 element={<PendingArticle />}
@@ -48,11 +48,10 @@ function App() {
                 path="/PendingActicleDetail/:PendingActicleDetail"
                 element={<PendingActicleDetail />}
               ></Route>
-                <Route path="/archive" element={<Archive />} />
-              </Route>
+              <Route path="/archive" element={<Archive />} />
             </Route>
-            <Route path="/affichage" element={<ArticleShow />}></Route>
           </Route>
+          <Route path="/affichage" element={<ArticleShow />}></Route>
           <Route path="/signin" element={<Signin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -343,4 +343,5 @@ export {
   editArticle,
   AproveArticle,
   getArticlesByUserRole,
+  getArchive,
 };

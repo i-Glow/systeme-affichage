@@ -1,151 +1,167 @@
 import { useState, useCallback, useEffect } from "react";
-import { Input, Table } from "antd";
-import Column from "antd/es/table/Column";
-import { useAuth } from "../context/AuthProvider";
-import { VscOpenPreview } from "react-icons/vsc";
-import useAxios from "../hooks/useAxios";
-import useDebounce from "../hooks/useDebounce";
-import { AiOutlineSearch } from "react-icons/ai";
-import { article } from "../types";
-import Link from "../components/shared/Link";
-import { useSearchParams } from "react-router-dom";
 
-const PAGE_SIZE = 10;
+import { message, Popconfirm, Row, Space, Table } from "antd";
+import { AiOutlineEdit } from "react-icons/ai";
+import { MdOutlinePreview } from "react-icons/md";
+
+import Link from "../components/shared/Link";
+import { DeleteIcon, Div } from "./styles/Archive.style";
+import { useAuth } from "../context/AuthProvider";
+import useAxios from "../hooks/useAxios";
+import Column from "antd/es/table/Column";
+import PageHeader from "../components/PageHeader";
+import { article } from "../types";
 
 export default function Archive() {
-  const axios = useAxios();
-  const [searchParams, setSearchParams] = useSearchParams({});
   //@ts-ignore
   const { token } = useAuth();
+  const axios = useAxios();
+  const [messageApi, contextHolder] = message.useMessage();
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(
-    Number(searchParams.get("page")) || 1
+  const [confirmLoading, setConfirmLoading] = useState(false);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  const [data, setData] = useState<article[]>([]);
+
+  const columnActionsRenderer = (_: any, record: article) => (
+    <Space size="middle">
+      <Link to={`edit/${record.article_id}`} state={{ data: record }}>
+        <AiOutlineEdit style={{ fontSize: "18px" }} />
+      </Link>
+      <Link to={record.article_id}>
+        <MdOutlinePreview />
+      </Link>
+      <Popconfirm
+        title="supprimer"
+        description="Voulez-vous supprimer ce article?"
+        okText="Supprimer"
+        okType="danger"
+        cancelText="Annuler"
+        okButtonProps={{ loading: confirmLoading }}
+        onConfirm={() => deleteArticle(record.article_id)}
+      >
+        <DeleteIcon />
+      </Popconfirm>
+    </Space>
   );
 
-  const [articles, setArticles] = useState<article[]>([]);
-  const [articleCount, setArticleCount] = useState<number>(0);
-  const [searchTerm, setSearchTerm] = useState(searchParams.get("query") || "");
-
-  const debouncedSearchTerm = useDebounce(searchTerm, 200);
-  const handleSearchTermChange = (
-    event: React.ChangeEvent<HTMLInputElement>
-  ): void => {
-    setSearchTerm(event.target.value);
-  };
-
-  async function getArchive(page = 1, pageSize = 10, search = "") {
-    setSearchParams({
-      query: search,
-      page: `${page}`,
-    });
-    setLoading(true);
+  const deleteArticle = useCallback(async (id: string) => {
     try {
-      const res = await axios.get("/articles/archive", {
-        params: {
-          page,
-          pageSize,
-          search,
-        },
+      setConfirmLoading(true);
+      const res = await axios.delete(`/articles/${id}`, {
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      setArticles(res.data.data);
-      setArticleCount(res.data.count);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+      if (res.status === 204) {
+        setData((prev) => prev.filter((item) => item.article_id !== id));
+        setConfirmLoading(false);
+      }
+    } catch (error: any) {
+      if (error.response?.status === 403) {
+        messageApi.open({
+          type: "error",
+          content: "Please log in",
+        });
+      } else {
+        messageApi.open({
+          type: "error",
+          content: "error",
+        });
+      }
     }
-  }
+  }, []);
+
+  const getArticles = useCallback(
+    async (controller: AbortController) => {
+      setDataLoading(true);
+      try {
+        const res = await axios.get("/articles", {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        });
+
+        if (res.status === 200) {
+          const newData = res.data.data.map((el: article) => {
+            //@ts-ignore
+            el.created_at = el.created_at.replace("T", " ").split(".")[0];
+            return el;
+          });
+          setData(newData);
+          setDataLoading(false);
+        }
+      } catch (error: any) {
+        if (error.response?.status === 403) {
+          messageApi.open({
+            type: "error",
+            content: "Please log in",
+          });
+          setDataLoading(false);
+        } else if (error.code === "ERR_NETWORK") {
+          messageApi.open({
+            type: "error",
+            content: "network error",
+          });
+          setDataLoading(false);
+        }
+      }
+    },
+    [token]
+  );
 
   useEffect(() => {
-    if (debouncedSearchTerm) {
-      getArchive(currentPage, PAGE_SIZE, debouncedSearchTerm);
-    } else {
-      getArchive(currentPage, PAGE_SIZE, searchTerm);
-    }
-  }, [debouncedSearchTerm, currentPage]);
+    const controller = new AbortController();
+    getArticles(controller);
+
+    return () => controller.abort();
+  }, []);
 
   return (
-    <div>
-      <h3>Archive</h3>
-      <Input
-        style={{
-          minWidth: "260px",
-          maxWidth: "420px",
-          margin: "10px 0",
-          padding: "3px 7px 4px 7px",
-        }}
-        value={searchTerm}
-        placeholder="search title or content"
-        onChange={(e) => handleSearchTermChange(e)}
-        allowClear
-        prefix={<AiOutlineSearch fontSize={16} />}
-      />
-      <Table
-        loading={loading}
-        size="middle"
-        pagination={{
-          pageSize: PAGE_SIZE,
-          current: currentPage,
-          total: articleCount,
-          position: ["bottomCenter"],
-          hideOnSinglePage: true,
-          simple: true,
-        }}
-        dataSource={articles}
-        onChange={(val) =>
-          val.current ? setCurrentPage(val.current) : setCurrentPage(1)
-        }
-      >
-        <Column
-          title="titre"
-          key="article_id"
-          ellipsis={true}
-          render={(article: article) => (
-            <Link to={`/articles/${article.article_id}`}>{article.titre}</Link>
-          )}
-        />
-        <Column
-          title="creator"
-          key="article_id"
-          render={({ creator }) => (
-            <>
-              <span>{creator.nom} </span>
-              <span>{creator.prenom}</span>
-            </>
-          )}
-        />
-        <Column
-          title="niveau"
-          key="article_id"
-          ellipsis={true}
-          render={(article: article) =>
-            article.niveau.map((niv, key) => <span key={key}>{niv} </span>)
-          }
-        />
-        <Column
-          title="Date"
-          key="article_id"
-          render={({ created_at }) => (
-            <p>{created_at.replace("T", " ").split(".")[0]}</p>
-          )}
-        />
-        <Column
-          title="Action"
-          key="article_id"
-          render={(article: article) => (
-            <Link
-              to={`/articles/${article.article_id}`}
-              state={{ lastPage: currentPage }}
-            >
-              <VscOpenPreview fontSize={18} cursor="pointer" />
-            </Link>
-          )}
-        />
-      </Table>
-    </div>
+    <>
+      <PageHeader page="Articles" />
+      <Div>
+        {contextHolder}
+        <Table
+          dataSource={data}
+          loading={dataLoading}
+          pagination={{ position: ["bottomCenter"] }}
+          rowKey="article_id"
+          size="middle"
+        >
+          <Column
+            title="Title"
+            key="article_id"
+            dataIndex="titre"
+            ellipsis={true}
+          />
+          <Column
+            title="Niveau"
+            key="article_id"
+            ellipsis={true}
+            render={(article: article) =>
+              article.niveau.map((niv, key) => <span key={key}>{niv} </span>)
+            }
+            filters={[
+              { text: "License 1", value: "L1" },
+              { text: "License 2", value: "L2" },
+              { text: "License 3", value: "L3" },
+              { text: "Master 1", value: "M1" },
+              { text: "Master 2", value: "M2" },
+              { text: "Doctorat", value: "D" },
+            ]}
+            onFilter={(value, record: article) =>
+              record.niveau.includes(value as string)
+            }
+          />
+          <Column title="Date" dataIndex="created_at" key="article_id" />
+          <Column
+            title="Action"
+            key="article_id"
+            render={columnActionsRenderer}
+          ></Column>
+        </Table>
+      </Div>
+    </>
   );
 }

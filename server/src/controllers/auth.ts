@@ -47,6 +47,7 @@ const signin = async (req: Request, res: Response) => {
 
 const creatUser = async (req: Request, res: Response) => {
   try {
+    console.log(req.body);
     const { nom, prenom, username, password, role } = req.body;
     const alreadyExists = await prisma.user.findUnique({ where: { username } });
 

@@ -33,4 +33,11 @@ export default [
     authorization: roles.admin,
     icon: <BsArchive />,
   },
+  {
+    key: 4,
+    name: "PendingArticle",
+    link: "/PendingArticle",
+    authorization: roles.affichage,
+    icon: <BsArchive />,
+  },
 ] satisfies link[];
