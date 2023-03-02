@@ -10,10 +10,10 @@ import Flex from "./components/shared/Flex";
 import { AuthProvider, useAuth } from "./context/AuthProvider";
 
 import Layout from "./pages/Layout";
-import Archive from "./pages/Archive";
-import ArchiveDetail from "./pages/ArchiveDetail";
+import Archive from "./pages/Articles";
+import ArchiveDetail from "./pages/ArticleDetails";
 import CreateArticle from "./pages/CreateArticle";
-import ArticleShow from "./pages/ArticleShow";
+import ArticleShow from "./pages/Affichage";
 import Signin from "./pages/Signin";
 import Users from "./pages/Users";
 import { Role } from "./types";
@@ -36,8 +36,14 @@ function App() {
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/nouveau" element={<CreateUser />} />
               </Route> */}
-              <Route path="/PendingArticle" element={<PendingArticle />}></Route>
-              <Route path="/PendingActicleDetail/:PendingActicleDetail" element={<PendingActicleDetail />}></Route>
+              <Route
+                path="/PendingArticle"
+                element={<PendingArticle />}
+              ></Route>
+              <Route
+                path="/PendingActicleDetail/:PendingActicleDetail"
+                element={<PendingActicleDetail />}
+              ></Route>
             </Route>
             <Route path="/affichage" element={<ArticleShow />}></Route>
           </Route>
