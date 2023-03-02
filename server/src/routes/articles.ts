@@ -5,6 +5,7 @@ import {
   deleteArticle,
   editArticle,
   getAll,
+  getArchive,
   getArticle,
   getArticlesByUserRole,
 } from "../controllers/articles";
@@ -15,7 +16,7 @@ const router = Router();
 router.use(verifyToken);
 
 router.get("/", getAll);
-
+router.get("/archive", getArchive);
 router.get("/pending", getArticlesByUserRole);
 
 router.get("/:id", getArticle);

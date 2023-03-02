@@ -3,16 +3,16 @@ import { AiOutlinePlusSquare } from "react-icons/ai";
 import { useNavigate } from "react-router-dom";
 import { DivSpaceBettwen, SvgPosition } from "./Style/Style";
 
-export default function PageHeader() {
+type props = {
+  page: string;
+};
+
+export default function PageHeader({ page }: props) {
   const navigate = useNavigate();
 
   return (
     <DivSpaceBettwen>
-      <Breadcrumb>
-        {location.pathname.split("/").map((bc, key) => (
-          <Breadcrumb.Item key={key}>{bc}</Breadcrumb.Item>
-        ))}
-      </Breadcrumb>
+      <h3>{page}</h3>
       <Button
         type="default"
         onClick={() => {

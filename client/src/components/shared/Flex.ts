@@ -27,9 +27,9 @@ export default styled.div`
   align-items: ${({ ai }: params) => (ai ? ai : "center")};
   justify-content: ${({ jc }: params) => (jc ? jc : "center")};
   width: ${({ w }: params) => w};
-  min-width: ${({ mw }: params) => mw} ;
+  min-width: ${({ mw }: params) => mw};
   height: ${({ h }: params) => h};
-  min-height: ${({ mh }: params) => mh} ;
+  min-height: ${({ mh }: params) => mh};
   gap: ${({ gap }: params) => gap};
   margin-top: ${({ mt }: params) => mt};
   margin-bottom: ${({ mb }: params) => mb};

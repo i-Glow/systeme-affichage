@@ -10,17 +10,18 @@ import Flex from "./components/shared/Flex";
 import { AuthProvider, useAuth } from "./context/AuthProvider";
 
 import Layout from "./pages/Layout";
-import Archive from "./pages/Articles";
-import ArchiveDetail from "./pages/ArticleDetails";
+import Articles from "./pages/Articles";
+import ArticleDetails from "./pages/ArticleDetails";
 import CreateArticle from "./pages/CreateArticle";
 import ArticleShow from "./pages/Affichage";
 import Signin from "./pages/Signin";
 import Users from "./pages/Users";
-import { Role } from "./types";
 import { roles } from "./utils/roles";
 import CreateUser from "./pages/CreateUser";
 import PendingArticle from "./pages/PendingArticle";
 import PendingActicleDetail from "./pages/PendingActicleDetail";
+import Archive from "./pages/Archive";
+
 function App() {
   return (
     <BrowserRouter>
@@ -28,11 +29,14 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute redirectPath="/signin" />}>
             <Route path="/" element={<Layout />}>
-              <Route index element={<Archive />}></Route>
-              <Route path="archive/:archiveId" element={<ArchiveDetail />} />
-              <Route path="nouveau" element={<CreateArticle />}></Route>
-              <Route path="archive/edit/:id" element={<CreateArticle />} />
-              {/* <Route element={<AuthorizedRoute />}>
+              <Route path="/articles" element={<Articles />}></Route>
+              <Route path="articles/:archiveId" element={<ArticleDetails />} />
+              <Route
+                path="articles/nouveau"
+                element={<CreateArticle />}
+              ></Route>
+              <Route path="articles/edit/:id" element={<CreateArticle />} />
+              <Route element={<AuthorizedRoute />}>
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/nouveau" element={<CreateUser />} />
               </Route> */}
@@ -44,6 +48,8 @@ function App() {
                 path="/PendingActicleDetail/:PendingActicleDetail"
                 element={<PendingActicleDetail />}
               ></Route>
+                <Route path="/archive" element={<Archive />} />
+              </Route>
             </Route>
             <Route path="/affichage" element={<ArticleShow />}></Route>
           </Route>
