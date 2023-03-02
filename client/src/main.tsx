@@ -5,8 +5,10 @@ import { GlobalStyles } from "./globalStyles";
 import { AuthProvider } from "./context/AuthProvider";
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <>
     <GlobalStyles />
     <App />
-  </React.StrictMode>
+    {/* </React.StrictMode> */}
+  </>
 );

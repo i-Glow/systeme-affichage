@@ -12,6 +12,7 @@ export const GlobalStyles = createGlobalStyle`
     :root {
       --border: 217, 217, 217;
       --background: 250, 250, 250;
+      --blue: 22, 119, 255;
     }
     * {
       box-sizing: border-box;

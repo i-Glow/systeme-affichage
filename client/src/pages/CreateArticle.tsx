@@ -68,7 +68,7 @@ export default function CreateArticle() {
     setDateDebut(value[0].$d.toISOString());
     setDateFin(value[1].$d.toISOString());
   }
-  
+
   async function onFinish() {
     setLoading(true);
     if (niveau.length === 0) {
@@ -87,7 +87,7 @@ export default function CreateArticle() {
     try {
       let config: AxiosRequestConfig;
 
-      if (location.pathname.includes("/archive/edit")) {
+      if (location.pathname.includes("/articles/edit")) {
         const id = location.pathname.split("/").at(-1);
 
         config = {
@@ -186,6 +186,11 @@ export default function CreateArticle() {
 
   return (
     <Wrapper>
+      <h3>
+        {location.pathname.includes("/articles/edit")
+          ? "Edit article"
+          : "Create article"}
+      </h3>
       <FormWrapper>
         {contextHolder}
         <Form

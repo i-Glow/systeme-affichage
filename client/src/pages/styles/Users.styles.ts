@@ -1,4 +1,5 @@
-import { AiOutlineEdit, AiOutlinePause } from "react-icons/ai";
+import { AiOutlineEdit, AiOutlinePause, AiOutlineStop } from "react-icons/ai";
+import { FiPlay } from "react-icons/fi";
 import styled from "styled-components";
 
 export const Wrapper = styled.div`
@@ -11,7 +12,18 @@ export const Wrapper = styled.div`
   border-radius: 8px;
 `;
 
-export const Pause = styled(AiOutlineEdit)`
+export const Resume = styled(FiPlay)`
+  font-size: 18px;
+  margin: 0 10px;
+  cursor: pointer;
+  transition: 0.2s ease;
+
+  &:hover {
+    color: orange;
+  }
+`;
+
+export const Edit = styled(AiOutlineEdit)`
   font-size: 18px;
   margin: 0 10px;
   cursor: pointer;
@@ -22,13 +34,13 @@ export const Pause = styled(AiOutlineEdit)`
   }
 `;
 
-export const Edit = styled(AiOutlinePause)`
+export const Pause = styled(AiOutlineStop)`
   font-size: 18px;
   margin: 0 10px;
   cursor: pointer;
   transition: 0.2s ease;
 
   &:hover {
-    color: yellow;
+    color: orange;
   }
 `;

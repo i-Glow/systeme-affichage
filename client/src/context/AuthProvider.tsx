@@ -52,9 +52,12 @@ export const AuthProvider = ({ children }: any) => {
 
       navigate("/");
     } catch (error: any) {
-      // console.error(error);
       if (error.response.status === 403) {
-        // console.log(error.response.data.message);
+        messageApi.open({
+          type: "error",
+          content: error.response.data.message,
+        });
+      } else if (error.response.status === 401) {
         messageApi.open({
           type: "error",
           content: error.response.data.message,
@@ -64,7 +67,6 @@ export const AuthProvider = ({ children }: any) => {
       return false;
     }
   }
-  function createUser() {}
 
   const value: any = {
     user,

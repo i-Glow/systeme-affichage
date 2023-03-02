@@ -22,7 +22,9 @@ export type user = {
   username: string;
   nom: string;
   prenom: string;
+  suspended: boolean;
   role: Role;
+  _count?: Object<number>;
 };
 
 enum Role {
