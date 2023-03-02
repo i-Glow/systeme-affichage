@@ -18,6 +18,8 @@ import Signin from "./pages/Signin";
 import Users from "./pages/Users";
 import { roles } from "./utils/roles";
 import CreateUser from "./pages/CreateUser";
+import PendingArticle from "./pages/PendingArticle";
+import PendingActicleDetail from "./pages/PendingActicleDetail";
 import Archive from "./pages/Archive";
 
 function App() {
@@ -37,6 +39,15 @@ function App() {
               <Route element={<AuthorizedRoute />}>
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/nouveau" element={<CreateUser />} />
+              </Route> */}
+              <Route
+                path="/PendingArticle"
+                element={<PendingArticle />}
+              ></Route>
+              <Route
+                path="/PendingActicleDetail/:PendingActicleDetail"
+                element={<PendingActicleDetail />}
+              ></Route>
                 <Route path="/archive" element={<Archive />} />
               </Route>
             </Route>

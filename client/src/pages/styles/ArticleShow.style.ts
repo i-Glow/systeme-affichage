@@ -28,7 +28,7 @@ export const Card = styled.div`
 export const CardTop = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 20px;
   max-width: 100%;
   overflow-wrap: break-word;
   padding-top: 10px;

@@ -108,7 +108,7 @@ export default function CreateArticle() {
         niveau: niveau as string[],
         categoryName: category,
       };
-
+      console.log(token);
       const res = await axios({
         ...config,
         data,
