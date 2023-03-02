@@ -17,13 +17,12 @@ const NiveauCheckBox = ({ checkedList, setCheckedList }: Props) => {
   useEffect(() => {
     if (!checkedList.length) {
       setCheckAll(false);
+      setIndeterminate(false);
     } else if (checkedList.length === 6) {
       setCheckAll(true);
-    } else if (checkedList.length <= 6 && checkedList.length >= 1) {
-      setIndeterminate(false);
-    } else {
+    } else if (checkedList.length < 6 && checkedList.length >= 1) {
       setIndeterminate(true);
-    }
+    } 
   }, [checkedList]);
 
   const onChange = (list: CheckboxValueType[]) => {

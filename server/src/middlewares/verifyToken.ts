@@ -14,7 +14,7 @@ const verifyToken = (req: Request, res: Response, next: NextFunction) => {
       return res.status(403).send(err);
     } else {
       //@ts-ignore
-      if (decoded) req.user = decoded.uid;
+      if (decoded) req.user = decoded;
       next();
     }
   });

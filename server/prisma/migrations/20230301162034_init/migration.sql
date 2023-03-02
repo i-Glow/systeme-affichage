@@ -1,4 +1,7 @@
 -- CreateEnum
+CREATE TYPE "State" AS ENUM ('aproved', 'pending', 'rejected');
+
+-- CreateEnum
 CREATE TYPE "Role" AS ENUM ('responsable_affichage', 'super_user');
 
 -- CreateTable
@@ -13,6 +16,7 @@ CREATE TABLE "article" (
     "date_fin" TIMESTAMP(3) NOT NULL,
     "creator_id" TEXT NOT NULL,
     "categorie_id" INTEGER NOT NULL,
+    "state" "State" NOT NULL,
 
     CONSTRAINT "article_pkey" PRIMARY KEY ("article_id")
 );

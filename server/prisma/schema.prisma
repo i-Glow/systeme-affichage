@@ -23,6 +23,13 @@ model article {
   creator_id   String
   categorie    categorie @relation(fields: [categorie_id], references: [category_id])
   categorie_id Int
+  state        State
+}
+
+enum State {
+  aproved
+  pending
+  rejected
 }
 
 model categorie {

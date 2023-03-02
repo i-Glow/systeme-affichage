@@ -19,7 +19,8 @@ import Users from "./pages/Users";
 import { Role } from "./types";
 import { roles } from "./utils/roles";
 import CreateUser from "./pages/CreateUser";
-
+import PendingArticle from "./pages/PendingArticle";
+import PendingActicleDetail from "./pages/PendingActicleDetail";
 function App() {
   return (
     <BrowserRouter>
@@ -35,6 +36,8 @@ function App() {
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/nouveau" element={<CreateUser />} />
               </Route> */}
+              <Route path="/PendingArticle" element={<PendingArticle />}></Route>
+              <Route path="/PendingActicleDetail/:PendingActicleDetail" element={<PendingActicleDetail />}></Route>
             </Route>
             <Route path="/affichage" element={<ArticleShow />}></Route>
           </Route>

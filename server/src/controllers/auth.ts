@@ -21,7 +21,7 @@ const signin = async (req: Request, res: Response) => {
     if (!validPassword)
       return res.status(403).send({ message: "wrong password" });
 
-    const payload = { uid: user.user_id };
+    const payload = { uid: user.user_id, role: user.role };
 
     const accessToken = createAccessToken(payload);
 
@@ -76,13 +76,13 @@ const refreshToken = async (req: Request, res: Response) => {
     //@ts-ignore
     const userid = req.user;
 
-    const payload = { uid: userid };
+    const payload = { uid: userid.uid, role: userid.role };
     const accessToken = createAccessToken(payload);
 
     //@ts-ignore
     const user: user = await prisma.user.findUnique({
       where: {
-        user_id: userid,
+        user_id: userid.uid,
       },
     });
 

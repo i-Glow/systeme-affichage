@@ -16,7 +16,7 @@ export default function PageHeader() {
       <Button
         type="default"
         onClick={() => {
-          navigate("nouveau");
+          navigate("/nouveau");
         }}
       >
         <SvgPosition>

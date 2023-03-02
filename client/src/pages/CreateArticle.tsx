@@ -68,7 +68,7 @@ export default function CreateArticle() {
     setDateDebut(value[0].$d.toISOString());
     setDateFin(value[1].$d.toISOString());
   }
-  
+
   async function onFinish() {
     setLoading(true);
     if (niveau.length === 0) {
@@ -108,7 +108,7 @@ export default function CreateArticle() {
         niveau: niveau as string[],
         categoryName: category,
       };
-
+      console.log(token);
       const res = await axios({
         ...config,
         data,
