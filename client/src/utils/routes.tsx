@@ -2,6 +2,7 @@ import { roles } from "./roles";
 import { RiArticleLine } from "react-icons/ri";
 import { TbUsers } from "react-icons/tb";
 import { BsArchive } from "react-icons/bs";
+import { MdOutlinePendingActions } from "react-icons/md";
 
 type link = {
   key: number;
@@ -21,23 +22,23 @@ export default [
   },
   {
     key: 2,
+    name: "Pending articles",
+    link: "/pendingarticles",
+    authorization: roles.affichage,
+    icon: <MdOutlinePendingActions />,
+  },
+  {
+    key: 3,
     name: "users",
     link: "/users",
     authorization: roles.admin,
     icon: <TbUsers />,
   },
   {
-    key: 2,
+    key: 4,
     name: "archive",
     link: "/archive",
     authorization: roles.admin,
-    icon: <BsArchive />,
-  },
-  {
-    key: 4,
-    name: "PendingArticle",
-    link: "/PendingArticle",
-    authorization: roles.affichage,
     icon: <BsArchive />,
   },
 ] satisfies link[];
