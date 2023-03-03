@@ -27,7 +27,7 @@ export default function PendingArticle() {
   const [confirmLoading, setConfirmLoading] = useState(false);
   const columnActionsRenderer = (_: any, record: article) => (
     <Space size="middle">
-      <Link to={`/PendingActicleDetail/${record.article_id}`}>
+      <Link to={record.article_id}>
         <MdOutlinePreview />
       </Link>
     </Space>
@@ -80,7 +80,7 @@ export default function PendingArticle() {
 
   return (
     <>
-      <PageHeader page="Pending articles" />
+      <h3>Pending articles</h3>
       <Div>
         {contextHolder}
         <Table
