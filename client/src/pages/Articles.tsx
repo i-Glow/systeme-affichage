@@ -39,14 +39,14 @@ export default function Archive() {
         okType="danger"
         cancelText="Annuler"
         okButtonProps={{ loading: confirmLoading }}
-        onConfirm={() => deleteArticle(record.article_id)}
+        onConfirm={() => ChangeArticleState(record.article_id)}
       >
         <DeleteIcon />
       </Popconfirm>
     </Space>
   );
 
-  const deleteArticle = useCallback(async (id: string) => {
+  const ChangeArticleState = useCallback(async (id: string) => {
     try {
       setConfirmLoading(true);
       let config: AxiosRequestConfig;

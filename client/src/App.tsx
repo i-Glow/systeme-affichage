@@ -21,7 +21,6 @@ import CreateUser from "./pages/CreateUser";
 import PendingArticle from "./pages/PendingArticle";
 import PendingActicleDetail from "./pages/PendingActicleDetail";
 import Archive from "./pages/Archive";
-import Test from "./pages/Test";
 
 function App() {
   return (
@@ -50,7 +49,6 @@ function App() {
                 element={<PendingActicleDetail />}
               ></Route>
               <Route path="/archive" element={<Archive />} />
-              <Route path="/test" element={<Test />}></Route>
             </Route>
           </Route>
           <Route path="/affichage" element={<ArticleShow />}></Route>
