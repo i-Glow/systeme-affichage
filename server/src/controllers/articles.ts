@@ -81,6 +81,7 @@ const getArchive = async (req: Request, res: Response) => {
       OR: [
         { titre: { contains: search as string, mode: "insensitive" } },
         { contenu: { contains: search as string, mode: "insensitive" } },
+        { state: State.rejected },
       ],
     };
 
@@ -199,34 +200,59 @@ const createArticle = async (req: Request, res: Response) => {
 
 const editArticle = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id, role } = req.params;
     const { titre, contenu, date_debut, date_fin, niveau, categoryName } =
       req.body;
-
-    await prisma.article.update({
-      data: {
-        titre,
-        contenu,
-        date_debut,
-        date_fin,
-        edited_at: new Date().toISOString(),
-        niveau,
-        categorie: {
-          connectOrCreate: {
-            create: {
-              nom: categoryName,
-            },
-            where: {
-              nom: categoryName,
+    if (role === Role.super_user) {
+      await prisma.article.update({
+        data: {
+          titre,
+          contenu,
+          date_debut,
+          date_fin,
+          edited_at: new Date().toISOString(),
+          niveau,
+          categorie: {
+            connectOrCreate: {
+              create: {
+                nom: categoryName,
+              },
+              where: {
+                nom: categoryName,
+              },
             },
           },
         },
-      },
-      where: {
-        article_id: id,
-      },
-    });
-
+        where: {
+          article_id: id,
+        },
+      });
+    } else {
+      await prisma.article.update({
+        data: {
+          titre,
+          contenu,
+          date_debut,
+          date_fin,
+          edited_at: new Date().toISOString(),
+          niveau,
+          state: State.pending,
+          categorie: {
+            connectOrCreate: {
+              create: {
+                nom: categoryName,
+              },
+              where: {
+                nom: categoryName,
+              },
+            },
+          },
+        },
+        where: {
+          article_id: id,
+        },
+      });
+    }
     res.sendStatus(204);
   } catch (error) {
     console.error(error);
@@ -335,6 +361,25 @@ const getArticlesByUserRole = async (req: Request, res: Response) => {
   }
 };
 
+const editArticleState = async (req: Request, res: Response) => {
+  try {
+    let articles;
+    const { id } = req.params;
+    articles = await prisma.article.update({
+      data: {
+        state: State.rejected,
+      },
+      where: {
+        article_id: id,
+      },
+    });
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+
 export {
   getAll,
   getArticle,
@@ -344,4 +389,5 @@ export {
   AproveArticle,
   getArticlesByUserRole,
   getArchive,
+  editArticleState,
 };

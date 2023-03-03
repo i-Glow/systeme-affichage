@@ -11,6 +11,7 @@ import useAxios from "../hooks/useAxios";
 import Column from "antd/es/table/Column";
 import PageHeader from "../components/PageHeader";
 import { article } from "../types";
+import { AxiosRequestConfig } from "axios";
 
 export default function Archive() {
   //@ts-ignore
@@ -48,14 +49,25 @@ export default function Archive() {
   const deleteArticle = useCallback(async (id: string) => {
     try {
       setConfirmLoading(true);
-      const res = await axios.delete(`/articles/${id}`, {
+      let config: AxiosRequestConfig;
+      config = {
+        method: "put",
+        url: `/articles/reject/${id}`,
+      };
+      const res = await axios({
+        ...config,
+        data,
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (res.status === 204) {
+      if (res.status === 200) {
         setData((prev) => prev.filter((item) => item.article_id !== id));
         setConfirmLoading(false);
+        messageApi.open({
+          type: "success",
+          content: "Article Archived",
+        });
       }
     } catch (error: any) {
       if (error.response?.status === 403) {

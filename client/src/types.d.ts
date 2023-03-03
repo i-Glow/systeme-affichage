@@ -10,6 +10,7 @@ export type article = {
   creator_id: string;
   categorie_id: number;
   categorie: category;
+  creator: Object<number>;
 };
 
 export type category = {
