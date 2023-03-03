@@ -4,7 +4,7 @@ import Flex from "../components/shared/Flex";
 import { AxiosRequestConfig } from "axios";
 import { useAuth } from "../context/AuthProvider";
 import { roles } from "../utils/roles";
-import { Button, Space, message } from "antd";
+import { Button, Space, message, Popconfirm } from "antd";
 import useAxios from "../hooks/useAxios";
 import { AiOutlineCheckCircle, AiOutlineStop } from "react-icons/ai";
 
@@ -98,15 +98,19 @@ export default function PendingActicleDetail() {
                 >
                   Accept
                 </Button>
-                <Button
-                  disabled={loadingAccept}
-                  loading={loadingReject}
-                  onClick={onFinishReject}
-                  type="primary"
-                  danger
+                <Popconfirm
+                  title="supprimer"
+                  description="Voulez-vous supprimer ce article?"
+                  okText="Supprimer"
+                  okType="danger"
+                  cancelText="Annuler"
+                  okButtonProps={{ loading: loadingReject }}
+                  onConfirm={() => onFinishReject()}
                 >
-                  Reject
-                </Button>
+                  <Button disabled={loadingAccept} type="primary" danger>
+                    Reject
+                  </Button>
+                </Popconfirm>
               </>
             ) : (
               <>

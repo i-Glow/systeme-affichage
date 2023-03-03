@@ -9,7 +9,11 @@ import useAxios from "../hooks/useAxios";
 import Column from "antd/es/table/Column";
 import PageHeader from "../components/PageHeader";
 import { article } from "../types";
+
+import { AxiosRequestConfig } from "axios";
+
 import { VscOpenPreview } from "react-icons/vsc";
+
 
 export default function Archive() {
   //@ts-ignore
@@ -37,24 +41,35 @@ export default function Archive() {
         okType="danger"
         cancelText="Annuler"
         okButtonProps={{ loading: confirmLoading }}
-        onConfirm={() => deleteArticle(record.article_id)}
+        onConfirm={() => ChangeArticleState(record.article_id)}
       >
         <DeleteIcon fontSize={18} />
       </Popconfirm>
     </Space>
   );
 
-  const deleteArticle = useCallback(async (id: string) => {
+  const ChangeArticleState = useCallback(async (id: string) => {
     try {
       setConfirmLoading(true);
-      const res = await axios.delete(`/articles/${id}`, {
+      let config: AxiosRequestConfig;
+      config = {
+        method: "put",
+        url: `/articles/reject/${id}`,
+      };
+      const res = await axios({
+        ...config,
+        data,
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (res.status === 204) {
+      if (res.status === 200) {
         setData((prev) => prev.filter((item) => item.article_id !== id));
         setConfirmLoading(false);
+        messageApi.open({
+          type: "success",
+          content: "Article Archived",
+        });
       }
     } catch (error: any) {
       if (error.response?.status === 403) {

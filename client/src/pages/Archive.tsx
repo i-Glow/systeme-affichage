@@ -12,7 +12,7 @@ import { useSearchParams } from "react-router-dom";
 
 const PAGE_SIZE = 10;
 
-export default function Archive() {
+export default function Test() {
   const axios = useAxios();
   const [searchParams, setSearchParams] = useSearchParams({});
   //@ts-ignore
@@ -22,11 +22,10 @@ export default function Archive() {
   const [currentPage, setCurrentPage] = useState<number>(
     Number(searchParams.get("page")) || 1
   );
-
   const [articles, setArticles] = useState<article[]>([]);
   const [articleCount, setArticleCount] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState(searchParams.get("query") || "");
-
+  const [creators, setCreators] = useState<any>([]);
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
   const handleSearchTermChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -67,7 +66,19 @@ export default function Archive() {
       getArchive(currentPage, PAGE_SIZE, searchTerm);
     }
   }, [debouncedSearchTerm, currentPage]);
-
+  useEffect(() => {
+    // get all creator by name and lastName and put them in array
+    const allCreators = articles.map((article) => {
+      return { text: article.creator.nom, value: article.creator.prenom };
+    });
+    //filter the duplicated data from allCreators and than set the creators state
+    setCreators(
+      allCreators.filter(
+        (obj, index) =>
+          allCreators.findIndex((item) => item.text === obj.text) === index
+      )
+    );
+  }, [articles]);
   return (
     <div>
       <h3>Archive</h3>
@@ -117,6 +128,11 @@ export default function Archive() {
               <span>{creator.prenom}</span>
             </>
           )}
+          filters={creators}
+          onFilter={(value, record: article) => {
+            let user = record.creator.nom + " " + record.creator.prenom;
+            return user.includes(value as string);
+          }}
         />
         <Column
           title="niveau"

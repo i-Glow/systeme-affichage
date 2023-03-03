@@ -194,7 +194,6 @@ export default function CreateArticle() {
     getData(controller);
     getCategories();
   }, []);
-
   return (
     <Wrapper>
       <h3>
@@ -295,31 +294,33 @@ export default function CreateArticle() {
             </p>
           </Form.Item>
           <Form.Item label="Durée">
-            {location.pathname.includes("/archive/edit") ? (
+            {location.pathname.includes("/articles/edit") ? (
               dateDebut && dateFin ? (
-                <DatePicker.RangePicker
-                  defaultValue={[
-                    dayjs(
-                      dateDebut?.replace("T", " ").split(".")[0],
-                      "YYYY-MM-DD HH:mm:ss"
-                    ),
-                    dayjs(
-                      dateFin?.replace("T", " ").split(".")[0],
-                      "YYYY-MM-DD HH:mm:ss"
-                    ),
-                  ]}
-                  allowEmpty={[false, false]}
-                  onChange={(value) => dateChangeHandler(value)}
-                  placeholder={["de", "à"]}
-                  showTime={{
-                    hideDisabledOptions: true,
-                    defaultValue: [
-                      dayjs("00:00:00", "HH:mm:ss"),
-                      dayjs("11:59:59", "HH:mm:ss"),
-                    ],
-                  }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                />
+                <>
+                  <DatePicker.RangePicker
+                    defaultValue={[
+                      dayjs(
+                        dateDebut?.replace("T", " ").split(".")[0],
+                        "YYYY-MM-DD HH:mm:ss"
+                      ),
+                      dayjs(
+                        dateFin?.replace("T", " ").split(".")[0],
+                        "YYYY-MM-DD HH:mm:ss"
+                      ),
+                    ]}
+                    allowEmpty={[false, false]}
+                    onChange={(value) => dateChangeHandler(value)}
+                    placeholder={["de", "à"]}
+                    showTime={{
+                      hideDisabledOptions: true,
+                      defaultValue: [
+                        dayjs("00:00:00", "HH:mm:ss"),
+                        dayjs("11:59:59", "HH:mm:ss"),
+                      ],
+                    }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                  />
+                </>
               ) : null
             ) : (
               <DatePicker.RangePicker
