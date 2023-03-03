@@ -168,13 +168,24 @@ export default function CreateArticle() {
   }, []);
 
   const getCategories = useCallback(async () => {
-    const res = await axios.get("/categorie", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      const res = await axios.get("/categorie", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    if (res.status === 200) {
-      setCategories(res.data.data);
-      setCategory(res.data.data[0]?.nom);
+      if (res.status === 200) {
+        if (res.data.data.length === 0) {
+          setIsInputShow(true);
+        } else {
+          setCategories(res.data.data);
+          setCategory(res.data.data[0]?.nom);
+        }
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Erreur",
+      });
     }
   }, []);
 
@@ -237,7 +248,7 @@ export default function CreateArticle() {
           </Form.Item>
           <Form.Item label="categorie">
             <Flex jc="start" gap="5px">
-              {!isInputShow && categories ? (
+              {!isInputShow && categories?.length ? (
                 <Select
                   defaultValue={category}
                   style={{ width: 120 }}
@@ -266,12 +277,13 @@ export default function CreateArticle() {
                   />
                 }
                 onClick={() => {
-                  if (isInputShow && categories) {
+                  if (isInputShow && categories?.length) {
                     setCategory(categories[0].nom);
+                    setIsInputShow(false);
                   } else {
                     setCategory("");
+                    setIsInputShow(true);
                   }
-                  setIsInputShow(!isInputShow);
                 }}
               />
             </Flex>

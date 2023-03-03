@@ -1,13 +1,10 @@
 import { Button, Form, Input } from "antd";
-import { useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
 import { Wrapper } from "./styles/Signin.styles";
 
 export default () => {
-  const navigate = useNavigate();
-  const s = useLocation();
   //@ts-ignore
-  const { user, login, loading, contextHolder } = useAuth();
+  const { login, loading, contextHolder } = useAuth();
 
   async function onFinish(values: any) {
     // e.preventDefault();

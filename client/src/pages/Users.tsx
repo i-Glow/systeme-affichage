@@ -5,7 +5,7 @@ import Flex from "../components/shared/Flex";
 import { useAuth } from "../context/AuthProvider";
 import useAxios from "../hooks/useAxios";
 import { user } from "../types";
-import { Edit, Pause, Resume, Wrapper } from "./styles/Users.styles";
+import { Pause, Resume, Wrapper } from "./styles/Users.styles";
 
 export default function Users() {
   const [users, setUsers] = useState<user[]>([]);
@@ -46,13 +46,6 @@ export default function Users() {
           </Tooltip>
         )}
       </Popconfirm>,
-      // <Edit
-      //   style={{
-      //     fontSize: "18px",
-      //     margin: "0 10px",
-      //     cursor: "pointer",
-      //   }}
-      // />,
     ];
   }
 
