@@ -41,11 +41,11 @@ function App() {
                 <Route path="/users/nouveau" element={<CreateUser />} />
               </Route>
               <Route
-                path="/PendingArticle"
+                path="/pendingarticles"
                 element={<PendingArticle />}
               ></Route>
               <Route
-                path="/PendingActicleDetail/:PendingActicleDetail"
+                path="/pendingarticles/:PendingActicleDetail"
                 element={<PendingActicleDetail />}
               ></Route>
               <Route path="/archive" element={<Archive />} />

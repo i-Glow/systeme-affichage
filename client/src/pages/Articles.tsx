@@ -1,9 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 
-import { message, Popconfirm, Row, Space, Table } from "antd";
+import { message, Popconfirm, Space, Table } from "antd";
 import { AiOutlineEdit } from "react-icons/ai";
-import { MdOutlinePreview } from "react-icons/md";
-
 import Link from "../components/shared/Link";
 import { DeleteIcon, Div } from "./styles/Archive.style";
 import { useAuth } from "../context/AuthProvider";
@@ -11,7 +9,11 @@ import useAxios from "../hooks/useAxios";
 import Column from "antd/es/table/Column";
 import PageHeader from "../components/PageHeader";
 import { article } from "../types";
+
 import { AxiosRequestConfig } from "axios";
+
+import { VscOpenPreview } from "react-icons/vsc";
+
 
 export default function Archive() {
   //@ts-ignore
@@ -27,10 +29,10 @@ export default function Archive() {
   const columnActionsRenderer = (_: any, record: article) => (
     <Space size="middle">
       <Link to={`edit/${record.article_id}`} state={{ data: record }}>
-        <AiOutlineEdit style={{ fontSize: "18px" }} />
+        <AiOutlineEdit fontSize={18} />
       </Link>
       <Link to={record.article_id}>
-        <MdOutlinePreview />
+        <VscOpenPreview fontSize={18} cursor="pointer" />
       </Link>
       <Popconfirm
         title="supprimer"
@@ -41,7 +43,7 @@ export default function Archive() {
         okButtonProps={{ loading: confirmLoading }}
         onConfirm={() => ChangeArticleState(record.article_id)}
       >
-        <DeleteIcon />
+        <DeleteIcon fontSize={18} />
       </Popconfirm>
     </Space>
   );

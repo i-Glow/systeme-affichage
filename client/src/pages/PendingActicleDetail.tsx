@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import ArticleCard from "../components/ArticleCard";
 import Flex from "../components/shared/Flex";
 import { AxiosRequestConfig } from "axios";

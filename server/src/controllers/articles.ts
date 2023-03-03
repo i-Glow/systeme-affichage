@@ -2,8 +2,26 @@ import { article, categorie, Role, State, Prisma } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../db";
 
-const getAll = async (_: Request, res: Response) => {
+const getAll = async (req: Request, res: Response) => {
   try {
+    const whereClause: Prisma.articleWhereInput =
+      //@ts-ignore
+      req.user.role === Role.super_user
+        ? {
+            date_fin: {
+              gt: new Date().toISOString(),
+            },
+            state: State.aproved,
+          }
+        : {
+            date_fin: {
+              gt: new Date().toISOString(),
+            },
+            state: State.aproved,
+            //@ts-ignore
+            creator_id: req.user.uid,
+          };
+
     const articles = await prisma.article.findMany({
       select: {
         article_id: true,
@@ -14,12 +32,11 @@ const getAll = async (_: Request, res: Response) => {
       orderBy: {
         date_debut: "asc",
       },
-      where: {
-        date_fin: {
-          gt: new Date().toISOString(),
-        },
-        state: State.aproved,
-      },
+      where: whereClause,
+      // date_fin: {
+      //   gt: new Date().toISOString(),
+      // },
+      // state: State.aproved,
     });
 
     res.status(200).send({ data: articles });
@@ -49,12 +66,26 @@ const getArticle = async (req: Request, res: Response) => {
         edited_at: true,
         creator: {
           select: {
+            user_id: true,
             nom: true,
             prenom: true,
           },
         },
       },
     });
+
+    if (!article) {
+      return res.status(404).send({ message: "Article does not exist" });
+    }
+
+    if (
+      //@ts-ignore
+      article.creator.user_id !== req.user.uid &&
+      //@ts-ignore
+      req.user.role !== Role.super_user
+    ) {
+      return res.status(401).send({ message: "Not authorized" });
+    }
 
     res.status(200).send({ data: article });
   } catch (error) {
