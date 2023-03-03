@@ -2,13 +2,11 @@ import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "../context/AuthProvider";
 
 import Link from "../components/shared/Link";
-import { message, Popconfirm, Row, Space, Table } from "antd";
-import { MdOutlinePreview } from "react-icons/md";
-
-import PageHeader from "../components/PageHeader";
-import { DeleteIcon, Div } from "./styles/Archive.style";
+import { message, Space, Table } from "antd";
+import { Div } from "./styles/Archive.style";
 import Column from "antd/es/table/Column";
 import useAxios from "../hooks/useAxios";
+import { VscOpenPreview } from "react-icons/vsc";
 
 type article = {
   article_id: string;
@@ -24,11 +22,11 @@ export default function PendingArticle() {
   const [messageApi, contextHolder] = message.useMessage();
   const [data, setData] = useState<article[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
-  const [confirmLoading, setConfirmLoading] = useState(false);
+
   const columnActionsRenderer = (_: any, record: article) => (
     <Space size="middle">
       <Link to={record.article_id}>
-        <MdOutlinePreview />
+        <VscOpenPreview fontSize={18} cursor="pointer" />
       </Link>
     </Space>
   );
