@@ -12,7 +12,7 @@ import { useSearchParams } from "react-router-dom";
 
 const PAGE_SIZE = 10;
 
-export default function Test() {
+export default function Archive() {
   const axios = useAxios();
   const [searchParams, setSearchParams] = useSearchParams({});
   //@ts-ignore
@@ -22,11 +22,14 @@ export default function Test() {
   const [currentPage, setCurrentPage] = useState<number>(
     Number(searchParams.get("page")) || 1
   );
+
   const [articles, setArticles] = useState<article[]>([]);
   const [articleCount, setArticleCount] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState(searchParams.get("query") || "");
   const [creators, setCreators] = useState<any>([]);
+
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
+
   const handleSearchTermChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
@@ -66,6 +69,7 @@ export default function Test() {
       getArchive(currentPage, PAGE_SIZE, searchTerm);
     }
   }, [debouncedSearchTerm, currentPage]);
+
   useEffect(() => {
     // get all creator by name and lastName and put them in array
     const allCreators = articles.map((article) => {
@@ -79,6 +83,7 @@ export default function Test() {
       )
     );
   }, [articles]);
+
   return (
     <div>
       <h3>Archive</h3>
@@ -112,7 +117,7 @@ export default function Test() {
         }
       >
         <Column
-          title="titre"
+          title="Titre"
           key="article_id"
           ellipsis={true}
           render={(article: article) => (
@@ -120,7 +125,7 @@ export default function Test() {
           )}
         />
         <Column
-          title="creator"
+          title="Creator"
           key="article_id"
           render={({ creator }) => (
             <>
@@ -135,7 +140,7 @@ export default function Test() {
           }}
         />
         <Column
-          title="niveau"
+          title="Level"
           key="article_id"
           ellipsis={true}
           render={(article: article) =>
@@ -150,7 +155,7 @@ export default function Test() {
           )}
         />
         <Column
-          title="Action"
+          title="Actions"
           key="article_id"
           render={(article: article) => (
             <Link

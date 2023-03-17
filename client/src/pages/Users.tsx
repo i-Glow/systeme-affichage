@@ -31,6 +31,7 @@ export default function Users() {
         };
 
     return [
+      //@ts-ignore
       <Popconfirm
         {...actionProps}
         cancelText="Annuler"

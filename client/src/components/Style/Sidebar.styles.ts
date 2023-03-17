@@ -11,6 +11,7 @@ export const Wrapper = styled.div`
 export const SideBar = styled.div`
   position: fixed;
   width: 15%;
+  min-width: 200px;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -28,7 +29,7 @@ export const LinkContainer = styled(Link)`
   transition: 0.15s ease-in-out;
   cursor: pointer;
   position: relative;
-  background-color: ${<T>({ isFocused }) =>
+  background-color: ${({ isFocused }: { isFocused: boolean }) =>
     isFocused ? "rgba(var(--blue), 0.09)" : "transparent"};
 
   &:hover {
@@ -41,7 +42,7 @@ export const LinkContainer = styled(Link)`
     height: 46px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
-    background-color: ${<T>({ isFocused }) =>
+    background-color: ${({ isFocused }: { isFocused: boolean }) =>
       isFocused ? "rgba(var(--blue))" : "transparent"};
     position: absolute;
     left: -11px;

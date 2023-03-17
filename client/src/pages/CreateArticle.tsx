@@ -19,6 +19,7 @@ import { useAuth } from "../context/AuthProvider";
 import useAxios from "../hooks/useAxios";
 import Flex from "../components/shared/Flex";
 import LatestArticles from "../components/LatestArticles";
+import { article } from "../types";
 
 type Categorie = {
   category_id: number | null;
@@ -119,7 +120,7 @@ export default function CreateArticle() {
       if (res.status === 200) {
         messageApi.open({
           type: "success",
-          content: "Article créé",
+          content: "Article created",
         });
 
         //update new articles list
@@ -132,14 +133,14 @@ export default function CreateArticle() {
       } else if (res.status === 204) {
         messageApi.open({
           type: "success",
-          content: "Article édité",
+          content: "Article edited",
         });
       }
     } catch (error) {
       console.log(error);
       messageApi.open({
         type: "error",
-        content: "Erreur",
+        content: "Error",
       });
     } finally {
       setLoading(false);
@@ -184,7 +185,7 @@ export default function CreateArticle() {
     } catch (error) {
       messageApi.open({
         type: "error",
-        content: "Erreur",
+        content: "Error",
       });
     }
   }, []);
@@ -218,7 +219,7 @@ export default function CreateArticle() {
             />
           </Form.Item>
           <Form.Item
-            label="titre"
+            label="title"
             rules={[{ required: true, message: "Please input your name" }]}
             requiredMark={true}
           >
@@ -232,7 +233,7 @@ export default function CreateArticle() {
             />
           </Form.Item>
           <Form.Item
-            label="contenu"
+            label="content"
             rules={[{ required: true }]}
             requiredMark={true}
           >
@@ -245,7 +246,7 @@ export default function CreateArticle() {
               maxLength={500}
             />
           </Form.Item>
-          <Form.Item label="categorie">
+          <Form.Item label="category">
             <Flex jc="start" gap="5px">
               {!isInputShow && categories?.length ? (
                 <Select
@@ -287,13 +288,13 @@ export default function CreateArticle() {
               />
             </Flex>
           </Form.Item>
-          <Form.Item label="Niveaux">
+          <Form.Item label="level">
             <NiveauCheckBox checkedList={niveau} setCheckedList={setNiveau} />
             <p style={{ color: "red" }}>
               {checkBoxMessageError ? "pick a level" : null}
             </p>
           </Form.Item>
-          <Form.Item label="Durée">
+          <Form.Item label="duration">
             {location.pathname.includes("/articles/edit") ? (
               dateDebut && dateFin ? (
                 <>
@@ -326,7 +327,7 @@ export default function CreateArticle() {
               <DatePicker.RangePicker
                 allowEmpty={[false, false]}
                 onChange={(value) => dateChangeHandler(value)}
-                placeholder={["de", "à"]}
+                placeholder={["from", "to"]}
                 showTime={{
                   hideDisabledOptions: true,
                   defaultValue: [
@@ -343,12 +344,13 @@ export default function CreateArticle() {
           </Form.Item>
           <Form.Item label=" " colon={false}>
             <Button loading={loading} htmlType="submit" type="primary">
-              Valider
+              Create
             </Button>
           </Form.Item>
         </Form>
       </FormWrapper>
       {newArticles?.length ? (
+        //@ts-ignore
         <LatestArticles newArticles={newArticles} />
       ) : null}
     </Wrapper>

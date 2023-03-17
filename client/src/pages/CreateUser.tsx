@@ -31,15 +31,15 @@ export default function CreateUser() {
       if (res.status === 200) {
         messageApi.open({
           type: "success",
-          content: "Utilisateur créé",
+          content: "User created",
         });
       }
       navigate("/users");
     } catch (error) {
-      console.log(error);
+      console.error(error);
       messageApi.open({
         type: "error",
-        content: "Erreur",
+        content: "Error",
       });
     }
   }
@@ -84,10 +84,10 @@ export default function CreateUser() {
           />
         </Form.Item>
         <Form.Item
-          rules={[{ required: true, message: "nom must be specified" }]}
+          rules={[{ required: true, message: "name must be specified" }]}
           required={false}
           name="nom"
-          label="nom"
+          label="name"
         >
           <Input
             onChange={(e) =>
@@ -96,10 +96,10 @@ export default function CreateUser() {
           />
         </Form.Item>
         <Form.Item
-          rules={[{ required: true, message: "prenom must be specified" }]}
+          rules={[{ required: true, message: "lastname must be specified" }]}
           required={false}
           name="prenom"
-          label="prenom"
+          label="lastname"
         >
           <Input
             onChange={(e) =>
@@ -122,7 +122,7 @@ export default function CreateUser() {
         </Form.Item>
         <Form.Item label=" " colon={false}>
           <Button type="primary" htmlType="submit">
-            Créer
+            Create
           </Button>
         </Form.Item>
       </Form>

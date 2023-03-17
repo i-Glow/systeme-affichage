@@ -23,9 +23,7 @@ export default function Sidebar() {
   const [openTab, setOpenTab] = useState<number>(getCurrentPath);
 
   useEffect(() => {
-    // if (navigationType === "POP") {
     setOpenTab(getCurrentPath);
-    // }
   }, [pathname]);
 
   return (
