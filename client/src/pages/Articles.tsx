@@ -14,7 +14,6 @@ import { AxiosRequestConfig } from "axios";
 
 import { VscOpenPreview } from "react-icons/vsc";
 
-
 export default function Archive() {
   //@ts-ignore
   const { token } = useAuth();
@@ -150,7 +149,7 @@ export default function Archive() {
             ellipsis={true}
           />
           <Column
-            title="Niveau"
+            title="Level"
             key="article_id"
             ellipsis={true}
             render={(article: article) =>
@@ -170,7 +169,7 @@ export default function Archive() {
           />
           <Column title="Date" dataIndex="created_at" key="article_id" />
           <Column
-            title="Action"
+            title="Actions"
             key="article_id"
             render={columnActionsRenderer}
           ></Column>

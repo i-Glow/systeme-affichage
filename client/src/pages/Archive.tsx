@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Input, Table } from "antd";
+import { Input, Select, Table } from "antd";
 import Column from "antd/es/table/Column";
 import { useAuth } from "../context/AuthProvider";
 import { VscOpenPreview } from "react-icons/vsc";
@@ -12,7 +12,12 @@ import { useSearchParams } from "react-router-dom";
 
 const PAGE_SIZE = 10;
 
-export default function Test() {
+interface creator {
+  nom: string;
+  prenom: string;
+}
+
+export default function Archive() {
   const axios = useAxios();
   const [searchParams, setSearchParams] = useSearchParams({});
   //@ts-ignore
@@ -22,21 +27,37 @@ export default function Test() {
   const [currentPage, setCurrentPage] = useState<number>(
     Number(searchParams.get("page")) || 1
   );
+
   const [articles, setArticles] = useState<article[]>([]);
   const [articleCount, setArticleCount] = useState<number>(0);
   const [searchTerm, setSearchTerm] = useState(searchParams.get("query") || "");
-  const [creators, setCreators] = useState<any>([]);
+  const [creator, setCreator] = useState<creator>({
+    nom: searchParams.get("name") || "",
+    prenom: searchParams.get("firstname") || "",
+  });
+  const [allCreators, setAllCreators] = useState<creator[]>([]);
+  // const [creators, setCreators] = useState<any>([]);
+
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
+
   const handleSearchTermChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ): void => {
     setSearchTerm(event.target.value);
   };
 
-  async function getArchive(page = 1, pageSize = 10, search = "") {
+  async function getArchive(
+    page = 1,
+    pageSize = 10,
+    search = "",
+    creator: creator
+  ) {
+    //update url params
     setSearchParams({
       query: search,
       page: `${page}`,
+      name: creator.nom,
+      firstname: creator.prenom,
     });
     setLoading(true);
     try {
@@ -45,9 +66,13 @@ export default function Test() {
           page,
           pageSize,
           search,
+          nom: creator.nom,
+          prenom: creator.prenom,
         },
         withCredentials: true,
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       setArticles(res.data.data);
@@ -59,26 +84,49 @@ export default function Test() {
     }
   }
 
+  async function getAllCreators() {
+    try {
+      const res = await axios.get("/users", {
+        withCredentials: true,
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (res.status === 200) {
+        setAllCreators(res.data.data);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   useEffect(() => {
     if (debouncedSearchTerm) {
-      getArchive(currentPage, PAGE_SIZE, debouncedSearchTerm);
+      getArchive(currentPage, PAGE_SIZE, debouncedSearchTerm, creator);
     } else {
-      getArchive(currentPage, PAGE_SIZE, searchTerm);
+      getArchive(currentPage, PAGE_SIZE, searchTerm, creator);
     }
-  }, [debouncedSearchTerm, currentPage]);
+  }, [debouncedSearchTerm, currentPage, creator]);
+
   useEffect(() => {
-    // get all creator by name and lastName and put them in array
-    const allCreators = articles.map((article) => {
-      return { text: article.creator.nom, value: article.creator.prenom };
-    });
-    //filter the duplicated data from allCreators and than set the creators state
-    setCreators(
-      allCreators.filter(
-        (obj, index) =>
-          allCreators.findIndex((item) => item.text === obj.text) === index
-      )
-    );
-  }, [articles]);
+    getAllCreators();
+  }, []);
+
+  // useEffect(() => {
+  //   // get all creator by name and lastName and put them in array
+  //   const allCreators = articles.map((article) => {
+  //     return { text: article.creator.nom, value: article.creator.prenom };
+  //   });
+  //   //filter the duplicated data from allCreators and than set the creators state
+  //   setCreators(
+  //     allCreators.filter(
+  //       (obj, index) =>
+  //         allCreators.findIndex((item) => item.text === obj.text) === index
+  //     )
+  //   );
+  // }, [articles]);
+
   return (
     <div>
       <h3>Archive</h3>
@@ -87,13 +135,30 @@ export default function Test() {
           minWidth: "260px",
           maxWidth: "420px",
           margin: "10px 0",
-          padding: "3px 7px 4px 7px",
+          padding: "4px 7px 5px 7px",
         }}
         value={searchTerm}
         placeholder="search title or content"
         onChange={(e) => handleSearchTermChange(e)}
         allowClear
         prefix={<AiOutlineSearch fontSize={16} />}
+      />
+      <Select
+        style={{ width: 120, marginLeft: "10px" }}
+        defaultValue={
+          creator.nom ? `${creator.nom}+${creator.prenom}` : "creator"
+        }
+        onChange={(value) =>
+          setCreator({ nom: value.split("+")[0], prenom: value.split("+")[1] })
+        }
+        options={allCreators.map((creator) => {
+          return {
+            label: `${creator.nom} ${creator.prenom}`,
+            value: `${creator.nom}+${creator.prenom}`,
+          };
+        })}
+        allowClear={true}
+        onClear={() => setCreator({ nom: "", prenom: "" })}
       />
       <Table
         loading={loading}
@@ -112,7 +177,7 @@ export default function Test() {
         }
       >
         <Column
-          title="titre"
+          title="Titre"
           key="article_id"
           ellipsis={true}
           render={(article: article) => (
@@ -120,7 +185,7 @@ export default function Test() {
           )}
         />
         <Column
-          title="creator"
+          title="Creator"
           key="article_id"
           render={({ creator }) => (
             <>
@@ -128,14 +193,14 @@ export default function Test() {
               <span>{creator.prenom}</span>
             </>
           )}
-          filters={creators}
-          onFilter={(value, record: article) => {
-            let user = record.creator.nom + " " + record.creator.prenom;
-            return user.includes(value as string);
-          }}
+          // filters={creators}
+          // onFilter={(value, record: article) => {
+          //   let user = record.creator.nom + " " + record.creator.prenom;
+          //   return user.includes(value as string);
+          // }}
         />
         <Column
-          title="niveau"
+          title="Level"
           key="article_id"
           ellipsis={true}
           render={(article: article) =>
@@ -150,7 +215,7 @@ export default function Test() {
           )}
         />
         <Column
-          title="Action"
+          title="Actions"
           key="article_id"
           render={(article: article) => (
             <Link

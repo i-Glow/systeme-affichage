@@ -40,7 +40,6 @@ export default function PendingArticle() {
           headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal,
         });
-        console.log(res.data);
         if (res.status === 200) {
           const newData = res.data.data.map((el: article) => {
             el.created_at = el.created_at.replace("T", " ").split(".")[0];
@@ -51,14 +50,12 @@ export default function PendingArticle() {
         }
       } catch (error: any) {
         if (error.response?.status === 403) {
-          console.log("im in 403");
           messageApi.open({
             type: "error",
             content: "Please log in",
           });
           setDataLoading(false);
         } else if (error.code === "ERR_NETWORK") {
-          console.log("else 403");
           messageApi.open({
             type: "error",
             content: "network error",
@@ -94,7 +91,7 @@ export default function PendingArticle() {
             ellipsis={true}
           />
           <Column
-            title="Niveau"
+            title="Level"
             key="article_id"
             dataIndex="niveau"
             ellipsis={true}
@@ -112,7 +109,7 @@ export default function PendingArticle() {
           />
           <Column title="Date" dataIndex="created_at" key="article_id" />
           <Column
-            title="Action"
+            title="Actions"
             key="article_id"
             render={columnActionsRenderer}
           ></Column>

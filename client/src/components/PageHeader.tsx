@@ -22,7 +22,7 @@ export default function PageHeader({ page }: props) {
         <SvgPosition>
           <AiOutlinePlusSquare />
         </SvgPosition>
-        <span>Créer</span>
+        <span>New</span>
       </Button>
     </DivSpaceBettwen>
   );

@@ -105,16 +105,41 @@ const getArchive = async (req: Request, res: Response) => {
     // }
 
     // Get pagination parameters from query string
-    const { page = 1, pageSize = 10, search = "" } = req.query;
+    const {
+      page = 1,
+      pageSize = 10,
+      search = "",
+      nom = "",
+      prenom = "",
+    } = req.query;
     const skip: number = (Number(page) - 1) * Number(pageSize);
 
-    const searchQuery: Prisma.articleWhereInput = {
-      OR: [
-        { titre: { contains: search as string, mode: "insensitive" } },
-        { contenu: { contains: search as string, mode: "insensitive" } },
-        { state: State.rejected },
-      ],
-    };
+    let searchQuery: Prisma.articleWhereInput;
+    if (nom.length && prenom.length) {
+      searchQuery = {
+        AND: [
+          {
+            OR: [
+              { titre: { contains: search as string, mode: "insensitive" } },
+              { contenu: { contains: search as string, mode: "insensitive" } },
+            ],
+          },
+          {
+            AND: [
+              { creator: { nom: { equals: nom } } },
+              { creator: { prenom: { equals: prenom } } },
+            ],
+          },
+        ],
+      };
+    } else {
+      searchQuery = {
+        OR: [
+          { titre: { contains: search as string, mode: "insensitive" } },
+          { contenu: { contains: search as string, mode: "insensitive" } },
+        ],
+      };
+    }
 
     // Fetch articles using pagination
     const articles = await prisma.article.findMany({
@@ -129,7 +154,7 @@ const getArchive = async (req: Request, res: Response) => {
           select: {
             password: false,
             username: true,
-            article: true,
+            article: false,
             nom: true,
             prenom: true,
             role: true,
