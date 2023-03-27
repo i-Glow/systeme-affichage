@@ -1,5 +1,5 @@
 import { roles } from "./roles";
-import { RiArticleLine } from "react-icons/ri";
+import { RiArticleLine, RiSlideshow3Line } from "react-icons/ri";
 import { TbUsers } from "react-icons/tb";
 import { BsArchive } from "react-icons/bs";
 import { MdOutlinePendingActions } from "react-icons/md";
@@ -14,31 +14,38 @@ type link = {
 
 export default [
   {
-    key: 1,
+    key: 0,
     name: "articles",
     link: "/articles",
     authorization: roles.affichage,
     icon: <RiArticleLine size={18} />,
   },
   {
-    key: 2,
-    name: "Pending articles",
+    key: 1,
+    name: "pending articles",
     link: "/pendingarticles",
     authorization: roles.affichage,
     icon: <MdOutlinePendingActions size={18} />,
   },
   {
-    key: 3,
+    key: 2,
     name: "users",
     link: "/users",
     authorization: roles.admin,
     icon: <TbUsers size={18} />,
   },
   {
-    key: 4,
+    key: 3,
     name: "archive",
     link: "/archive",
     authorization: roles.admin,
     icon: <BsArchive size={18} />,
   },
-] satisfies link[];
+  {
+    key: 4,
+    name: "slide show",
+    link: "/affichage",
+    authorization: roles.affichage,
+    icon: <RiSlideshow3Line size={18} />,
+  },
+] as link[];

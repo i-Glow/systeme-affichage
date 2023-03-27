@@ -1,9 +1,10 @@
 //@ts-nocheck
-import { Empty } from "antd";
-import { useState } from "react";
-import { useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import axios from "../api";
 import isArabic from "../utils/isArabic";
+//components
+import { Empty } from "antd";
+// styles
 import {
   CenterDiv,
   Card,
@@ -31,9 +32,9 @@ type allArticles = {
   M2: article[] | undefined;
   D: article[] | undefined;
 };
-const arabic = /[\u0600-\u06FF]/;
+
 export default function ArticleShow() {
-  const [articles, setArticles] = useState<allArticles | undefined>();
+  const [articles, setArticles] = useState<allArticles>();
   const [data, setData] = useState<article[]>();
   const [count, setCount] = useState([0, 0, 0, 0, 0, 0]);
 
@@ -45,7 +46,7 @@ export default function ArticleShow() {
         setData(res.data.data);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }, []);
 
@@ -87,7 +88,6 @@ export default function ArticleShow() {
   useEffect(() => {
     let slideTimer: any;
     if (articles) {
-      console.log(articles);
       slideTimer = setTimeout(() => {
         const niveaux = ["L1", "L2", "L3", "M1", "M2", "D"];
 

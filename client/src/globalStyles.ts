@@ -13,13 +13,15 @@ export const GlobalStyles = createGlobalStyle`
       --border: 217, 217, 217;
       --background: 250, 250, 250;
       --blue: 22, 119, 255;
+      --success: 46, 160, 67;
+      --error: #ff4d4f;
     }
     * {
       box-sizing: border-box;
     	margin: 0;
       padding: 0;
       scroll-behavior: smooth;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
       
       ::-webkit-scrollbar {
         width: 6px;

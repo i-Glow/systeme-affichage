@@ -14,7 +14,7 @@ export default function PageHeader({ page }: props) {
     <DivSpaceBettwen>
       <h3>{page}</h3>
       <Button
-        type="default"
+        type="primary"
         onClick={() => {
           navigate("nouveau");
         }}

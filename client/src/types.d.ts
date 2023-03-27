@@ -8,9 +8,10 @@ export type article = {
   date_debut: Date;
   date_fin: Date;
   creator_id: string;
+  state: string;
   categorie_id: number;
   categorie: category;
-  creator: Object<number>;
+  creator: user;
 };
 
 export type category = {
@@ -28,7 +29,4 @@ export type user = {
   _count?: Object<number>;
 };
 
-enum Role {
-  responsable_affichage,
-  super_user,
-}
+type Role = "responsable_affichage" | "super_user";

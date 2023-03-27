@@ -27,8 +27,10 @@ export const LinkContainer = styled(Link)`
   margin: 0 10px;
   border-radius: 6px;
   transition: 0.15s ease-in-out;
+  white-space: nowrap;
   cursor: pointer;
   position: relative;
+
   background-color: ${({ isFocused }: { isFocused: boolean }) =>
     isFocused ? "rgba(var(--blue), 0.09)" : "transparent"};
 
@@ -42,13 +44,33 @@ export const LinkContainer = styled(Link)`
     height: 46px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
-    background-color: ${({ isFocused }: { isFocused: boolean }) =>
+    background-color: ${({ isFocused }: params) =>
       isFocused ? "rgba(var(--blue))" : "transparent"};
     position: absolute;
     left: -11px;
     top: -2px;
   }
 `;
+
+export const Notification = styled.div`
+  min-width: 20px;
+  min-height: 20px;
+  font-size: 12px;
+  background-color: rgb(var(--blue));
+  color: white;
+  border-radius: 4px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  right: 10px;
+  top: 11px;
+  /* margin-left: auto; */
+`;
+
+type params = {
+  isFocused?: boolean;
+};
 
 export const Logout = styled.div`
   display: flex;

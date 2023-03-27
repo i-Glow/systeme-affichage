@@ -1,14 +1,18 @@
 import { useState, useEffect } from "react";
-import { Input, Select, Table } from "antd";
-import Column from "antd/es/table/Column";
+import { useSearchParams } from "react-router-dom";
 import { useAuth } from "../context/AuthProvider";
-import { VscOpenPreview } from "react-icons/vsc";
+import levelColors from "../utils/levelColors";
 import useAxios from "../hooks/useAxios";
 import useDebounce from "../hooks/useDebounce";
-import { AiOutlineSearch } from "react-icons/ai";
-import { article } from "../types";
+// components
+import { Input, Select, Table, Tag } from "antd";
+import Column from "antd/es/table/Column";
 import Link from "../components/shared/Link";
-import { useSearchParams } from "react-router-dom";
+import Flex from "../components/shared/Flex";
+import { AiOutlineSearch } from "react-icons/ai";
+import { VscOpenPreview } from "react-icons/vsc";
+// types
+import { article } from "../types";
 
 const PAGE_SIZE = 10;
 
@@ -20,7 +24,6 @@ interface creator {
 export default function Archive() {
   const axios = useAxios();
   const [searchParams, setSearchParams] = useSearchParams({});
-  //@ts-ignore
   const { token } = useAuth();
 
   const [loading, setLoading] = useState<boolean>(false);
@@ -36,7 +39,6 @@ export default function Archive() {
     prenom: searchParams.get("firstname") || "",
   });
   const [allCreators, setAllCreators] = useState<creator[]>([]);
-  // const [creators, setCreators] = useState<any>([]);
 
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
 
@@ -97,12 +99,13 @@ export default function Archive() {
         setAllCreators(res.data.data);
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
     }
   }
 
   useEffect(() => {
     if (debouncedSearchTerm) {
+      setCurrentPage(1);
       getArchive(currentPage, PAGE_SIZE, debouncedSearchTerm, creator);
     } else {
       getArchive(currentPage, PAGE_SIZE, searchTerm, creator);
@@ -113,53 +116,41 @@ export default function Archive() {
     getAllCreators();
   }, []);
 
-  // useEffect(() => {
-  //   // get all creator by name and lastName and put them in array
-  //   const allCreators = articles.map((article) => {
-  //     return { text: article.creator.nom, value: article.creator.prenom };
-  //   });
-  //   //filter the duplicated data from allCreators and than set the creators state
-  //   setCreators(
-  //     allCreators.filter(
-  //       (obj, index) =>
-  //         allCreators.findIndex((item) => item.text === obj.text) === index
-  //     )
-  //   );
-  // }, [articles]);
-
   return (
     <div>
       <h3>Archive</h3>
-      <Input
-        style={{
-          minWidth: "260px",
-          maxWidth: "420px",
-          margin: "10px 0",
-          padding: "4px 7px 5px 7px",
-        }}
-        value={searchTerm}
-        placeholder="search title or content"
-        onChange={(e) => handleSearchTermChange(e)}
-        allowClear
-        prefix={<AiOutlineSearch fontSize={16} />}
-      />
-      <Select
-        style={{ width: 120, marginLeft: "10px" }}
-        defaultValue={
-          creator.nom ? `${creator.nom}+${creator.prenom}` : "creator"
-        }
-        onChange={(value) =>
-          setCreator({ nom: value.split("+")[0], prenom: value.split("+")[1] })
-        }
-        options={allCreators.map((creator) => {
-          return {
-            label: `${creator.nom} ${creator.prenom}`,
-            value: `${creator.nom}+${creator.prenom}`,
-          };
-        })}
-        allowClear={true}
-        onClear={() => setCreator({ nom: "", prenom: "" })}
-      />
+      <Flex wrap={true} jc="flex-start" gap="5px" mt="10px">
+        <Input
+          style={{
+            minWidth: "260px",
+            maxWidth: "420px",
+            padding: "4px 7px 5px 7px",
+          }}
+          value={searchTerm}
+          placeholder="search title or content"
+          onChange={(e) => handleSearchTermChange(e)}
+          allowClear
+          prefix={<AiOutlineSearch fontSize={16} />}
+        />
+        <Select
+          style={{ width: 120 }}
+          value={creator.nom ? `${creator.nom}+${creator.prenom}` : "creator"}
+          onChange={(value) => {
+            setCurrentPage(1);
+            setCreator({
+              nom: value?.split("+")[0] || "",
+              prenom: value?.split("+")[1] || "",
+            });
+          }}
+          options={allCreators.map((creator) => {
+            return {
+              label: `${creator.nom} ${creator.prenom}`,
+              value: `${creator.nom}+${creator.prenom}`,
+            };
+          })}
+          allowClear
+        />
+      </Flex>
       <Table
         loading={loading}
         size="middle"
@@ -171,14 +162,14 @@ export default function Archive() {
           hideOnSinglePage: true,
           simple: true,
         }}
+        rowKey="article_id"
         dataSource={articles}
         onChange={(val) =>
           val.current ? setCurrentPage(val.current) : setCurrentPage(1)
         }
       >
         <Column
-          title="Titre"
-          key="article_id"
+          title="Title"
           ellipsis={true}
           render={(article: article) => (
             <Link to={`/articles/${article.article_id}`}>{article.titre}</Link>
@@ -186,7 +177,6 @@ export default function Archive() {
         />
         <Column
           title="Creator"
-          key="article_id"
           render={({ creator }) => (
             <>
               <span>{creator.nom} </span>
@@ -201,22 +191,23 @@ export default function Archive() {
         />
         <Column
           title="Level"
-          key="article_id"
           ellipsis={true}
           render={(article: article) =>
-            article.niveau.map((niv, key) => <span key={key}>{niv} </span>)
+            article.niveau.map((niv, key) => (
+              <Tag color={levelColors.get(niv)} key={key}>
+                {niv}
+              </Tag>
+            ))
           }
         />
         <Column
           title="Date"
-          key="article_id"
           render={({ created_at }) => (
             <p>{created_at.replace("T", " ").split(".")[0]}</p>
           )}
         />
         <Column
           title="Actions"
-          key="article_id"
           render={(article: article) => (
             <Link
               to={`/articles/${article.article_id}`}

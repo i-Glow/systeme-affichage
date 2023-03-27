@@ -3,11 +3,9 @@ import { useAuth } from "../context/AuthProvider";
 import { Wrapper } from "./styles/Signin.styles";
 
 export default () => {
-  //@ts-ignore
   const { login, loading, contextHolder } = useAuth();
 
   async function onFinish(values: any) {
-    // e.preventDefault();
     login(values.username, values.password);
   }
 

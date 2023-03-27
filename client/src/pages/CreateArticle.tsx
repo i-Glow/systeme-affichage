@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
+import useAxios from "../hooks/useAxios";
+import { useAuth } from "../context/AuthProvider";
 import dayjs from "dayjs";
-import { AxiosRequestConfig } from "axios";
+//components
 import {
   Input,
   DatePicker,
@@ -12,14 +14,14 @@ import {
   Segmented,
 } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
-import { BsPlusLg } from "react-icons/bs";
-import { FormWrapper, Wrapper } from "./styles/CreateArticles.styles";
-import NiveauCheckBox from "../components/CheckboxGroup";
-import { useAuth } from "../context/AuthProvider";
-import useAxios from "../hooks/useAxios";
 import Flex from "../components/shared/Flex";
+import NiveauCheckBox from "../components/CheckboxGroup";
 import LatestArticles from "../components/LatestArticles";
-import { article } from "../types";
+import { BsPlusLg } from "react-icons/bs";
+//styles
+import { FormWrapper, Wrapper } from "./styles/CreateArticles.styles";
+//types
+import { AxiosRequestConfig } from "axios";
 
 type Categorie = {
   category_id: number | null;
@@ -36,7 +38,6 @@ type data = {
 };
 
 export default function CreateArticle() {
-  //@ts-ignore
   const { token } = useAuth();
   const axios = useAxios();
   const location = useLocation();
@@ -109,7 +110,7 @@ export default function CreateArticle() {
         niveau: niveau as string[],
         categoryName: category,
       };
-      console.log(token);
+
       const res = await axios({
         ...config,
         data,
@@ -137,7 +138,7 @@ export default function CreateArticle() {
         });
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       messageApi.open({
         type: "error",
         content: "Error",

@@ -12,6 +12,7 @@ import {
 } from "../pages/styles/ArchiveDetail.styles";
 import Flex from "../components/shared/Flex";
 import useAxios from "../hooks/useAxios";
+import levelColors from "../utils/levelColors";
 
 type Categorie = {
   categorie_id: number;
@@ -32,6 +33,7 @@ type Article = {
   date_fin: string;
   created_at: string;
   edited_at: string | null;
+  state: string;
   categorie: Categorie;
 };
 
@@ -49,7 +51,6 @@ export default function ArticleCard(props: Params) {
       const id = location.pathname.split("/").at(-1);
       if (id) {
         const url = `/articles/${id}`;
-        console.log(props.pathname);
         const res = await axios.get(url, {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
@@ -118,8 +119,10 @@ export default function ArticleCard(props: Params) {
               <h2>{data.titre}</h2>
               <p>{data.contenu}</p>
               <Flex style={{ marginLeft: "auto" }} gap="7px">
-                {data.niveau.map((el, key) => (
-                  <h4 key={key}>{el}</h4>
+                {data.niveau.map((niv, key) => (
+                  <Tag color={levelColors.get(niv)} key={key}>
+                    {niv}
+                  </Tag>
                 ))}
               </Flex>
             </Flex>
