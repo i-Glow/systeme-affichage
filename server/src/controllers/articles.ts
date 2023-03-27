@@ -77,7 +77,7 @@ const getArticle = async (req: Request, res: Response) => {
     });
 
     if (!article) {
-      return res.status(404).send({ message: "Article does not exist" });
+      throw new Error("NOT_FOUND");
     }
 
     if (
@@ -86,13 +86,25 @@ const getArticle = async (req: Request, res: Response) => {
       //@ts-ignore
       req.user.role !== Role.super_user
     ) {
-      return res.status(401).send({ message: "Not authorized" });
+      throw new Error("NOT_AUTHORIZED");
     }
 
     res.status(200).send({ data: article });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    res.status(500).send({ message: "Server error" });
+
+    switch (error.message) {
+      case "NOT_FOUND":
+        res.status(404).send({ message: "Article does not exist" });
+        break;
+      case "NOT_AUTHORIZED":
+        res
+          .status(401)
+          .send({ message: "You are not authorized to perform this action" });
+        break;
+      default:
+        res.status(500).send({ message: "Server error" });
+    }
   }
 };
 
@@ -101,9 +113,7 @@ const getArchive = async (req: Request, res: Response) => {
     // Check if user is an admin
     //@ts-ignore
     if (req.user.role !== Role.super_user) {
-      return res
-        .status(401)
-        .send({ message: "You are not authorized to perform this action" });
+      throw new Error("NOT_AUTHORIZED");
     }
 
     // Get pagination parameters from query string
@@ -175,8 +185,13 @@ const getArchive = async (req: Request, res: Response) => {
       data: articles,
       count: totalCount,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
+    if (error.message === "NOT_AUTHORIZED")
+      return res
+        .status(401)
+        .send({ message: "You are not authorized to perform this action" });
+
     res.status(500).send({ message: "Error fetching articles" });
   }
 };
@@ -342,29 +357,10 @@ const deleteArticle = async (req: Request, res: Response) => {
   }
 };
 
-const approveArticle = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    await prisma.article.update({
-      data: {
-        state: State.aproved,
-      },
-      where: {
-        article_id: id,
-      },
-    });
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ message: "Error updating article state" });
-  }
-};
-
 const getArticlesByUserRole = async (req: Request, res: Response) => {
   try {
     //@ts-ignore
-    const { role, uid } = req.user; // Assuming the user object contains the user's role
+    const { role, uid } = req.user;
 
     let articles;
     if (role === Role.super_user) {
@@ -482,10 +478,11 @@ const getPendingArticlesCount = async (req: Request, res: Response) => {
 const editArticleState = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { state }: { state: State } = req.body;
 
     await prisma.article.update({
       data: {
-        state: State.rejected,
+        state,
       },
       where: {
         article_id: id,
@@ -505,7 +502,6 @@ export {
   createArticle,
   deleteArticle,
   editArticle,
-  approveArticle,
   getArticlesByUserRole,
   getPendingArticlesCount,
   getArchive,

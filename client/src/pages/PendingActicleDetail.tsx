@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import useAxios from "../hooks/useAxios";
 import { roles } from "../utils/roles";
 import { useAuth } from "../context/AuthProvider";
+import PendingArticlesContext from "../context/PendingArticlesContext";
 // components
 import ArticleCard from "../components/ArticleCard";
 import Flex from "../components/shared/Flex";
@@ -13,17 +14,20 @@ import { Success } from "./styles/PendingArticleDetail";
 // types
 import { AxiosRequestConfig } from "axios";
 
+type ArticleState = "aproved" | "pending" | "rejected";
+
 export default function PendingActicleDetail() {
   const { token, user } = useAuth();
   const axios = useAxios();
   const [messageApi, contextHolder] = message.useMessage();
+  const { setPendingCount } = useContext(PendingArticlesContext);
 
   const [loadingAccept, setLoadingAccept] = useState<boolean>(false);
   const [loadingReject, setLoadingReject] = useState<boolean>(false);
   const [articlesState, setarticlesState] = useState(false);
   const [aproved, setaproved] = useState(false);
 
-  async function onFinishAccept() {
+  async function onFinishAccept(state: ArticleState = "aproved") {
     try {
       setLoadingAccept(true);
       if (user?.role === roles.admin) {
@@ -31,7 +35,8 @@ export default function PendingActicleDetail() {
         const id = location.pathname.split("/").at(-1);
         config = {
           method: "put",
-          url: `/articles/aprove/${id}`,
+          url: `/articles/state/${id}`,
+          data: { state },
         };
         const res = await axios({
           ...config,
@@ -46,6 +51,7 @@ export default function PendingActicleDetail() {
           });
           setarticlesState(true);
           setaproved(res.data);
+          setPendingCount((prev) => prev - 1);
         }
       }
     } catch (error) {
@@ -59,14 +65,15 @@ export default function PendingActicleDetail() {
     }
   }
 
-  async function onFinishReject() {
+  async function onFinishReject(state: ArticleState = "rejected") {
     try {
       setLoadingReject(true);
       if (user?.role === roles.admin) {
         const id = location.pathname.split("/").at(-1);
         const res = await axios({
-          url: `/articles/reject/${id}`,
+          url: `/articles/state/${id}`,
           method: "put",
+          data: { state },
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -76,6 +83,7 @@ export default function PendingActicleDetail() {
             content: "Article Rejected",
           });
           setarticlesState(true);
+          setPendingCount((prev) => prev - 1);
         }
       }
     } catch (error) {
@@ -101,7 +109,7 @@ export default function PendingActicleDetail() {
                   type="primary"
                   disabled={loadingReject}
                   loading={loadingAccept}
-                  onClick={onFinishAccept}
+                  onClick={() => onFinishAccept()}
                 >
                   <h4>Accept</h4>
                 </Success>

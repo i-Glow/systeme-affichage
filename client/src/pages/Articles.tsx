@@ -53,7 +53,8 @@ export default function Archive() {
       let config: AxiosRequestConfig;
       config = {
         method: "put",
-        url: `/articles/reject/${id}`,
+        url: `/articles/state/${id}`,
+        data: { state: "rejected" },
       };
       const res = await axios({
         ...config,

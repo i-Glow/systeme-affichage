@@ -24,9 +24,8 @@ export default function Sidebar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
-  const { setPendingArticles } = usePendingArticles();
-
-  const [pendingCount, setPendingCount] = useState<number>(0);
+  const { setPendingArticles, pendingCount, setPendingCount } =
+    usePendingArticles();
 
   const getArticlesCount = async () => {
     const events = new EventSourcePolyfill(
@@ -98,7 +97,7 @@ export default function Sidebar() {
     <SideBar>
       {contextHolder}
       {routes.map((route, key) =>
-        user.role === route.authorization || user.role === roles.admin ? (
+        user?.role === route.authorization || user?.role === roles.admin ? (
           <LinkContainer
             isFocused={key === openTab}
             to={route.link}
