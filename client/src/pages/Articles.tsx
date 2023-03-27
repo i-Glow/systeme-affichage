@@ -1,21 +1,21 @@
 import { useState, useCallback, useEffect } from "react";
-
-import { message, Popconfirm, Space, Table } from "antd";
-import { AiOutlineEdit } from "react-icons/ai";
-import Link from "../components/shared/Link";
-import { DeleteIcon, Div } from "./styles/Archive.style";
 import { useAuth } from "../context/AuthProvider";
 import useAxios from "../hooks/useAxios";
-import Column from "antd/es/table/Column";
+import levelColors from "../utils/levelColors";
+//components
 import PageHeader from "../components/PageHeader";
+import Link from "../components/shared/Link";
+import { message, Popconfirm, Space, Table, Tag } from "antd";
+import Column from "antd/es/table/Column";
+import { AiOutlineEdit } from "react-icons/ai";
+import { VscOpenPreview } from "react-icons/vsc";
+// styles
+import { DeleteIcon, Div } from "./styles/Archive.style";
+//types
 import { article } from "../types";
-
 import { AxiosRequestConfig } from "axios";
 
-import { VscOpenPreview } from "react-icons/vsc";
-
 export default function Archive() {
-  //@ts-ignore
   const { token } = useAuth();
   const axios = useAxios();
   const [messageApi, contextHolder] = message.useMessage();
@@ -142,18 +142,16 @@ export default function Archive() {
           rowKey="article_id"
           size="middle"
         >
-          <Column
-            title="Title"
-            key="article_id"
-            dataIndex="titre"
-            ellipsis={true}
-          />
+          <Column title="Title" dataIndex="titre" ellipsis={true} />
           <Column
             title="Level"
-            key="article_id"
             ellipsis={true}
             render={(article: article) =>
-              article.niveau.map((niv, key) => <span key={key}>{niv} </span>)
+              article.niveau.map((niv, key) => (
+                <Tag color={levelColors.get(niv)} key={key}>
+                  {niv}
+                </Tag>
+              ))
             }
             filters={[
               { text: "License 1", value: "L1" },
@@ -167,12 +165,8 @@ export default function Archive() {
               record.niveau.includes(value as string)
             }
           />
-          <Column title="Date" dataIndex="created_at" key="article_id" />
-          <Column
-            title="Actions"
-            key="article_id"
-            render={columnActionsRenderer}
-          ></Column>
+          <Column title="Date" dataIndex="created_at" />
+          <Column title="Actions" render={columnActionsRenderer}></Column>
         </Table>
       </Div>
     </>

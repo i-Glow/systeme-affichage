@@ -1,27 +1,32 @@
 import { useState } from "react";
+import useAxios from "../hooks/useAxios";
+import { roles } from "../utils/roles";
+import { useAuth } from "../context/AuthProvider";
+// components
 import ArticleCard from "../components/ArticleCard";
 import Flex from "../components/shared/Flex";
+import { Button, message, Popconfirm, Tag } from "antd";
+import { IoIosCloseCircleOutline } from "react-icons/io";
+import { BsCheckAll } from "react-icons/bs";
+// styles
+import { Success } from "./styles/PendingArticleDetail";
+// types
 import { AxiosRequestConfig } from "axios";
-import { useAuth } from "../context/AuthProvider";
-import { roles } from "../utils/roles";
-import { Button, Space, message, Popconfirm } from "antd";
-import useAxios from "../hooks/useAxios";
-import { AiOutlineCheckCircle, AiOutlineStop } from "react-icons/ai";
 
 export default function PendingActicleDetail() {
+  const { token, user } = useAuth();
+  const axios = useAxios();
+  const [messageApi, contextHolder] = message.useMessage();
+
   const [loadingAccept, setLoadingAccept] = useState<boolean>(false);
   const [loadingReject, setLoadingReject] = useState<boolean>(false);
   const [articlesState, setarticlesState] = useState(false);
   const [aproved, setaproved] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
-  const axios = useAxios();
-  //@ts-ignore
-  const { token, user } = useAuth();
 
   async function onFinishAccept() {
     try {
       setLoadingAccept(true);
-      if (user.role === roles.admin) {
+      if (user?.role === roles.admin) {
         let config: AxiosRequestConfig;
         const id = location.pathname.split("/").at(-1);
         config = {
@@ -33,21 +38,21 @@ export default function PendingActicleDetail() {
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
-        console.log(res.data);
+
         if (res.status === 200) {
           messageApi.open({
             type: "success",
-            content: "Article aproved",
+            content: "Article approved",
           });
           setarticlesState(true);
           setaproved(res.data);
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       messageApi.open({
         type: "error",
-        content: "Erreur",
+        content: "Error",
       });
     } finally {
       setLoadingAccept(false);
@@ -57,25 +62,27 @@ export default function PendingActicleDetail() {
   async function onFinishReject() {
     try {
       setLoadingReject(true);
-      if (user.role === roles.admin) {
+      if (user?.role === roles.admin) {
         const id = location.pathname.split("/").at(-1);
-        const res = await axios.delete(`/articles/${id}`, {
+        const res = await axios({
+          url: `/articles/reject/${id}`,
+          method: "put",
           withCredentials: true,
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (res.status === 204) {
+        if (res.status === 200) {
           messageApi.open({
             type: "success",
-            content: "Article Deleted",
+            content: "Article Rejected",
           });
           setarticlesState(true);
         }
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
       messageApi.open({
         type: "error",
-        content: "Erreur",
+        content: "Error",
       });
     } finally {
       setLoadingReject(false);
@@ -86,54 +93,53 @@ export default function PendingActicleDetail() {
     <>
       {contextHolder}
       <Flex jc={"flex-end"}>
-        <Space wrap>
-          {user.role === roles.admin ? (
+        <Flex gap="15px">
+          {user?.role === roles.admin ? (
             !articlesState ? (
               <>
-                <Button
+                <Success
+                  type="primary"
                   disabled={loadingReject}
                   loading={loadingAccept}
                   onClick={onFinishAccept}
-                  style={{ border: "1px solid green", color: "green" }}
                 >
-                  Accept
-                </Button>
+                  <h4>Accept</h4>
+                </Success>
                 <Popconfirm
-                  title="supprimer"
-                  description="Voulez-vous supprimer ce article?"
-                  okText="Supprimer"
+                  title="reject"
+                  description="Do you want to reject this article?"
+                  okText="Reject"
                   okType="danger"
-                  cancelText="Annuler"
+                  cancelText="Cancel"
                   okButtonProps={{ loading: loadingReject }}
                   onConfirm={() => onFinishReject()}
                 >
                   <Button disabled={loadingAccept} type="primary" danger>
-                    Reject
+                    <h4>Reject</h4>
                   </Button>
                 </Popconfirm>
               </>
+            ) : aproved ? (
+              <Tag color="success">
+                <Flex gap="7px" p="3px 7px">
+                  <BsCheckAll fontSize={20}></BsCheckAll>
+                  <h4>approved</h4>
+                </Flex>
+              </Tag>
             ) : (
-              <>
-                {aproved ? (
-                  <Flex m={"auto"}>
-                    <AiOutlineCheckCircle
-                      fontSize={20}
-                      color={"green"}
-                    ></AiOutlineCheckCircle>
-                    <h4 style={{ color: "green" }}>approved</h4>
-                  </Flex>
-                ) : (
-                  <>
-                    <AiOutlineStop fontSize={20} color={"red"}></AiOutlineStop>
-                    <h4 style={{ color: "red" }}>rejected</h4>
-                  </>
-                )}
-              </>
+              <Tag color="error">
+                <Flex gap="7px" p="3px 7px">
+                  <IoIosCloseCircleOutline
+                    fontSize={20}
+                  ></IoIosCloseCircleOutline>
+                  <h4>rejected</h4>
+                </Flex>
+              </Tag>
             )
           ) : null}
-        </Space>
+        </Flex>
       </Flex>
-      <ArticleCard pathname=""></ArticleCard>
+      <ArticleCard pathname="" />
     </>
   );
 }

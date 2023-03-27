@@ -1,6 +1,6 @@
 import Router from "express";
 import {
-  AproveArticle,
+  approveArticle,
   createArticle,
   deleteArticle,
   editArticle,
@@ -9,6 +9,7 @@ import {
   getArticle,
   getArticlesByUserRole,
   editArticleState,
+  getPendingArticlesCount,
 } from "../controllers/articles";
 import verifyToken from "../middlewares/verifyToken";
 
@@ -22,11 +23,13 @@ router.get("/archive", getArchive);
 
 router.get("/pending", getArticlesByUserRole);
 
+router.get("/pending/count", getPendingArticlesCount);
+
 router.get("/:id", getArticle);
 
 router.post("/", createArticle);
 
-router.put("/aprove/:id", AproveArticle);
+router.put("/aprove/:id", approveArticle);
 
 router.put("/reject/:id", editArticleState);
 

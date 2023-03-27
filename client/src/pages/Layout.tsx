@@ -1,14 +1,19 @@
 import { Outlet } from "react-router-dom";
-import { Wrapper, Main1 } from "./styles/Layout.style";
+import { PendingArticlesProvider } from "../context/PendingArticlesContext";
+
 import Sidebar from "../components/Sidebar";
+
+import { Wrapper, Main1 } from "./styles/Layout.style";
 
 export default function HomePage() {
   return (
     <Wrapper>
-      <Sidebar />
-      <Main1>
-        <Outlet />
-      </Main1>
+      <PendingArticlesProvider>
+        <Sidebar />
+        <Main1>
+          <Outlet />
+        </Main1>
+      </PendingArticlesProvider>
     </Wrapper>
   );
 }

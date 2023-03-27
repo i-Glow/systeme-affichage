@@ -1,26 +1,28 @@
 import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "../context/AuthProvider";
-
-import Link from "../components/shared/Link";
-import { message, Space, Table } from "antd";
-import { Div } from "./styles/Archive.style";
-import Column from "antd/es/table/Column";
+import { usePendingArticles } from "../context/PendingArticlesContext";
 import useAxios from "../hooks/useAxios";
+import levelColors from "../utils/levelColors";
+// components
+import { message, Space, Table, Tag } from "antd";
+import Column from "antd/es/table/Column";
+import Link from "../components/shared/Link";
 import { VscOpenPreview } from "react-icons/vsc";
+// styles
+import { Div } from "./styles/Archive.style";
 
 type article = {
   article_id: string;
   titre: string;
-  niveau: string;
+  niveau: string[];
   created_at: string;
 };
 
 export default function PendingArticle() {
-  //@ts-ignore
   const { token } = useAuth();
   const axios = useAxios();
   const [messageApi, contextHolder] = message.useMessage();
-  const [data, setData] = useState<article[]>([]);
+  const { pendingArticles, setPendingArticles } = usePendingArticles();
   const [dataLoading, setDataLoading] = useState(true);
 
   const columnActionsRenderer = (_: any, record: article) => (
@@ -45,20 +47,14 @@ export default function PendingArticle() {
             el.created_at = el.created_at.replace("T", " ").split(".")[0];
             return el;
           });
-          setData(newData);
+          setPendingArticles(newData);
           setDataLoading(false);
         }
       } catch (error: any) {
-        if (error.response?.status === 403) {
+        if (error.code === "ERR_NETWORK") {
           messageApi.open({
             type: "error",
-            content: "Please log in",
-          });
-          setDataLoading(false);
-        } else if (error.code === "ERR_NETWORK") {
-          messageApi.open({
-            type: "error",
-            content: "network error",
+            content: "Network error",
           });
           setDataLoading(false);
         }
@@ -79,21 +75,22 @@ export default function PendingArticle() {
       <Div>
         {contextHolder}
         <Table
-          dataSource={data}
+          dataSource={pendingArticles}
           loading={dataLoading}
           pagination={{ position: ["bottomCenter"] }}
           rowKey="article_id"
+          size="middle"
         >
-          <Column
-            title="Title"
-            key="article_id"
-            dataIndex="titre"
-            ellipsis={true}
-          />
+          <Column title="Title" dataIndex="titre" ellipsis={true} />
           <Column
             title="Level"
-            key="article_id"
-            dataIndex="niveau"
+            render={(article: article) =>
+              article.niveau.map((niv, key) => (
+                <Tag color={levelColors.get(niv)} key={key}>
+                  {niv}
+                </Tag>
+              ))
+            }
             ellipsis={true}
             filters={[
               { text: "License 1", value: "L1" },
@@ -107,12 +104,8 @@ export default function PendingArticle() {
               record.niveau.includes(value as string)
             }
           />
-          <Column title="Date" dataIndex="created_at" key="article_id" />
-          <Column
-            title="Actions"
-            key="article_id"
-            render={columnActionsRenderer}
-          ></Column>
+          <Column title="Date" dataIndex="created_at" />
+          <Column title="Actions" render={columnActionsRenderer}></Column>
         </Table>
       </Div>
     </>

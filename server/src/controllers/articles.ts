@@ -1,6 +1,7 @@
-import { article, categorie, Role, State, Prisma } from "@prisma/client";
+import { article, Role, State, Prisma } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../db";
+import pendingCountEventEmmiter from "../utils/EventEmmiter";
 
 const getAll = async (req: Request, res: Response) => {
   try {
@@ -64,6 +65,7 @@ const getArticle = async (req: Request, res: Response) => {
         categorie: true,
         created_at: true,
         edited_at: true,
+        state: true,
         creator: {
           select: {
             user_id: true,
@@ -98,11 +100,11 @@ const getArchive = async (req: Request, res: Response) => {
   try {
     // Check if user is an admin
     //@ts-ignore
-    // if (req.user.role !== Role.super_user) {
-    //   return res
-    //     .status(401)
-    //     .send({ message: "You are not authorized to perform this action" });
-    // }
+    if (req.user.role !== Role.super_user) {
+      return res
+        .status(401)
+        .send({ message: "You are not authorized to perform this action" });
+    }
 
     // Get pagination parameters from query string
     const {
@@ -126,8 +128,8 @@ const getArchive = async (req: Request, res: Response) => {
           },
           {
             AND: [
-              { creator: { nom: { equals: nom } } },
-              { creator: { prenom: { equals: prenom } } },
+              { creator: { nom: { equals: nom as string } } },
+              { creator: { prenom: { equals: prenom as string } } },
             ],
           },
         ],
@@ -246,7 +248,12 @@ const createArticle = async (req: Request, res: Response) => {
           categorie: true,
         },
       });
+
+      pendingCountEventEmmiter.emit("articleCreated", {
+        article: newArticle,
+      });
     }
+
     res.status(200).send({ data: newArticle });
   } catch (error) {
     console.error(error);
@@ -335,11 +342,10 @@ const deleteArticle = async (req: Request, res: Response) => {
   }
 };
 
-const AproveArticle = async (req: Request, res: Response) => {
+const approveArticle = async (req: Request, res: Response) => {
   try {
-    let articles;
     const { id } = req.params;
-    articles = await prisma.article.update({
+    await prisma.article.update({
       data: {
         state: State.aproved,
       },
@@ -347,10 +353,11 @@ const AproveArticle = async (req: Request, res: Response) => {
         article_id: id,
       },
     });
+
     res.sendStatus(200);
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: "Server error" });
+    res.status(500).send({ message: "Error updating article state" });
   }
 };
 
@@ -412,16 +419,71 @@ const getArticlesByUserRole = async (req: Request, res: Response) => {
     }
     res.status(200).send({ data: articles });
   } catch (error) {
-    console.log("first");
-    res.status(500).json({ error: "Error fetching articles" });
+    console.error(error);
+    res.status(500).send({ error: "Error fetching articles" });
   }
 };
 
+interface client {
+  id: number;
+  response: Response;
+}
+
+let clients: client[] = [];
+
+const getPendingArticlesCount = async (req: Request, res: Response) => {
+  try {
+    //remove all listeners to avoid duplicates
+    pendingCountEventEmmiter.removeAllListeners("articleCreated");
+    //@ts-ignore
+    const { role } = req.user;
+
+    if (role !== Role.super_user)
+      return res
+        .status(401)
+        .send({ message: "You are not authorized to perform this action" });
+
+    const count = await prisma.article.count({
+      where: {
+        state: State.pending,
+      },
+    });
+
+    const headers = {
+      "Content-Type": "text/event-stream",
+      Connection: "keep-alive",
+      "Cache-Control": "no-cache",
+    };
+    res.writeHead(200, headers);
+
+    const data = `data: ${JSON.stringify({ count })}\n\n`;
+
+    //keep track of all opened conections
+    const clientId = Date.now();
+    clients.push({ id: Date.now(), response: res });
+
+    res.write(data);
+
+    pendingCountEventEmmiter.on("articleCreated", ({ article }) => {
+      clients.forEach((client) =>
+        client.response.write(`data: ${JSON.stringify({ article })}\n\n`)
+      );
+    });
+
+    //remove closed connections
+    req.on("close", () => {
+      clients = clients.filter((client) => client.id !== clientId);
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Error fetching articles count" });
+  }
+};
 const editArticleState = async (req: Request, res: Response) => {
   try {
-    let articles;
     const { id } = req.params;
-    articles = await prisma.article.update({
+
+    await prisma.article.update({
       data: {
         state: State.rejected,
       },
@@ -429,10 +491,11 @@ const editArticleState = async (req: Request, res: Response) => {
         article_id: id,
       },
     });
+
     res.sendStatus(200);
   } catch (error) {
     console.error(error);
-    res.status(500).send({ message: "Server error" });
+    res.status(500).send({ message: "Error updating article" });
   }
 };
 
@@ -442,8 +505,9 @@ export {
   createArticle,
   deleteArticle,
   editArticle,
-  AproveArticle,
+  approveArticle,
   getArticlesByUserRole,
+  getPendingArticlesCount,
   getArchive,
   editArticleState,
 };

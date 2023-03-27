@@ -1,20 +1,23 @@
-import { List, Popconfirm, Space, Spin, Tooltip } from "antd";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import useAxios from "../hooks/useAxios";
+import { useAuth } from "../context/AuthProvider";
+
+import { List, Popconfirm, Spin, Tooltip } from "antd";
+import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import Flex from "../components/shared/Flex";
-import { useAuth } from "../context/AuthProvider";
-import useAxios from "../hooks/useAxios";
-import { user } from "../types";
+
 import { Pause, Resume, Wrapper } from "./styles/Users.styles";
+
+import { user } from "../types";
 
 export default function Users() {
   const [users, setUsers] = useState<user[]>([]);
-  //@ts-ignore
   const { token, user } = useAuth();
   const axios = useAxios();
 
-  function UserAdminActions(userData: user): ReactNode[] {
-    if (userData.user_id === user.user_id) return [];
+  function UserAdminActions(userData: user) {
+    if (userData.user_id === user?.user_id) return [];
 
     const actionProps = userData.suspended
       ? {
@@ -117,7 +120,7 @@ export default function Users() {
                     <Flex jc="flex-start" gap="5px">
                       <h4>{userData.nom}</h4>
                       <h4>{userData.prenom}</h4>
-                      {userData.user_id === user.user_id ? (
+                      {userData.user_id === user?.user_id ? (
                         <h5 style={{ color: "green" }}>(You)</h5>
                       ) : null}
                     </Flex>
@@ -126,7 +129,11 @@ export default function Users() {
                       <p>********</p>
                     </Flex>
                   </div>
-                  <p>{userData._count.article} articles</p>
+                  <Link
+                    to={`/archive?query=&page=1&name=${userData.nom}&firstname=${userData.prenom}`}
+                  >
+                    {userData._count.article} articles
+                  </Link>
                   <p>{userData.role}</p>
                 </Flex>
               </List.Item>

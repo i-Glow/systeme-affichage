@@ -1,5 +1,6 @@
 import prisma from "../db";
 import { Request, Response } from "express";
+import { State } from "@prisma/client";
 
 const getAffichage = async (req: Request, res: Response) => {
   try {
@@ -18,6 +19,7 @@ const getAffichage = async (req: Request, res: Response) => {
             gt: new Date().toISOString(),
           },
         },
+        state: State.aproved,
       },
     });
 
