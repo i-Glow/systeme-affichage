@@ -14,11 +14,7 @@ import News from './screens/News';
 import Article from './screens/Article';
 import Menu from './screens/Menu';
 import Affichage from './screens/Affichage';
-/* type Screen = {
-  lat: number;
-  lon: number;
-  description: string;
-}; */
+
 export type RootStackParams = {
   News;
   Map;

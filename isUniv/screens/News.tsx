@@ -15,16 +15,21 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
+
   // Dimensions,
 } from 'react-native';
 
 import NavBar from '../components/NavBar';
+import {useNavigation} from '@react-navigation/native';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParams} from '../App';
 
 // const screenHeight = Dimensions.get('screen').height;
 const Articles = [
   {
     id: 1,
     titre: 'Article 1phasiuuhqqvnuelzt',
+
     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
     object:
       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
@@ -32,13 +37,16 @@ const Articles = [
   {
     id: 2,
     titre: 'Article 1phasiuuhqqvnuelzt',
+
     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
     object:
       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
   },
+
   {
     id: 3,
     titre: 'Article 1phasiuuhqqvnuelzt',
+    image: require('../assets/PH1.png'),
     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
     object:
       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
@@ -46,13 +54,16 @@ const Articles = [
   {
     id: 4,
     titre: 'Article 1phasiuuhqqvnuelzt',
+    image: '../assets/PH1.png',
     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
     object:
       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
   },
+  /*
   {
     id: 5,
     titre: 'Article 1phasiuuhqqvnuelzt',
+    image: '../assets/PH1.png',
     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
     object:
       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
@@ -60,6 +71,7 @@ const Articles = [
   {
     id: 6,
     titre: 'Article 1phasiuuhqqvnuelzt',
+    image: '../assets/PH1.png',
     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
     object:
       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
@@ -67,6 +79,7 @@ const Articles = [
   {
     id: 7,
     titre: 'Article 1phasiuuhqqvnuelzt',
+    image: '../assets/PH1.png',
     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
     object:
       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
@@ -74,30 +87,22 @@ const Articles = [
   {
     id: 8,
     titre: 'Article 1phasiuuhqqvnuelzt',
+    image: require('../assets/PH1.png'),
     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
     object:
       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  },
+  }, */
 ];
 
-/* <View style={styles.CardContainer}>
-            <ScrollView
-              contentContainerStyle={styles.Scrol}
-              scrollEnabled={true}>
-              {Articles.map((Article, key) => {
-                return (
-                  <View key={key} style={styles.OneArticle}>
-                    <Text>{Article.titre}</Text>
-                    <Text>{Article.reason}</Text>
-                    <Text>{Article.object}</Text>
-                  </View>
-                );
-              })}
-            </ScrollView>
-          </View> */
-function Home() {
+function News() {
+  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
+
   const renderItem = ({item}: any) => (
-    <TouchableOpacity onPress={() => {}} style={styles.OneArticle}>
+    <TouchableOpacity
+      onPress={() => {
+        navigation.navigate('Article', item.id);
+      }}
+      style={styles.OneArticle}>
       <Text style={{fontSize: 24, fontWeight: 'bold'}}>{item.titre}</Text>
       <Text style={{fontSize: 18, marginTop: 15, fontWeight: '600'}}>
         {item.reason}
@@ -137,6 +142,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexGrow: 1,
   },
+  Image: {
+    width: '100%',
+    height: 120,
+    resizeMode: 'contain',
+  },
   CardContainer: {
     flex: 1,
     width: '100%',
@@ -157,8 +167,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     overflow: 'hidden',
     flexShrink: 1,
-    numberOfLines: 1,
-    ellipsizeMode: 'tail',
     marginTop: 15,
   },
   NavContainer: {
@@ -170,4 +178,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Home;
+export default News;
