@@ -22,7 +22,7 @@ const NiveauCheckBox = ({ checkedList, setCheckedList }: Props) => {
       setCheckAll(true);
     } else if (checkedList.length < 6 && checkedList.length >= 1) {
       setIndeterminate(true);
-    } 
+    }
   }, [checkedList]);
 
   const onChange = (list: CheckboxValueType[]) => {
@@ -44,7 +44,7 @@ const NiveauCheckBox = ({ checkedList, setCheckedList }: Props) => {
         onChange={onCheckAllChange}
         checked={checkAll}
       >
-        Selectioner tous
+        Select all
       </Checkbox>
       <div></div>
       <CheckboxGroup

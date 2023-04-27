@@ -1,20 +1,25 @@
-import { List, Popconfirm, Space, Spin, Tooltip } from "antd";
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import useAxios from "../hooks/useAxios";
+import { useAuth } from "../context/AuthProvider";
+
+import { List, Popconfirm, Spin, Tooltip } from "antd";
+import { Link } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import Flex from "../components/shared/Flex";
-import { useAuth } from "../context/AuthProvider";
-import useAxios from "../hooks/useAxios";
+
+import { Pause, Resume, Wrapper } from "./styles/Users.styles";
+
 import { user } from "../types";
-import { Edit, Pause, Resume, Wrapper } from "./styles/Users.styles";
 
 export default function Users() {
   const [users, setUsers] = useState<user[]>([]);
-  //@ts-ignore
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const axios = useAxios();
 
-  function UserAdminActions(user: user): ReactNode[] {
-    const actionProps = user.suspended
+  function UserAdminActions(userData: user) {
+    if (userData.user_id === user?.user_id) return [];
+
+    const actionProps = userData.suspended
       ? {
           title: "unsuspend",
           description: "Voulez-vous resumer ce utilisateur?",
@@ -29,12 +34,13 @@ export default function Users() {
         };
 
     return [
+      //@ts-ignore
       <Popconfirm
         {...actionProps}
         cancelText="Annuler"
-        onConfirm={() => suspendUser(user.user_id, !user.suspended)}
+        onConfirm={() => suspendUser(userData.user_id, !userData.suspended)}
       >
-        {user.suspended ? (
+        {userData.suspended ? (
           <Tooltip title="lift suspension">
             <Resume />
           </Tooltip>
@@ -44,13 +50,6 @@ export default function Users() {
           </Tooltip>
         )}
       </Popconfirm>,
-      // <Edit
-      //   style={{
-      //     fontSize: "18px",
-      //     margin: "0 10px",
-      //     cursor: "pointer",
-      //   }}
-      // />,
     ];
   }
 
@@ -70,7 +69,6 @@ export default function Users() {
       );
 
       if (res.status === 204) {
-        //TODO: update ui (suspend button)
         setUsers((prev) =>
           prev.map((user) => {
             if (user.user_id === id) {
@@ -112,20 +110,31 @@ export default function Users() {
       <Wrapper>
         <List size="small">
           {users.length ? (
-            users.map((user: user) => (
-              <List.Item key={user.user_id} actions={UserAdminActions(user)}>
+            users.map((userData: user) => (
+              <List.Item
+                key={userData.user_id}
+                actions={UserAdminActions(userData)}
+              >
                 <Flex jc="space-between" ai="flex-start" gap="50px">
                   <div style={{ width: "100px" }}>
                     <Flex jc="flex-start" gap="5px">
-                      <h4>{user.nom}</h4>
-                      <h4>{user.prenom}</h4>
+                      <h4>{userData.nom}</h4>
+                      <h4>{userData.prenom}</h4>
+                      {userData.user_id === user?.user_id ? (
+                        <h5 style={{ color: "green" }}>(You)</h5>
+                      ) : null}
                     </Flex>
                     <Flex jc="flex-start" gap="10px">
-                      <p>{user.username}</p>
+                      <p>{userData.username}</p>
                       <p>********</p>
                     </Flex>
                   </div>
-                  <p>{user._count.article} articles</p>
+                  <Link
+                    to={`/archive?query=&page=1&name=${userData.nom}&firstname=${userData.prenom}`}
+                  >
+                    {userData._count.article} articles
+                  </Link>
+                  <p>{userData.role}</p>
                 </Flex>
               </List.Item>
             ))

@@ -36,23 +36,22 @@ function App() {
                 element={<CreateArticle />}
               ></Route>
               <Route path="articles/edit/:id" element={<CreateArticle />} />
-              <Route element={<AuthorizedRoute />}>
+              <Route element={<AdminOnlyRoute />}>
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/nouveau" element={<CreateUser />} />
-              </Route> */}
+              </Route>
               <Route
-                path="/PendingArticle"
+                path="/pendingarticles"
                 element={<PendingArticle />}
               ></Route>
               <Route
-                path="/PendingActicleDetail/:PendingActicleDetail"
+                path="/pendingarticles/:PendingActicleDetail"
                 element={<PendingActicleDetail />}
               ></Route>
-                <Route path="/archive" element={<Archive />} />
-              </Route>
+              <Route path="/archive" element={<Archive />} />
             </Route>
-            <Route path="/affichage" element={<ArticleShow />}></Route>
           </Route>
+          <Route path="/affichage" element={<ArticleShow />}></Route>
           <Route path="/signin" element={<Signin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -66,12 +65,12 @@ function NotFound() {
     <Flex h="100vh" gap="10px">
       <h3>404</h3>
       <Divider type="vertical" />
-      <p>Page non trouvée</p>
+      <p>Page Not Found</p>
     </Flex>
   );
 }
 
-function AuthorizedRoute({ redirectPath = "/" }) {
+function AdminOnlyRoute({ redirectPath = "/" }) {
   //@ts-ignore
   const { user } = useAuth();
 

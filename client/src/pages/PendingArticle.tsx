@@ -1,34 +1,34 @@
 import { useState, useCallback, useEffect } from "react";
 import { useAuth } from "../context/AuthProvider";
-
-import Link from "../components/shared/Link";
-import { message, Popconfirm, Row, Space, Table } from "antd";
-import { MdOutlinePreview } from "react-icons/md";
-
-import PageHeader from "../components/PageHeader";
-import { DeleteIcon, Div } from "./styles/Archive.style";
-import Column from "antd/es/table/Column";
+import { usePendingArticles } from "../context/PendingArticlesContext";
 import useAxios from "../hooks/useAxios";
+import levelColors from "../utils/levelColors";
+// components
+import { message, Space, Table, Tag } from "antd";
+import Column from "antd/es/table/Column";
+import Link from "../components/shared/Link";
+import { VscOpenPreview } from "react-icons/vsc";
+// styles
+import { Div } from "./styles/Archive.style";
 
 type article = {
   article_id: string;
   titre: string;
-  niveau: string;
+  niveau: string[];
   created_at: string;
 };
 
 export default function PendingArticle() {
-  //@ts-ignore
   const { token } = useAuth();
   const axios = useAxios();
   const [messageApi, contextHolder] = message.useMessage();
-  const [data, setData] = useState<article[]>([]);
+  const { pendingArticles, setPendingArticles } = usePendingArticles();
   const [dataLoading, setDataLoading] = useState(true);
-  const [confirmLoading, setConfirmLoading] = useState(false);
+
   const columnActionsRenderer = (_: any, record: article) => (
     <Space size="middle">
-      <Link to={`/PendingActicleDetail/${record.article_id}`}>
-        <MdOutlinePreview />
+      <Link to={record.article_id}>
+        <VscOpenPreview fontSize={18} cursor="pointer" />
       </Link>
     </Space>
   );
@@ -42,28 +42,19 @@ export default function PendingArticle() {
           headers: { Authorization: `Bearer ${token}` },
           signal: controller.signal,
         });
-        console.log(res.data);
         if (res.status === 200) {
           const newData = res.data.data.map((el: article) => {
             el.created_at = el.created_at.replace("T", " ").split(".")[0];
             return el;
           });
-          setData(newData);
+          setPendingArticles(newData);
           setDataLoading(false);
         }
       } catch (error: any) {
-        if (error.response?.status === 403) {
-          console.log("im in 403");
+        if (error.code === "ERR_NETWORK") {
           messageApi.open({
             type: "error",
-            content: "Please log in",
-          });
-          setDataLoading(false);
-        } else if (error.code === "ERR_NETWORK") {
-          console.log("else 403");
-          messageApi.open({
-            type: "error",
-            content: "network error",
+            content: "Network error",
           });
           setDataLoading(false);
         }
@@ -80,25 +71,32 @@ export default function PendingArticle() {
 
   return (
     <>
-      <PageHeader />
+      <h3>Pending articles</h3>
       <Div>
         {contextHolder}
         <Table
-          dataSource={data}
+          dataSource={pendingArticles}
           loading={dataLoading}
           pagination={{ position: ["bottomCenter"] }}
           rowKey="article_id"
+          size="middle"
         >
           <Column
             title="Title"
-            key="article_id"
-            dataIndex="titre"
             ellipsis={true}
+            render={(article: article) => (
+              <Link to={`${article.article_id}`}>{article.titre}</Link>
+            )}
           />
           <Column
-            title="Niveau"
-            key="article_id"
-            dataIndex="niveau"
+            title="Level"
+            render={(article: article) =>
+              article.niveau.map((niv, key) => (
+                <Tag color={levelColors.get(niv)} key={key}>
+                  {niv}
+                </Tag>
+              ))
+            }
             ellipsis={true}
             filters={[
               { text: "License 1", value: "L1" },
@@ -112,12 +110,8 @@ export default function PendingArticle() {
               record.niveau.includes(value as string)
             }
           />
-          <Column title="Date" dataIndex="created_at" key="article_id" />
-          <Column
-            title="Action"
-            key="article_id"
-            render={columnActionsRenderer}
-          ></Column>
+          <Column title="Date" dataIndex="created_at" />
+          <Column title="Actions" render={columnActionsRenderer}></Column>
         </Table>
       </Div>
     </>

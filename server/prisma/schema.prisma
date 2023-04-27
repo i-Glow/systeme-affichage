@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -19,17 +20,16 @@ model article {
   edited_at    DateTime?
   date_debut   DateTime
   date_fin     DateTime
+  includeFb    Boolean   @default(false)
+  fbPostId     String?
   creator      user      @relation(fields: [creator_id], references: [user_id])
   creator_id   String
   categorie    categorie @relation(fields: [categorie_id], references: [category_id])
   categorie_id Int
   state        State
-}
 
-enum State {
-  aproved
-  pending
-  rejected
+  @@index(fields: [titre, contenu], type: BTree)
+  @@index(fields: [created_at], type: Brin)
 }
 
 model categorie {
@@ -52,4 +52,11 @@ model user {
 enum Role {
   responsable_affichage
   super_user
+}
+
+enum State {
+  approved
+  pending
+  rejected
+  deleted
 }

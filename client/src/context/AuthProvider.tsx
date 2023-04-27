@@ -4,7 +4,19 @@ import { useNavigate } from "react-router-dom";
 import axios from "../api";
 import { user } from "../types";
 
-const AuthContext = createContext(null);
+interface Auth {
+  user: user | null;
+  token: string | null;
+  login: (username: string, password: string) => Promise<false | undefined>;
+  loading: boolean;
+  contextHolder: React.ReactElement<
+    any,
+    string | React.JSXElementConstructor<any>
+  >;
+  setToken: React.Dispatch<React.SetStateAction<string | null>>;
+}
+
+const AuthContext = createContext<Auth>({} as Auth);
 
 export const useAuth = () => useContext(AuthContext);
 
@@ -13,7 +25,7 @@ export const AuthProvider = ({ children }: any) => {
   const navigate = useNavigate();
 
   const [user, setUser] = useState<user | null>(null);
-  const [token, setToken] = useState<string | null>();
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,7 +50,10 @@ export const AuthProvider = ({ children }: any) => {
     }
   }
 
-  async function login(username: string, password: string) {
+  async function login(
+    username: string,
+    password: string
+  ): Promise<false | undefined> {
     setLoading(true);
     try {
       const res = await axios.post("/auth/signin", {
@@ -52,6 +67,7 @@ export const AuthProvider = ({ children }: any) => {
 
       navigate("/");
     } catch (error: any) {
+      console.error(error);
       if (error.response.status === 403) {
         messageApi.open({
           type: "error",
@@ -68,7 +84,7 @@ export const AuthProvider = ({ children }: any) => {
     }
   }
 
-  const value: any = {
+  const value: Auth = {
     user,
     token,
     login,

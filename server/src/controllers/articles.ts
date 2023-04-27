@@ -1,9 +1,29 @@
-import { article, categorie, Role, State, Prisma } from "@prisma/client";
+import { article, Role, State, Prisma } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../db";
+import pendingCountEventEmmiter from "../utils/EventEmmiter";
+import axios from "axios";
 
-const getAll = async (_: Request, res: Response) => {
+const getAll = async (req: Request, res: Response) => {
   try {
+    const whereClause: Prisma.articleWhereInput =
+      //@ts-ignore
+      req.user.role === Role.super_user
+        ? {
+            date_fin: {
+              gt: new Date().toISOString(),
+            },
+            state: State.approved,
+          }
+        : {
+            date_fin: {
+              gt: new Date().toISOString(),
+            },
+            state: State.approved,
+            //@ts-ignore
+            creator_id: req.user.uid,
+          };
+
     const articles = await prisma.article.findMany({
       select: {
         article_id: true,
@@ -14,12 +34,7 @@ const getAll = async (_: Request, res: Response) => {
       orderBy: {
         date_debut: "asc",
       },
-      where: {
-        date_fin: {
-          gt: new Date().toISOString(),
-        },
-        state: State.aproved,
-      },
+      where: whereClause,
     });
 
     res.status(200).send({ data: articles });
@@ -47,8 +62,11 @@ const getArticle = async (req: Request, res: Response) => {
         categorie: true,
         created_at: true,
         edited_at: true,
+        state: true,
+        fbPostId: true,
         creator: {
           select: {
+            user_id: true,
             nom: true,
             prenom: true,
           },
@@ -56,33 +74,113 @@ const getArticle = async (req: Request, res: Response) => {
       },
     });
 
+    if (!article) {
+      throw new Error("NOT_FOUND");
+    }
+
+    if (
+      //@ts-ignore
+      article.creator.user_id !== req.user.uid &&
+      //@ts-ignore
+      req.user.role !== Role.super_user
+    ) {
+      throw new Error("NOT_AUTHORIZED");
+    }
+
     res.status(200).send({ data: article });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    res.status(500).send({ message: "Server error" });
+
+    switch (error.message) {
+      case "NOT_FOUND":
+        res.status(404).send({ message: "Article does not exist" });
+        break;
+      case "NOT_AUTHORIZED":
+        res
+          .status(401)
+          .send({ message: "You are not authorized to perform this action" });
+        break;
+      default:
+        res.status(500).send({ message: "Server error" });
+    }
   }
 };
+
+interface SearchQuery {
+  page: number;
+  pageSize: number;
+  search: string;
+  nom: string;
+  prenom: string;
+  levels: string[];
+}
 
 const getArchive = async (req: Request, res: Response) => {
   try {
     // Check if user is an admin
     //@ts-ignore
-    // if (req.user.role !== Role.super_user) {
-    //   return res
-    //     .status(401)
-    //     .send({ message: "You are not authorized to perform this action" });
-    // }
+    if (req.user.role !== Role.super_user) {
+      throw new Error("NOT_AUTHORIZED");
+    }
 
     // Get pagination parameters from query string
-    const { page = 1, pageSize = 10, search = "" } = req.query;
-    const skip: number = (Number(page) - 1) * Number(pageSize);
+    const {
+      page = 1,
+      pageSize = 10,
+      search = "",
+      nom = "",
+      prenom = "",
+      levels,
+    } = req.query;
 
-    const searchQuery: Prisma.articleWhereInput = {
-      OR: [
-        { titre: { contains: search as string, mode: "insensitive" } },
-        { contenu: { contains: search as string, mode: "insensitive" } },
-      ],
-    };
+    const skip: number = (Number(page) - 1) * Number(pageSize);
+    let level: string[] = [];
+    let searchQuery: Prisma.articleWhereInput;
+
+    //skipping typescript error
+    if (typeof levels === "string") {
+      level = levels?.split(",").filter((lvl) => lvl !== "");
+    }
+
+    if (nom.length && prenom.length) {
+      searchQuery = {
+        AND: [
+          {
+            OR: [
+              { titre: { contains: search as string, mode: "insensitive" } },
+              { contenu: { contains: search as string, mode: "insensitive" } },
+            ],
+          },
+          {
+            AND: [
+              { creator: { nom: { equals: nom as string } } },
+              { creator: { prenom: { equals: prenom as string } } },
+            ],
+          },
+          {
+            niveau: level.length
+              ? { hasSome: level as string[] }
+              : { isEmpty: false },
+          },
+        ],
+      };
+    } else {
+      searchQuery = {
+        AND: [
+          {
+            OR: [
+              { titre: { contains: search as string, mode: "insensitive" } },
+              { contenu: { contains: search as string, mode: "insensitive" } },
+            ],
+          },
+          {
+            niveau: level.length
+              ? { hasSome: level as string[] }
+              : { isEmpty: false },
+          },
+        ],
+      };
+    }
 
     // Fetch articles using pagination
     const articles = await prisma.article.findMany({
@@ -97,7 +195,7 @@ const getArchive = async (req: Request, res: Response) => {
           select: {
             password: false,
             username: true,
-            article: true,
+            article: false,
             nom: true,
             prenom: true,
             role: true,
@@ -116,26 +214,97 @@ const getArchive = async (req: Request, res: Response) => {
       data: articles,
       count: totalCount,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
+    if (error.message === "NOT_AUTHORIZED")
+      return res
+        .status(401)
+        .send({ message: "You are not authorized to perform this action" });
+
     res.status(500).send({ message: "Error fetching articles" });
+  }
+};
+
+const postToFacebook = async (
+  content: string,
+  scheduledTime: string | Date
+): Promise<string | Error> => {
+  const message = (content as string).replaceAll(
+    /\[url:(?<url>(https?:\/\/)?[\w-]+\.[\w-]+\S*)\]|\[qr:(?<qr>.*?)\]/g,
+    "$<url>$<qr>"
+  );
+
+  const MIN_SCHEDULE_TIME = 10 * 60; // 10 minutes in seconds
+  const MAX_SCHEDULE_TIME = 75 * 24 * 60 * 60; // 75 days in seconds
+
+  const scheduledTimeInSeconds = Math.floor(
+    (new Date(scheduledTime) as any) / 1000
+  );
+  const currentTime = Math.floor(Date.now() / 1000); // current time in seconds
+
+  const timeDiff = scheduledTimeInSeconds - currentTime;
+
+  const body: any = {
+    message: message,
+    access_token: process.env.FB_PAGE_ACCESS_TOKEN,
+  };
+
+  if (timeDiff > MIN_SCHEDULE_TIME && timeDiff < MAX_SCHEDULE_TIME) {
+    body.published = false;
+    body.scheduled_publish_time = scheduledTimeInSeconds;
+  }
+
+  const url = `https://graph.facebook.com/${process.env.FB_PAGE_ID}/feed`;
+  try {
+    const response: any = await axios({
+      url,
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+    });
+
+    return response.data.id;
+  } catch (error: any) {
+    console.error(error.response.data.error);
+    return new Error(error.response.data.error.message);
   }
 };
 
 const createArticle = async (req: Request, res: Response) => {
   try {
-    const { titre, contenu, date_debut, date_fin, niveau, categoryName } =
-      req.body;
+    const {
+      titre,
+      contenu,
+      date_debut,
+      date_fin,
+      niveau,
+      categoryName,
+      includeFb,
+    } = req.body;
     //@ts-ignore
     const { role, uid } = req.user;
     let newArticle: article;
+
     if (role === Role.super_user) {
+      let fbPostId = null;
+      if (includeFb) {
+        fbPostId = await postToFacebook(contenu, date_debut);
+
+        if (typeof fbPostId !== "string") {
+          return res.status(400).send({ message: fbPostId.message });
+        }
+      }
+
       newArticle = await prisma.article.create({
         data: {
           titre,
           contenu,
           date_debut,
           date_fin,
+          includeFb,
+          fbPostId,
           creator: {
             connect: {
               //@ts-ignore
@@ -153,7 +322,7 @@ const createArticle = async (req: Request, res: Response) => {
             },
           },
           niveau,
-          state: State.aproved,
+          state: State.approved,
         },
         include: {
           categorie: true,
@@ -166,6 +335,7 @@ const createArticle = async (req: Request, res: Response) => {
           contenu,
           date_debut,
           date_fin,
+          includeFb,
           creator: {
             connect: {
               //@ts-ignore
@@ -189,7 +359,12 @@ const createArticle = async (req: Request, res: Response) => {
           categorie: true,
         },
       });
+
+      pendingCountEventEmmiter.emit("newArticle", {
+        article: newArticle,
+      });
     }
+
     res.status(200).send({ data: newArticle });
   } catch (error) {
     console.error(error);
@@ -199,34 +374,66 @@ const createArticle = async (req: Request, res: Response) => {
 
 const editArticle = async (req: Request, res: Response) => {
   try {
+    //@ts-ignore
+    const { role } = req.user;
     const { id } = req.params;
     const { titre, contenu, date_debut, date_fin, niveau, categoryName } =
       req.body;
 
-    await prisma.article.update({
-      data: {
-        titre,
-        contenu,
-        date_debut,
-        date_fin,
-        edited_at: new Date().toISOString(),
-        niveau,
-        categorie: {
-          connectOrCreate: {
-            create: {
-              nom: categoryName,
-            },
-            where: {
-              nom: categoryName,
+    if (role === Role.super_user) {
+      await prisma.article.update({
+        data: {
+          titre,
+          contenu,
+          date_debut,
+          date_fin,
+          edited_at: new Date().toISOString(),
+          niveau,
+          categorie: {
+            connectOrCreate: {
+              create: {
+                nom: categoryName,
+              },
+              where: {
+                nom: categoryName,
+              },
             },
           },
         },
-      },
-      where: {
-        article_id: id,
-      },
-    });
+        where: {
+          article_id: id,
+        },
+      });
+    } else {
+      const article = await prisma.article.update({
+        data: {
+          titre,
+          contenu,
+          date_debut,
+          date_fin,
+          edited_at: new Date().toISOString(),
+          niveau,
+          state: State.pending,
+          categorie: {
+            connectOrCreate: {
+              create: {
+                nom: categoryName,
+              },
+              where: {
+                nom: categoryName,
+              },
+            },
+          },
+        },
+        where: {
+          article_id: id,
+        },
+      });
 
+      pendingCountEventEmmiter.emit("newArticle", {
+        article,
+      });
+    }
     res.sendStatus(204);
   } catch (error) {
     console.error(error);
@@ -253,29 +460,10 @@ const deleteArticle = async (req: Request, res: Response) => {
   }
 };
 
-const AproveArticle = async (req: Request, res: Response) => {
-  try {
-    let articles;
-    const { id } = req.params;
-    articles = await prisma.article.update({
-      data: {
-        state: State.aproved,
-      },
-      where: {
-        article_id: id,
-      },
-    });
-    res.sendStatus(200);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ message: "Server error" });
-  }
-};
-
 const getArticlesByUserRole = async (req: Request, res: Response) => {
   try {
     //@ts-ignore
-    const { role, uid } = req.user; // Assuming the user object contains the user's role
+    const { role, uid } = req.user;
 
     let articles;
     if (role === Role.super_user) {
@@ -330,8 +518,115 @@ const getArticlesByUserRole = async (req: Request, res: Response) => {
     }
     res.status(200).send({ data: articles });
   } catch (error) {
-    console.log("first");
-    res.status(500).json({ error: "Error fetching articles" });
+    console.error(error);
+    res.status(500).send({ error: "Error fetching articles" });
+  }
+};
+
+interface client {
+  id: number;
+  response: Response;
+}
+
+let clients: client[] = [];
+
+const getPendingArticlesCount = async (req: Request, res: Response) => {
+  try {
+    //remove all listeners to avoid duplicates
+    pendingCountEventEmmiter.removeAllListeners("newArticle");
+    //@ts-ignore
+    const { role } = req.user;
+
+    if (role !== Role.super_user)
+      return res
+        .status(401)
+        .send({ message: "You are not authorized to perform this action" });
+
+    const count = await prisma.article.count({
+      where: {
+        state: State.pending,
+      },
+    });
+
+    const headers = {
+      "Content-Type": "text/event-stream",
+      Connection: "keep-alive",
+      "Cache-Control": "no-cache",
+    };
+    res.writeHead(200, headers);
+
+    const data = `data: ${JSON.stringify({ count })}\n\n`;
+
+    //keep track of all opened conections
+    const clientId = Date.now();
+    clients.push({ id: Date.now(), response: res });
+
+    res.write(data);
+
+    pendingCountEventEmmiter.on("newArticle", ({ article }) => {
+      clients.forEach((client) =>
+        client.response.write(`data: ${JSON.stringify({ article })}\n\n`)
+      );
+    });
+
+    //remove closed connections
+    req.on("close", () => {
+      clients = clients.filter((client) => client.id !== clientId);
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ error: "Error fetching articles count" });
+  }
+};
+const editArticleState = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { state }: { state: State } = req.body;
+
+    const data: any = {
+      state,
+    };
+
+    if (state === State.approved) {
+      const article = await prisma.article.findUnique({
+        select: {
+          contenu: true,
+          date_debut: true,
+          includeFb: true,
+        },
+        where: {
+          article_id: id,
+        },
+      });
+
+      if (!article)
+        return res.status(404).send({ message: "Article not found" });
+
+      if (article.includeFb) {
+        let fbPostId = await postToFacebook(
+          article.contenu,
+          article.date_debut
+        );
+
+        if (typeof fbPostId !== "string") {
+          return res.status(400).send({ message: fbPostId.message });
+        }
+
+        data.fbPostId = fbPostId;
+      }
+    }
+
+    await prisma.article.update({
+      data,
+      where: {
+        article_id: id,
+      },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Error updating article" });
   }
 };
 
@@ -341,6 +636,8 @@ export {
   createArticle,
   deleteArticle,
   editArticle,
-  AproveArticle,
   getArticlesByUserRole,
+  getPendingArticlesCount,
+  getArchive,
+  editArticleState,
 };

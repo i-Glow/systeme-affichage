@@ -61,8 +61,12 @@ export const LinkContainer = styled(Link)`
 
 export const Main1 = styled.div`
   width: 100%;
-  margin-left: 15%;
+  margin-left: 200px;
   padding: 24px;
+
+  @media (min-width: 1366px) {
+    margin-left: 15%;
+  }
 `;
 
 type params = {

@@ -2,10 +2,12 @@ import express, { Express } from "express";
 import cors from "cors";
 import * as dotenv from "dotenv";
 import router from "./routes";
+import morgan from "morgan";
 
 //initialisation
 dotenv.config();
 const app: Express = express();
+// app.use(morgan("dev"));
 
 //constants
 const PORT = process.env.PORT || 8080;
@@ -17,7 +19,7 @@ const CORS_OPTIONS = {
 
 //midllewares
 app.use(cors(CORS_OPTIONS));
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
 // app.use(cookieParser());
 app.use(router);
 

@@ -1,7 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { useLocation } from "react-router-dom";
+import useAxios from "../hooks/useAxios";
+import { useAuth } from "../context/AuthProvider";
 import dayjs from "dayjs";
-import { AxiosRequestConfig } from "axios";
+//components
 import {
   Input,
   DatePicker,
@@ -10,15 +12,17 @@ import {
   Select,
   Form,
   Segmented,
+  Checkbox,
 } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
-import { BsPlusLg } from "react-icons/bs";
-import { FormWrapper, Wrapper } from "./styles/CreateArticles.styles";
-import NiveauCheckBox from "../components/CheckboxGroup";
-import { useAuth } from "../context/AuthProvider";
-import useAxios from "../hooks/useAxios";
 import Flex from "../components/shared/Flex";
+import NiveauCheckBox from "../components/CheckboxGroup";
 import LatestArticles from "../components/LatestArticles";
+import { BsPlusLg } from "react-icons/bs";
+//styles
+import { FormWrapper, Wrapper } from "./styles/CreateArticles.styles";
+//types
+import { AxiosRequestConfig } from "axios";
 
 type Categorie = {
   category_id: number | null;
@@ -32,10 +36,10 @@ type data = {
   date_fin: string;
   niveau: string[];
   categoryName: string;
+  includeFb: boolean;
 };
 
 export default function CreateArticle() {
-  //@ts-ignore
   const { token } = useAuth();
   const axios = useAxios();
   const location = useLocation();
@@ -45,7 +49,7 @@ export default function CreateArticle() {
   //control state
   const [loading, setLoading] = useState<boolean>(false);
   const [isInputShow, setIsInputShow] = useState<boolean>(false);
-  const [direction, setDirection] = useState<"ltr" | "rtl">("rtl");
+  const [direction, setDirection] = useState<"ltr" | "rtl">("ltr");
   const [checkBoxMessageError, setCheckBoxMessageError] = useState(false);
   const [dateMessageError, setDateMessageError] = useState(false);
 
@@ -57,6 +61,7 @@ export default function CreateArticle() {
   const [niveau, setNiveau] = useState<CheckboxValueType[]>([]);
   const [dateDebut, setDateDebut] = useState<string>();
   const [dateFin, setDateFin] = useState<string>();
+  const [postToFacebook, setPostToFacebook] = useState<boolean>(false);
   //new articles
   const [newArticles, setNewArticles] = useState<data[] | undefined>([]);
 
@@ -107,8 +112,9 @@ export default function CreateArticle() {
         date_fin: dateFin,
         niveau: niveau as string[],
         categoryName: category,
+        includeFb: postToFacebook,
       };
-      console.log(token);
+
       const res = await axios({
         ...config,
         data,
@@ -119,7 +125,7 @@ export default function CreateArticle() {
       if (res.status === 200) {
         messageApi.open({
           type: "success",
-          content: "Article créé",
+          content: "Article created",
         });
 
         //update new articles list
@@ -132,14 +138,14 @@ export default function CreateArticle() {
       } else if (res.status === 204) {
         messageApi.open({
           type: "success",
-          content: "Article édité",
+          content: "Article edited",
         });
       }
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      console.error(error);
       messageApi.open({
         type: "error",
-        content: "Erreur",
+        content: error?.response?.data?.message,
       });
     } finally {
       setLoading(false);
@@ -168,13 +174,24 @@ export default function CreateArticle() {
   }, []);
 
   const getCategories = useCallback(async () => {
-    const res = await axios.get("/categorie", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    try {
+      const res = await axios.get("/categorie", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
-    if (res.status === 200) {
-      setCategories(res.data.data);
-      setCategory(res.data.data[0]?.nom);
+      if (res.status === 200) {
+        if (res.data.data.length === 0) {
+          setIsInputShow(true);
+        } else {
+          setCategories(res.data.data);
+          setCategory(res.data.data[0]?.nom);
+        }
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Error",
+      });
     }
   }, []);
 
@@ -204,11 +221,11 @@ export default function CreateArticle() {
             <Segmented
               onChange={directionChangeHandler}
               style={{ color: "rgb(200, 200, 200)" }}
-              options={["عربية", "foreign"]}
+              options={["foreign", "عربية"]}
             />
           </Form.Item>
           <Form.Item
-            label="titre"
+            label="title"
             rules={[{ required: true, message: "Please input your name" }]}
             requiredMark={true}
           >
@@ -222,7 +239,7 @@ export default function CreateArticle() {
             />
           </Form.Item>
           <Form.Item
-            label="contenu"
+            label="content"
             rules={[{ required: true }]}
             requiredMark={true}
           >
@@ -235,9 +252,9 @@ export default function CreateArticle() {
               maxLength={500}
             />
           </Form.Item>
-          <Form.Item label="categorie">
+          <Form.Item label="category">
             <Flex jc="start" gap="5px">
-              {!isInputShow && categories ? (
+              {!isInputShow && categories?.length ? (
                 <Select
                   defaultValue={category}
                   style={{ width: 120 }}
@@ -266,54 +283,57 @@ export default function CreateArticle() {
                   />
                 }
                 onClick={() => {
-                  if (isInputShow && categories) {
+                  if (isInputShow && categories?.length) {
                     setCategory(categories[0].nom);
+                    setIsInputShow(false);
                   } else {
                     setCategory("");
+                    setIsInputShow(true);
                   }
-                  setIsInputShow(!isInputShow);
                 }}
               />
             </Flex>
           </Form.Item>
-          <Form.Item label="Niveaux">
+          <Form.Item label="level">
             <NiveauCheckBox checkedList={niveau} setCheckedList={setNiveau} />
             <p style={{ color: "red" }}>
               {checkBoxMessageError ? "pick a level" : null}
             </p>
           </Form.Item>
-          <Form.Item label="Durée">
-            {location.pathname.includes("/archive/edit") ? (
+          <Form.Item label="duration">
+            {location.pathname.includes("/articles/edit") ? (
               dateDebut && dateFin ? (
-                <DatePicker.RangePicker
-                  defaultValue={[
-                    dayjs(
-                      dateDebut?.replace("T", " ").split(".")[0],
-                      "YYYY-MM-DD HH:mm:ss"
-                    ),
-                    dayjs(
-                      dateFin?.replace("T", " ").split(".")[0],
-                      "YYYY-MM-DD HH:mm:ss"
-                    ),
-                  ]}
-                  allowEmpty={[false, false]}
-                  onChange={(value) => dateChangeHandler(value)}
-                  placeholder={["de", "à"]}
-                  showTime={{
-                    hideDisabledOptions: true,
-                    defaultValue: [
-                      dayjs("00:00:00", "HH:mm:ss"),
-                      dayjs("11:59:59", "HH:mm:ss"),
-                    ],
-                  }}
-                  format="YYYY-MM-DD HH:mm:ss"
-                />
+                <>
+                  <DatePicker.RangePicker
+                    defaultValue={[
+                      dayjs(
+                        dateDebut?.replace("T", " ").split(".")[0],
+                        "YYYY-MM-DD HH:mm:ss"
+                      ),
+                      dayjs(
+                        dateFin?.replace("T", " ").split(".")[0],
+                        "YYYY-MM-DD HH:mm:ss"
+                      ),
+                    ]}
+                    allowEmpty={[false, false]}
+                    onChange={(value) => dateChangeHandler(value)}
+                    placeholder={["de", "à"]}
+                    showTime={{
+                      hideDisabledOptions: true,
+                      defaultValue: [
+                        dayjs("00:00:00", "HH:mm:ss"),
+                        dayjs("11:59:59", "HH:mm:ss"),
+                      ],
+                    }}
+                    format="YYYY-MM-DD HH:mm:ss"
+                  />
+                </>
               ) : null
             ) : (
               <DatePicker.RangePicker
                 allowEmpty={[false, false]}
                 onChange={(value) => dateChangeHandler(value)}
-                placeholder={["de", "à"]}
+                placeholder={["from", "to"]}
                 showTime={{
                   hideDisabledOptions: true,
                   defaultValue: [
@@ -329,13 +349,22 @@ export default function CreateArticle() {
             </p>
           </Form.Item>
           <Form.Item label=" " colon={false}>
+            <Checkbox
+              checked={postToFacebook}
+              onChange={() => setPostToFacebook(!postToFacebook)}
+            >
+              Facebook
+            </Checkbox>
+          </Form.Item>
+          <Form.Item label=" " colon={false}>
             <Button loading={loading} htmlType="submit" type="primary">
-              Valider
+              {location.pathname.includes("edit") ? "Edit" : "Create"}
             </Button>
           </Form.Item>
         </Form>
       </FormWrapper>
       {newArticles?.length ? (
+        //@ts-ignore
         <LatestArticles newArticles={newArticles} />
       ) : null}
     </Wrapper>

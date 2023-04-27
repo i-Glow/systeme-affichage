@@ -14,15 +14,15 @@ export default function PageHeader({ page }: props) {
     <DivSpaceBettwen>
       <h3>{page}</h3>
       <Button
-        type="default"
+        type="primary"
         onClick={() => {
-          navigate("/nouveau");
+          navigate("nouveau");
         }}
       >
         <SvgPosition>
           <AiOutlinePlusSquare />
         </SvgPosition>
-        <span>Créer</span>
+        <span>New</span>
       </Button>
     </DivSpaceBettwen>
   );
