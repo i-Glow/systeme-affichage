@@ -2,6 +2,7 @@ import { article, Role, State, Prisma } from "@prisma/client";
 import { Request, Response } from "express";
 import prisma from "../db";
 import pendingCountEventEmmiter from "../utils/EventEmmiter";
+import axios from "axios";
 
 const getAll = async (req: Request, res: Response) => {
   try {
@@ -12,13 +13,13 @@ const getAll = async (req: Request, res: Response) => {
             date_fin: {
               gt: new Date().toISOString(),
             },
-            state: State.aproved,
+            state: State.approved,
           }
         : {
             date_fin: {
               gt: new Date().toISOString(),
             },
-            state: State.aproved,
+            state: State.approved,
             //@ts-ignore
             creator_id: req.user.uid,
           };
@@ -34,10 +35,6 @@ const getAll = async (req: Request, res: Response) => {
         date_debut: "asc",
       },
       where: whereClause,
-      // date_fin: {
-      //   gt: new Date().toISOString(),
-      // },
-      // state: State.aproved,
     });
 
     res.status(200).send({ data: articles });
@@ -66,6 +63,7 @@ const getArticle = async (req: Request, res: Response) => {
         created_at: true,
         edited_at: true,
         state: true,
+        fbPostId: true,
         creator: {
           select: {
             user_id: true,
@@ -77,7 +75,7 @@ const getArticle = async (req: Request, res: Response) => {
     });
 
     if (!article) {
-      return res.status(404).send({ message: "Article does not exist" });
+      throw new Error("NOT_FOUND");
     }
 
     if (
@@ -86,24 +84,43 @@ const getArticle = async (req: Request, res: Response) => {
       //@ts-ignore
       req.user.role !== Role.super_user
     ) {
-      return res.status(401).send({ message: "Not authorized" });
+      throw new Error("NOT_AUTHORIZED");
     }
 
     res.status(200).send({ data: article });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    res.status(500).send({ message: "Server error" });
+
+    switch (error.message) {
+      case "NOT_FOUND":
+        res.status(404).send({ message: "Article does not exist" });
+        break;
+      case "NOT_AUTHORIZED":
+        res
+          .status(401)
+          .send({ message: "You are not authorized to perform this action" });
+        break;
+      default:
+        res.status(500).send({ message: "Server error" });
+    }
   }
 };
+
+interface SearchQuery {
+  page: number;
+  pageSize: number;
+  search: string;
+  nom: string;
+  prenom: string;
+  levels: string[];
+}
 
 const getArchive = async (req: Request, res: Response) => {
   try {
     // Check if user is an admin
     //@ts-ignore
     if (req.user.role !== Role.super_user) {
-      return res
-        .status(401)
-        .send({ message: "You are not authorized to perform this action" });
+      throw new Error("NOT_AUTHORIZED");
     }
 
     // Get pagination parameters from query string
@@ -113,10 +130,18 @@ const getArchive = async (req: Request, res: Response) => {
       search = "",
       nom = "",
       prenom = "",
+      levels,
     } = req.query;
-    const skip: number = (Number(page) - 1) * Number(pageSize);
 
+    const skip: number = (Number(page) - 1) * Number(pageSize);
+    let level: string[] = [];
     let searchQuery: Prisma.articleWhereInput;
+
+    //skipping typescript error
+    if (typeof levels === "string") {
+      level = levels?.split(",").filter((lvl) => lvl !== "");
+    }
+
     if (nom.length && prenom.length) {
       searchQuery = {
         AND: [
@@ -132,13 +157,27 @@ const getArchive = async (req: Request, res: Response) => {
               { creator: { prenom: { equals: prenom as string } } },
             ],
           },
+          {
+            niveau: level.length
+              ? { hasSome: level as string[] }
+              : { isEmpty: false },
+          },
         ],
       };
     } else {
       searchQuery = {
-        OR: [
-          { titre: { contains: search as string, mode: "insensitive" } },
-          { contenu: { contains: search as string, mode: "insensitive" } },
+        AND: [
+          {
+            OR: [
+              { titre: { contains: search as string, mode: "insensitive" } },
+              { contenu: { contains: search as string, mode: "insensitive" } },
+            ],
+          },
+          {
+            niveau: level.length
+              ? { hasSome: level as string[] }
+              : { isEmpty: false },
+          },
         ],
       };
     }
@@ -175,26 +214,97 @@ const getArchive = async (req: Request, res: Response) => {
       data: articles,
       count: totalCount,
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
+    if (error.message === "NOT_AUTHORIZED")
+      return res
+        .status(401)
+        .send({ message: "You are not authorized to perform this action" });
+
     res.status(500).send({ message: "Error fetching articles" });
+  }
+};
+
+const postToFacebook = async (
+  content: string,
+  scheduledTime: string | Date
+): Promise<string | Error> => {
+  const message = (content as string).replaceAll(
+    /\[url:(?<url>(https?:\/\/)?[\w-]+\.[\w-]+\S*)\]|\[qr:(?<qr>.*?)\]/g,
+    "$<url>$<qr>"
+  );
+
+  const MIN_SCHEDULE_TIME = 10 * 60; // 10 minutes in seconds
+  const MAX_SCHEDULE_TIME = 75 * 24 * 60 * 60; // 75 days in seconds
+
+  const scheduledTimeInSeconds = Math.floor(
+    (new Date(scheduledTime) as any) / 1000
+  );
+  const currentTime = Math.floor(Date.now() / 1000); // current time in seconds
+
+  const timeDiff = scheduledTimeInSeconds - currentTime;
+
+  const body: any = {
+    message: message,
+    access_token: process.env.FB_PAGE_ACCESS_TOKEN,
+  };
+
+  if (timeDiff > MIN_SCHEDULE_TIME && timeDiff < MAX_SCHEDULE_TIME) {
+    body.published = false;
+    body.scheduled_publish_time = scheduledTimeInSeconds;
+  }
+
+  const url = `https://graph.facebook.com/${process.env.FB_PAGE_ID}/feed`;
+  try {
+    const response: any = await axios({
+      url,
+      method: "post",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      data: body,
+    });
+
+    return response.data.id;
+  } catch (error: any) {
+    console.error(error.response.data.error);
+    return new Error(error.response.data.error.message);
   }
 };
 
 const createArticle = async (req: Request, res: Response) => {
   try {
-    const { titre, contenu, date_debut, date_fin, niveau, categoryName } =
-      req.body;
+    const {
+      titre,
+      contenu,
+      date_debut,
+      date_fin,
+      niveau,
+      categoryName,
+      includeFb,
+    } = req.body;
     //@ts-ignore
     const { role, uid } = req.user;
     let newArticle: article;
+
     if (role === Role.super_user) {
+      let fbPostId = null;
+      if (includeFb) {
+        fbPostId = await postToFacebook(contenu, date_debut);
+
+        if (typeof fbPostId !== "string") {
+          return res.status(400).send({ message: fbPostId.message });
+        }
+      }
+
       newArticle = await prisma.article.create({
         data: {
           titre,
           contenu,
           date_debut,
           date_fin,
+          includeFb,
+          fbPostId,
           creator: {
             connect: {
               //@ts-ignore
@@ -212,7 +322,7 @@ const createArticle = async (req: Request, res: Response) => {
             },
           },
           niveau,
-          state: State.aproved,
+          state: State.approved,
         },
         include: {
           categorie: true,
@@ -225,6 +335,7 @@ const createArticle = async (req: Request, res: Response) => {
           contenu,
           date_debut,
           date_fin,
+          includeFb,
           creator: {
             connect: {
               //@ts-ignore
@@ -249,7 +360,7 @@ const createArticle = async (req: Request, res: Response) => {
         },
       });
 
-      pendingCountEventEmmiter.emit("articleCreated", {
+      pendingCountEventEmmiter.emit("newArticle", {
         article: newArticle,
       });
     }
@@ -263,9 +374,12 @@ const createArticle = async (req: Request, res: Response) => {
 
 const editArticle = async (req: Request, res: Response) => {
   try {
-    const { id, role } = req.params;
+    //@ts-ignore
+    const { role } = req.user;
+    const { id } = req.params;
     const { titre, contenu, date_debut, date_fin, niveau, categoryName } =
       req.body;
+
     if (role === Role.super_user) {
       await prisma.article.update({
         data: {
@@ -291,7 +405,7 @@ const editArticle = async (req: Request, res: Response) => {
         },
       });
     } else {
-      await prisma.article.update({
+      const article = await prisma.article.update({
         data: {
           titre,
           contenu,
@@ -314,6 +428,10 @@ const editArticle = async (req: Request, res: Response) => {
         where: {
           article_id: id,
         },
+      });
+
+      pendingCountEventEmmiter.emit("newArticle", {
+        article,
       });
     }
     res.sendStatus(204);
@@ -342,29 +460,10 @@ const deleteArticle = async (req: Request, res: Response) => {
   }
 };
 
-const approveArticle = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    await prisma.article.update({
-      data: {
-        state: State.aproved,
-      },
-      where: {
-        article_id: id,
-      },
-    });
-
-    res.sendStatus(200);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send({ message: "Error updating article state" });
-  }
-};
-
 const getArticlesByUserRole = async (req: Request, res: Response) => {
   try {
     //@ts-ignore
-    const { role, uid } = req.user; // Assuming the user object contains the user's role
+    const { role, uid } = req.user;
 
     let articles;
     if (role === Role.super_user) {
@@ -434,7 +533,7 @@ let clients: client[] = [];
 const getPendingArticlesCount = async (req: Request, res: Response) => {
   try {
     //remove all listeners to avoid duplicates
-    pendingCountEventEmmiter.removeAllListeners("articleCreated");
+    pendingCountEventEmmiter.removeAllListeners("newArticle");
     //@ts-ignore
     const { role } = req.user;
 
@@ -464,7 +563,7 @@ const getPendingArticlesCount = async (req: Request, res: Response) => {
 
     res.write(data);
 
-    pendingCountEventEmmiter.on("articleCreated", ({ article }) => {
+    pendingCountEventEmmiter.on("newArticle", ({ article }) => {
       clients.forEach((client) =>
         client.response.write(`data: ${JSON.stringify({ article })}\n\n`)
       );
@@ -482,11 +581,43 @@ const getPendingArticlesCount = async (req: Request, res: Response) => {
 const editArticleState = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const { state }: { state: State } = req.body;
+
+    const data: any = {
+      state,
+    };
+
+    if (state === State.approved) {
+      const article = await prisma.article.findUnique({
+        select: {
+          contenu: true,
+          date_debut: true,
+          includeFb: true,
+        },
+        where: {
+          article_id: id,
+        },
+      });
+
+      if (!article)
+        return res.status(404).send({ message: "Article not found" });
+
+      if (article.includeFb) {
+        let fbPostId = await postToFacebook(
+          article.contenu,
+          article.date_debut
+        );
+
+        if (typeof fbPostId !== "string") {
+          return res.status(400).send({ message: fbPostId.message });
+        }
+
+        data.fbPostId = fbPostId;
+      }
+    }
 
     await prisma.article.update({
-      data: {
-        state: State.rejected,
-      },
+      data,
       where: {
         article_id: id,
       },
@@ -505,7 +636,6 @@ export {
   createArticle,
   deleteArticle,
   editArticle,
-  approveArticle,
   getArticlesByUserRole,
   getPendingArticlesCount,
   getArchive,

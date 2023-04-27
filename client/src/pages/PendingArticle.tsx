@@ -81,7 +81,13 @@ export default function PendingArticle() {
           rowKey="article_id"
           size="middle"
         >
-          <Column title="Title" dataIndex="titre" ellipsis={true} />
+          <Column
+            title="Title"
+            ellipsis={true}
+            render={(article: article) => (
+              <Link to={`${article.article_id}`}>{article.titre}</Link>
+            )}
+          />
           <Column
             title="Level"
             render={(article: article) =>

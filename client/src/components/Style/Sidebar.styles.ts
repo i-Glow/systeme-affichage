@@ -31,8 +31,8 @@ export const LinkContainer = styled(Link)`
   cursor: pointer;
   position: relative;
 
-  background-color: ${({ isFocused }: { isFocused: boolean }) =>
-    isFocused ? "rgba(var(--blue), 0.09)" : "transparent"};
+  background-color: ${({ isfocused: isfocused }: { isfocused: boolean }) =>
+    isfocused ? "rgba(var(--blue), 0.09)" : "transparent"};
 
   &:hover {
     background-color: rgba(var(--blue), 0.09);
@@ -44,8 +44,8 @@ export const LinkContainer = styled(Link)`
     height: 46px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
-    background-color: ${({ isFocused }: params) =>
-      isFocused ? "rgba(var(--blue))" : "transparent"};
+    background-color: ${({ isfocused }: params) =>
+      isfocused ? "rgba(var(--blue))" : "transparent"};
     position: absolute;
     left: -11px;
     top: -2px;
@@ -69,7 +69,7 @@ export const Notification = styled.div`
 `;
 
 type params = {
-  isFocused?: boolean;
+  isfocused?: boolean;
 };
 
 export const Logout = styled.div`

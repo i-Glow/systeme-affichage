@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Params, useLocation } from "react-router-dom";
 import { message, Skeleton, Tag, Tooltip } from "antd";
 import { AiOutlineSwapRight } from "react-icons/ai";
+import { FaFacebookSquare } from "react-icons/fa";
 
 import { Wrapper } from "../pages/styles/ArchiveDetail.styles";
 import { useAuth } from "../context/AuthProvider";
@@ -13,6 +14,8 @@ import {
 import Flex from "../components/shared/Flex";
 import useAxios from "../hooks/useAxios";
 import levelColors from "../utils/levelColors";
+import { PresetColorType } from "antd/es/_util/colors";
+import Link from "./shared/Link";
 
 type Categorie = {
   categorie_id: number;
@@ -34,6 +37,7 @@ type Article = {
   created_at: string;
   edited_at: string | null;
   state: string;
+  fbPostId: string;
   categorie: Categorie;
 };
 
@@ -88,6 +92,21 @@ export default function ArticleCard(props: Params) {
     return () => controller.abort();
   }, []);
 
+  const colorPicker = (state: string): PresetColorType => {
+    switch (state) {
+      case "approved":
+        return "green";
+      case "pending":
+        return "orange";
+      case "rejected":
+        return "red";
+      case "deleted":
+        return "red";
+      default:
+        return "blue";
+    }
+  };
+
   return (
     <>
       {contextHolder}
@@ -100,7 +119,22 @@ export default function ArticleCard(props: Params) {
                 <h4>{data.creator.prenom}</h4>
               </Flex>
               <Flex gap="10px">
-                <Tag>{data.categorie.nom}</Tag>
+                <Flex>
+                  <Tag color={colorPicker(data.state)}>{data.state}</Tag>
+                  <Tag>{data.categorie.nom}</Tag>
+                </Flex>
+                {!!data.fbPostId && (
+                  <Link
+                    target="_blank"
+                    to={`https://www.facebook.com/${data.fbPostId}`}
+                  >
+                    <FaFacebookSquare
+                      style={{ marginTop: "3px" }}
+                      color="#4267B2"
+                      size={24}
+                    />
+                  </Link>
+                )}
                 <p style={{ fontSize: ".9em" }}>{data.created_at}</p>
                 <Tooltip
                   placement="topRight"
