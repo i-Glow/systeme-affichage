@@ -19,7 +19,7 @@ const getAffichage = async (req: Request, res: Response) => {
             gt: new Date().toISOString(),
           },
         },
-        state: State.aproved,
+        state: State.approved,
       },
     });
 

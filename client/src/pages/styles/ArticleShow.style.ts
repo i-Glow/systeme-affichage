@@ -7,10 +7,8 @@ export const CenterDiv = styled.div`
   justify-content: center;
   align-items: center;
   flex-wrap: wrap;
-  /* column-gap: 3%; */
-  /* padding-left: 0.3%; */
-  /* padding-right: 0.3%; */
 `;
+
 export const Card = styled.div`
   display: flex;
   flex-direction: column;
@@ -25,19 +23,25 @@ export const Card = styled.div`
     padding: 2px 20px;
   }
 `;
+
 export const CardTop = styled.div`
+  max-width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  max-width: 100%;
   overflow-wrap: break-word;
   padding-top: 10px;
+
+  & > div {
+    flex: 1;
+  }
 `;
+
 export const CardBottom = styled.div`
   display: flex;
   justify-content: center;
   overflow-wrap: break-word;
-  /* max-width: 100%; */
   line-height: 32px;
   border-bottom: 1px solid gray;
   width: calc(100% +20px);
@@ -54,6 +58,7 @@ export const Title = styled.h1`
 `;
 
 export const Parag = styled.p`
+  display: inline;
   font-size: 18px;
   font-weight: 500;
   overflow-wrap: break-word;
@@ -61,6 +66,7 @@ export const Parag = styled.p`
   overflow: hidden;
   font-weight: 600;
 `;
+
 export const Niveau = styled.p`
   font-size: 20px;
 `;
@@ -69,25 +75,50 @@ export const CardVoid = styled(Card)`
   justify-content: none;
   gap: 0;
 `;
+
 export const CardVoidTop = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
   height: 80%;
 `;
+
 export const CardVoidBottom = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: flex-end;
   height: 20%;
 `;
+
 export const TitleVoid = styled.h1`
   letter-spacing: 1, 7px;
 
   font-size: 28px;
 `;
-export const NiveauVoid = styled.p`
-  /* margin: 0 0 0 70%; */
 
+export const NiveauVoid = styled.p`
   font-weight: bolder;
+`;
+
+export const InputContainer = styled.div`
+  display: inline-flex;
+  width: fit-content;
+  height: 26px;
+  border: 1px solid rgb(var(--border));
+  border-radius: 6px;
+  overflow: hidden;
+
+  & p {
+    padding: 0px 8px;
+  }
+`;
+
+export const IconCtn = styled.div`
+  width: 26px;
+  height: 26px;
+  background-color: #eee;
+  border-right: 1px solid rgb(var(--border));
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;

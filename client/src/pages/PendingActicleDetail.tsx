@@ -14,7 +14,7 @@ import { Success } from "./styles/PendingArticleDetail";
 // types
 import { AxiosRequestConfig } from "axios";
 
-type ArticleState = "aproved" | "pending" | "rejected";
+type ArticleState = "approved" | "pending" | "rejected" | "deleted";
 
 export default function PendingActicleDetail() {
   const { token, user } = useAuth();
@@ -25,9 +25,9 @@ export default function PendingActicleDetail() {
   const [loadingAccept, setLoadingAccept] = useState<boolean>(false);
   const [loadingReject, setLoadingReject] = useState<boolean>(false);
   const [articlesState, setarticlesState] = useState(false);
-  const [aproved, setaproved] = useState(false);
+  const [approved, setapproved] = useState(false);
 
-  async function onFinishAccept(state: ArticleState = "aproved") {
+  async function onFinishAccept(state: ArticleState = "approved") {
     try {
       setLoadingAccept(true);
       if (user?.role === roles.admin) {
@@ -50,7 +50,7 @@ export default function PendingActicleDetail() {
             content: "Article approved",
           });
           setarticlesState(true);
-          setaproved(res.data);
+          setapproved(res.data);
           setPendingCount((prev) => prev - 1);
         }
       }
@@ -127,7 +127,7 @@ export default function PendingActicleDetail() {
                   </Button>
                 </Popconfirm>
               </>
-            ) : aproved ? (
+            ) : approved ? (
               <Tag color="success">
                 <Flex gap="7px" p="3px 7px">
                   <BsCheckAll fontSize={20}></BsCheckAll>

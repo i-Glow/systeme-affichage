@@ -12,6 +12,7 @@ import {
   Select,
   Form,
   Segmented,
+  Checkbox,
 } from "antd";
 import { CheckboxValueType } from "antd/es/checkbox/Group";
 import Flex from "../components/shared/Flex";
@@ -35,6 +36,7 @@ type data = {
   date_fin: string;
   niveau: string[];
   categoryName: string;
+  includeFb: boolean;
 };
 
 export default function CreateArticle() {
@@ -47,7 +49,7 @@ export default function CreateArticle() {
   //control state
   const [loading, setLoading] = useState<boolean>(false);
   const [isInputShow, setIsInputShow] = useState<boolean>(false);
-  const [direction, setDirection] = useState<"ltr" | "rtl">("rtl");
+  const [direction, setDirection] = useState<"ltr" | "rtl">("ltr");
   const [checkBoxMessageError, setCheckBoxMessageError] = useState(false);
   const [dateMessageError, setDateMessageError] = useState(false);
 
@@ -59,6 +61,7 @@ export default function CreateArticle() {
   const [niveau, setNiveau] = useState<CheckboxValueType[]>([]);
   const [dateDebut, setDateDebut] = useState<string>();
   const [dateFin, setDateFin] = useState<string>();
+  const [postToFacebook, setPostToFacebook] = useState<boolean>(false);
   //new articles
   const [newArticles, setNewArticles] = useState<data[] | undefined>([]);
 
@@ -109,6 +112,7 @@ export default function CreateArticle() {
         date_fin: dateFin,
         niveau: niveau as string[],
         categoryName: category,
+        includeFb: postToFacebook,
       };
 
       const res = await axios({
@@ -137,11 +141,11 @@ export default function CreateArticle() {
           content: "Article edited",
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       messageApi.open({
         type: "error",
-        content: "Error",
+        content: error?.response?.data?.message,
       });
     } finally {
       setLoading(false);
@@ -196,6 +200,7 @@ export default function CreateArticle() {
     getData(controller);
     getCategories();
   }, []);
+
   return (
     <Wrapper>
       <h3>
@@ -216,7 +221,7 @@ export default function CreateArticle() {
             <Segmented
               onChange={directionChangeHandler}
               style={{ color: "rgb(200, 200, 200)" }}
-              options={["عربية", "foreign"]}
+              options={["foreign", "عربية"]}
             />
           </Form.Item>
           <Form.Item
@@ -344,8 +349,16 @@ export default function CreateArticle() {
             </p>
           </Form.Item>
           <Form.Item label=" " colon={false}>
+            <Checkbox
+              checked={postToFacebook}
+              onChange={() => setPostToFacebook(!postToFacebook)}
+            >
+              Facebook
+            </Checkbox>
+          </Form.Item>
+          <Form.Item label=" " colon={false}>
             <Button loading={loading} htmlType="submit" type="primary">
-              Create
+              {location.pathname.includes("edit") ? "Edit" : "Create"}
             </Button>
           </Form.Item>
         </Form>

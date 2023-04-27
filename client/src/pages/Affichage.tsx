@@ -1,9 +1,11 @@
 //@ts-nocheck
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import axios from "../api";
 import isArabic from "../utils/isArabic";
+import useThrottle from "../hooks/useThrottle";
 //components
-import { Empty } from "antd";
+import { Empty, QRCode } from "antd";
+import { FaGlobeAfrica } from "react-icons/fa";
 // styles
 import {
   CenterDiv,
@@ -16,7 +18,10 @@ import {
   CardBottom,
   CardVoidBottom,
   CardVoidTop,
+  InputContainer,
+  IconCtn,
 } from "./styles/ArticleShow.style";
+import Flex from "../components/shared/Flex";
 
 type article = {
   titre: string;
@@ -33,7 +38,7 @@ type allArticles = {
   D: article[] | undefined;
 };
 
-export default function ArticleShow() {
+export default function Affichage() {
   const [articles, setArticles] = useState<allArticles>();
   const [data, setData] = useState<article[]>();
   const [count, setCount] = useState([0, 0, 0, 0, 0, 0]);
@@ -113,7 +118,7 @@ export default function ArticleShow() {
       {articles &&
         Object.keys(articles).map((art, key) => {
           return articles[art as keyof allArticles][count[key]] ? (
-            <Card>
+            <Card key={key}>
               <CardBottom>
                 <Niveau>
                   {key < 3
@@ -134,25 +139,14 @@ export default function ArticleShow() {
                 >
                   {articles[art][count[key]].titre}
                 </Title>
-                <Parag
-                  style={{
-                    direction: isArabic(articles[art][count[key]].titre)
-                      ? "rtl"
-                      : "ltr",
-                    fontFamily: isArabic(articles[art][count[key]].titre)
-                      ? "'Inter', sans-serif"
-                      : "'ReadexPro', sans-serif;",
-                    fontSize: isArabic(articles[art][count[key]].titre)
-                      ? "22px"
-                      : "18px",
-                  }}
-                >
-                  {articles[art][count[key]].contenu}
-                </Parag>
+                <Content
+                  content={articles[art][count[key]].contenu}
+                  title={articles[art][count[key]].titre}
+                />
               </CardTop>
             </Card>
           ) : (
-            <CardVoid>
+            <CardVoid key={key}>
               <CardVoidTop>
                 <Empty description={"Pas D'affichage"}></Empty>
               </CardVoidTop>
@@ -165,5 +159,97 @@ export default function ArticleShow() {
           );
         })}
     </CenterDiv>
+  );
+}
+
+const urlRegex = /\[url:((https?:\/\/)?[\w-]+\.[\w-]+\S*)\]/gi;
+const qrRegex = /\[qr:(.*?)\]/g;
+const regex = /(\[url:(?:(?:https?:\/\/)?[\w-]+\.[\w-]+\S*)\])|(\[qr:.*?\])/g;
+
+function Content({ content, title }: { content: string; title: string }) {
+  let parts = content.split(regex);
+  //remove falsy values
+  parts = parts.filter((value) => value !== undefined && value !== "");
+  const ref = useRef(null);
+
+  return (
+    <div
+      ref={ref}
+      style={{
+        direction: isArabic(title) ? "rtl" : "ltr",
+        fontFamily: isArabic(title)
+          ? "'Inter', sans-serif"
+          : "'ReadexPro', sans-serif",
+        fontSize: isArabic(title) ? "22px" : "18px",
+      }}
+    >
+      {parts.map((part, key) => {
+        if (part.match(qrRegex))
+          return parts.length === 1 ? (
+            <Flex key={key} h="100%">
+              <SingleQRcode data={part} parentRef={ref} />
+            </Flex>
+          ) : (
+            <QRCode
+              errorLevel="L"
+              key={key}
+              value={part.split(qrRegex)[1]}
+              style={{ width: "max-content", margin: "0 auto" }}
+            />
+          );
+        else if (part.match(urlRegex))
+          return (
+            <InputContainer key={key}>
+              <IconCtn>
+                <FaGlobeAfrica />
+              </IconCtn>
+              <p>{part.split(urlRegex)[1]}</p>
+            </InputContainer>
+          );
+        else return <span key={key}>{part}</span>;
+      })}
+    </div>
+  );
+}
+
+function SingleQRcode({ data, parentRef }) {
+  const [dimensions, setDimensions] = useState({ width: 200, height: 200 });
+  const [qrSize, setQrSize] = useState<number>(100);
+  const throttledDimensions = useThrottle(dimensions, 250);
+
+  useEffect(() => {
+    const size =
+      throttledDimensions.height < throttledDimensions.width
+        ? throttledDimensions.height
+        : throttledDimensions.width;
+
+    setQrSize(size);
+  }, [throttledDimensions]);
+
+  useEffect(() => {
+    function handleWindowResize() {
+      setDimensions({
+        width: parentRef.current.clientWidth,
+        height: parentRef.current.clientHeight,
+      });
+    }
+
+    //get dimensions on page load
+    handleWindowResize();
+
+    //then hook an event listener
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
+  }, []);
+
+  return (
+    <QRCode
+      errorLevel="L"
+      size={Number(qrSize)}
+      value={data.split(qrRegex)[1]}
+    />
   );
 }

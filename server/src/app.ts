@@ -19,7 +19,7 @@ const CORS_OPTIONS = {
 
 //midllewares
 app.use(cors(CORS_OPTIONS));
-app.use(express.json());
+app.use(express.json({ limit: "5mb" }));
 // app.use(cookieParser());
 app.use(router);
 
