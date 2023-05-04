@@ -6,6 +6,7 @@
   "main": "build/app.js",
   "scripts": {
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q build/app.js\"",
+    "build": "npx tsc",
     "start": "node build/app.js"
   },
   "author": "Abdelmalek Bouhalassa",

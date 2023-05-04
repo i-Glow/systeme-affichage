@@ -74,7 +74,7 @@ function AdminOnlyRoute({ redirectPath = "/" }) {
   //@ts-ignore
   const { user } = useAuth();
 
-  return user.role === roles.admin ? (
+  return user?.role === roles.admin ? (
     <Outlet />
   ) : (
     <Navigate to={redirectPath} />
