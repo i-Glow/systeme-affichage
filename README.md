@@ -47,7 +47,7 @@ _client_
 _server_
 
 ```bash
-  npx tsc
+  npm run build
 ```
 
 # Run the build
@@ -55,8 +55,7 @@ _server_
 _client_
 
 ```bash
-  sudo npm install -g serve
-  serve dist -s -p 5173 -n --no-port-switching
+  npm start
 ```
 
 _server_
