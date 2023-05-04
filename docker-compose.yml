@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=111002
+      - POSTGRES_DB=sys-affichage
+    ports:
+      - 5432:5432
+    networks:
+      - shared-network
+    volumes:
+      - ./database:/var/lib/postgresql/data
+
+  server:
+    container_name: affichage_server
+    restart: unless-stopped
+    image: affichage_server:0.1.0
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+      - ALLOWED_ORIGINS=http://localhost:5173
+      - DATABASE_URL=postgresql://postgres:111002@postgres:5432/sys-affichage?schema=public
+      - JWT_ACCESS_SECRET=UaIL3ILz/e6IpNKzOBhABf7eXimEYV2iCD2Ol96hNplEyO3zArwx5+/DCk1Ll/kfGqcw3nULd2XpiYGhx1E3bA
+      - ACCESS_DURATION=8h
+      - FB_PAGE_ID=100731319659012
+      - FB_PAGE_ACCESS_TOKEN=EAANOEaMbLZCBAPyCcxXY1q75ZAIcDKJLtBN9rWaDKqz1EevoLIbXFVcFOvDNEXe0AbkvLfNBeqkXGOsZAJ3HC9q3JhZB8H4KnWpVdrSGOXe5mnrm6JvMHabFaX1l9JluBkxKwkWBKObqHZAmGb3PPEDZCMNuD7kZBBukRO1gi6xZC4ZCY0oUi9ItHZA2SSp2K4JCO0ZCJjGg4DG4LsUjEVtvMsCWCahlWZA2ZBMZD
+      - FB_APP_ID=930262588010492
+    build: 
+      context: server
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - shared-network
+    depends_on:
+      - postgres
+
+  client:
+    container_name: affichage_client
+    restart: unless-stopped
+    image: affichage_client:0.1.0
+    build: 
+      context: client
+      dockerfile: Dockerfile
+    ports:
+      - 5173:5173
+    networks:
+      - shared-network
+    depends_on:
+      - server
+
+networks:
+  shared-network:
