@@ -1,6 +1,6 @@
 /*eslint-disable prettier/prettier*/
 
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   Dimensions,
   FlatList,
@@ -13,11 +13,21 @@ import {
   View,
 } from 'react-native';
 import NavBar from '../components/NavBar';
-import {useNavigation} from '@react-navigation/native';
 
-const ITEM_WIDTH = Dimensions.get('window').height / 5.8;
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {BottomBarContext} from '../App';
+const {height} = Dimensions.get('window');
+
+const BottomBar = height * 0.08;
+const ITEM_WIDTH = height / 5.8;
 
 export default function Menu() {
+  const {setActiveScreen} = useContext(BottomBarContext);
+
+  useFocusEffect(() => {
+    setActiveScreen('MenuStackPage');
+  });
+
   const MenuCarts = [
     {
       id: 1,
@@ -33,64 +43,10 @@ export default function Menu() {
     },
     {
       id: 3,
-      imageUrl: require('../assets/journal.png'),
-      screen: 'Affichage',
-      titre: 'Affichage',
+      imageUrl: require('../assets/Support.png'),
+      screen: 'SupportStackPage',
+      titre: 'Support',
     },
-    /*{
-      id: 4,
-      imageUrl: require('../assets/'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    },
-    {
-      id: 5,
-      imageUrl: require('../assets/'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    },
-    {
-      id: 6,
-      imageUrl: require('../assets/'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    },
-    {
-      id: 7,
-      imageUrl: require('../assets/'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    },
-    {
-      id: 8,
-      imageUrl: require('../assets/'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    },
-    {
-      id: 9,
-      imageUrl: require('../assets/'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    },
-    {
-      id: 10,
-      imageUrl: require('../assets/'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    },
-    {
-      id: 11,
-      imageUrl: require('../assets/'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    },
-    {
-      id: 12,
-      imageUrl: require('../assets/'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    }, */
   ];
   const navigation = useNavigation();
 
@@ -132,19 +88,20 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   NavContainer: {
+    height: BottomBar,
+  },
+  /* NavContainer: {
     position: 'absolute',
     bottom: 20,
     alignItems: 'center',
     left: 0,
     right: 0,
-  },
+  }, */
   MenuContainer: {
     flex: 1,
     flexGrow: 1,
   },
   MenuContainerCard: {
-    flex: 1,
-    flexGrow: 1,
     padding: '1.5%',
     paddingTop: '5%',
     gap: 15,
@@ -167,7 +124,7 @@ const styles = StyleSheet.create({
     paddingBottom: 5,
   },
   Image: {
-    width: '100%',
+    width: '65%',
     height: '80%',
   },
   MenuOption: {

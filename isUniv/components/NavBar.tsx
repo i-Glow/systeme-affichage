@@ -1,36 +1,61 @@
 /*eslint-disable prettier/prettier*/
 
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useContext} from 'react';
 import {Image, Pressable, StyleSheet, View} from 'react-native';
-import {RootStackParams} from '../App';
+import {BottomBarContext, RootStackParams} from '../App';
 import {StackNavigationProp} from '@react-navigation/stack';
 
 function NavBar() {
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
+
+  const {activeScreen} = useContext(BottomBarContext);
+
   return (
     <>
       <View style={styles.Container}>
         <Pressable
-          style={styles.Pressable}
+          style={[
+            styles.Pressable,
+            activeScreen === 'News' && styles.activeButton,
+          ]}
           onPress={() => {
             navigation.navigate('News');
           }}>
           <Image
-            source={require('../assets/journal.png')}
-            style={styles.Image}
+            source={
+              activeScreen === 'News'
+                ? require('../assets/NewsBlack.png')
+                : require('../assets/NewsWhite.png')
+            }
+            style={[
+              styles.Image,
+              activeScreen === 'News' && styles.activeImage,
+            ]}
           />
         </Pressable>
+
         <Pressable
-          style={styles.Pressable}
+          style={[
+            styles.Pressable,
+            activeScreen === 'MenuStackPage' && styles.activeButton,
+          ]}
           onPress={() => {
-            navigation.navigate('Menu');
+            navigation.navigate('MenuStackPage');
           }}>
           <Image
-            source={require('../assets/accueil.png')}
-            style={styles.Image}
+            source={
+              activeScreen === 'MenuStackPage'
+                ? require('../assets/HomeBlack.png')
+                : require('../assets/HomeWhite.png')
+            }
+            style={[
+              styles.Image,
+              activeScreen === 'MenuStackPage' && styles.activeImage,
+            ]}
           />
         </Pressable>
+
         {/* <Pressable
           style={styles.Pressable}
           onPress={() => {
@@ -48,15 +73,19 @@ function NavBar() {
     </>
   );
 }
+
 const styles = StyleSheet.create({
   Container: {
-    width: '90%',
-    height: 50,
-    backgroundColor: '#cab2fa',
+    width: '100%',
+    height: '100%',
+    backgroundColor: '#161326',
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    borderRadius: 40,
+    borderTopLeftRadius: 15,
+    borderTopRightRadius: 15,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 0,
   },
   Pressable: {
     width: '30%',
@@ -65,8 +94,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   Image: {
-    width: '50%',
+    width: 45,
+    height: 45,
+    // opacity: 0.8,
+    // #837e7e
+  },
+  activeImage: {
+    width: 45,
+    height: 45,
+  },
+  activeButton: {
+    width: '30%',
     height: '80%',
+    borderRadius: 30,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'white',
   },
 });
 export default NavBar;

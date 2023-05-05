@@ -1,129 +1,131 @@
 /*eslint-disable prettier/prettier*/
 
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import {
-  StatusBar,
-  StyleSheet,
-  View,
-  Text,
-  SafeAreaView,
   FlatList,
+  SafeAreaView,
+  StatusBar,
+  Text,
+  View,
+  StyleSheet,
   TouchableOpacity,
-
-  // Dimensions,
+  Image,
+  Dimensions,
+  Linking,
 } from 'react-native';
-
 import NavBar from '../components/NavBar';
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParams} from '../App';
-
-// const screenHeight = Dimensions.get('screen').height;
-const Articles = [
-  {
-    id: 1,
-    titre: 'Article 1phasiuuhqqvnuelzt',
-
-    reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-    object:
-      'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  },
-  {
-    id: 2,
-    titre: 'Article 1phasiuuhqqvnuelzt',
-
-    reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-    object:
-      'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  },
-
-  {
-    id: 3,
-    titre: 'Article 1phasiuuhqqvnuelzt',
-    image: require('../assets/PH1.png'),
-    reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-    object:
-      'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  },
-  {
-    id: 4,
-    titre: 'Article 1phasiuuhqqvnuelzt',
-    image: '../assets/PH1.png',
-    reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-    object:
-      'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  },
-  /*
-  {
-    id: 5,
-    titre: 'Article 1phasiuuhqqvnuelzt',
-    image: '../assets/PH1.png',
-    reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-    object:
-      'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  },
-  {
-    id: 6,
-    titre: 'Article 1phasiuuhqqvnuelzt',
-    image: '../assets/PH1.png',
-    reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-    object:
-      'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  },
-  {
-    id: 7,
-    titre: 'Article 1phasiuuhqqvnuelzt',
-    image: '../assets/PH1.png',
-    reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-    object:
-      'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  },
-  {
-    id: 8,
-    titre: 'Article 1phasiuuhqqvnuelzt',
-    image: require('../assets/PH1.png'),
-    reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-    object:
-      'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  }, */
-];
-
-function News() {
+import {BottomBarContext, RootStackParams} from '../App';
+const {height} = Dimensions.get('window');
+const BottomBar = height * 0.08;
+const contentHeight = height * 0.9 - BottomBar + 6.7;
+export default function News() {
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
-  const renderItem = ({item}: any) => (
-    <TouchableOpacity
-      onPress={() => {
-        navigation.navigate('Article', item.id);
-      }}
-      style={styles.OneArticle}>
-      <Text style={{fontSize: 24, fontWeight: 'bold'}}>{item.titre}</Text>
-      <Text style={{fontSize: 18, marginTop: 15, fontWeight: '600'}}>
-        {item.reason}
-      </Text>
-      <Text numberOfLines={8} style={styles.Paragh}>
-        {item.object}
-      </Text>
-    </TouchableOpacity>
-  );
+  const {setActiveScreen} = useContext(BottomBarContext);
+
+  useFocusEffect(() => {
+    setActiveScreen('News');
+  });
+
+  const Articles = [
+    {
+      id: 1,
+      titre: 'Article1 1phasiuuhqqvnuelzt',
+      image: require('../assets/PH1.png'),
+      reason: '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+      object:
+        '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+    },
+    {
+      id: 2,
+      titre: 'Article2 1phasiuuhqqvnuelzt',
+      image: require('../assets/PH1.png'),
+      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+      object:
+        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+    },
+
+    {
+      id: 3,
+      titre: 'Article3 1phasiuuhqqvnuelzt',
+      image: require('../assets/PH1.png'),
+      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+      object:
+        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+    },
+    {
+      id: 4,
+      titre: 'Article4 1phasiuuhqqvnuelzt',
+      image: require('../assets/PH1.png'),
+      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+      object:
+        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+    },
+
+    {
+      id: 5,
+      titre: 'Article5 1phasiuuhqqvnuelzt',
+      image: require('../assets/PH1.png'),
+      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+      object:
+        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+    },
+    {
+      id: 6,
+      titre: 'Article6 1phasiuuhqqvnuelzt',
+      image: require('../assets/PH1.png'),
+      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+      object:
+        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+    },
+    {
+      id: 7,
+      titre: 'Article7 1phasiuuhqqvnuelzt',
+      image: require('../assets/PH1.png'),
+      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+      object:
+        '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+    },
+    {
+      id: 8,
+      titre: 'Article8 1phasiuuhqqvnuelzt',
+      image: require('../assets/PH1.png'),
+      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+      object:
+        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+    },
+  ];
 
   return (
     <>
       <StatusBar />
       <SafeAreaView style={{flex: 1}}>
         <View style={styles.Container}>
-          <View style={styles.CardContainer}>
+          <View style={styles.Container}>
             <FlatList
               data={Articles}
-              renderItem={renderItem}
-              keyExtractor={(Article: any) => Article.id}
+              keyExtractor={(item: any) => item.id}
               contentContainerStyle={styles.FlatList}
+              scrollEventThrottle={16}
+              renderItem={({item}) => {
+                return (
+                  <TouchableOpacity
+                    onPress={() => {
+                      //to send user to facebook or website
+                      Linking.openURL('https://www.facebook.com/article-url');
+                    }}
+                    style={styles.OneArticle}>
+                    <Image source={item.image} style={styles.Image} />
+                    <View style={styles.TextContainer}>
+                      <Text style={styles.title}>{item.titre}</Text>
+                      <Text style={styles.Reason}>{item.reason}</Text>
+                      <Text style={styles.Paragh}>{item.object}</Text>
+                    </View>
+                  </TouchableOpacity>
+                );
+              }}
             />
           </View>
           <View style={styles.NavContainer}>
@@ -134,48 +136,44 @@ function News() {
     </>
   );
 }
-
 const styles = StyleSheet.create({
   Container: {
-    backgroundColor: '#030bfc',
-    /* height: screenHeight, */
     flex: 1,
     flexGrow: 1,
   },
-  Image: {
-    width: '100%',
-    height: 120,
-    resizeMode: 'contain',
+  NavContainer: {
+    height: BottomBar,
   },
-  CardContainer: {
-    flex: 1,
-    width: '100%',
-    backgroundColor: '#74e2b2',
-  },
-  FlatList: {
-    alignItems: 'center',
+  TextContainer: {
+    padding: '3%',
   },
   OneArticle: {
-    padding: '5%',
-    height: 290,
-    width: '90%',
-    backgroundColor: '#074757',
-    marginTop: '10%',
+    width: '100%',
+    height: contentHeight,
+    backgroundColor: 'whitesmoke',
     borderRadius: 15,
   },
-  Paragh: {
-    fontSize: 14,
-    overflow: 'hidden',
-    flexShrink: 1,
-    marginTop: 15,
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'black',
   },
-  NavContainer: {
-    position: 'absolute',
-    bottom: 20,
-    alignItems: 'center',
-    left: 0,
-    right: 0,
+  Reason: {
+    fontSize: 18,
+    marginTop: 15,
+    fontWeight: '600',
+    color: 'black',
+  },
+  Paragh: {
+    fontSize: 18,
+    marginTop: 15,
+    color: 'black',
+  },
+  Image: {
+    width: '100%',
+    height: '30%',
+  },
+  FlatList: {
+    backgroundColor: 'white',
   },
 });
-
-export default News;

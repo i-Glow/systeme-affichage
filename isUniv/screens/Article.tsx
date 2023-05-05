@@ -7,57 +7,30 @@
  * @format
  */
 // import {NativeStackScreenProps} from '@react-navigation/native-stack';
+// import {useRoute} from '@react-navigation/native';
 import React from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  View,
-  Text,
-  TouchableOpacity,
-  Image,
-} from 'react-native';
-/*
-TODO: activate it and pass it as a type to prop
-import {RootStackParams} from '../App';
+import {SafeAreaView, StatusBar, StyleSheet, View, Text} from 'react-native';
 
-type Props = NativeStackScreenProps<RootStackParams, 'Article'>;
-*/
 export default function Article() {
+  // const route = useRoute();
+  // const {id} = route.params;
   /*TODO: id: Props => useEffect => useCallBack => handle the id TO FETCH DATA */
   return (
     <>
       <StatusBar />
       <SafeAreaView style={{flex: 1}}>
         <View style={styles.Container}>
-          <Image source={require('../assets/PH1.png')} style={styles.Image} />
+          {/* <Image source={require('../assets/PH1.png')} style={styles.Image} /> */}
           <View style={styles.TextContainer}>
-            <Text style={{fontSize: 24, fontWeight: 'bold', color: 'white'}}>
-              THERE IS SOME TEXT
-            </Text>
+            <Text style={styles.title}>THERE IS SOME TEXT</Text>
             <Text style={{color: 'whitesmoke'}}>9 hours by Admin</Text>
-            <Text
-              style={{
-                fontSize: 18,
-                marginTop: 15,
-                fontWeight: '500',
-                color: 'white',
-              }}>
+            <Text style={styles.Reason}>
               Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc
             </Text>
-            <Text style={{fontSize: 18, marginTop: 15, color: 'white'}}>
+            <Text style={styles.Paragh}>
               Object
               1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt
             </Text>
-
-            <View style={styles.Button}>
-              <TouchableOpacity
-                onPress={() => {
-                  /*TODO: tike the use to the desired Link (fp,google,...)*/
-                }}>
-                <Text style={styles.Link}>Savoir plus</Text>
-              </TouchableOpacity>
-            </View>
           </View>
         </View>
       </SafeAreaView>
@@ -69,6 +42,24 @@ const styles = StyleSheet.create({
   Container: {
     flex: 1,
     flexGrow: 1,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: 'white',
+  },
+  Reason: {
+    fontSize: 18,
+    marginTop: 15,
+    fontWeight: '600',
+    color: 'white',
+  },
+  Paragh: {
+    fontSize: 16,
+    overflow: 'hidden',
+    flexShrink: 1,
+    marginTop: 15,
+    color: 'white',
   },
   Button: {
     width: '100%',
