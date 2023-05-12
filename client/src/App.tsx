@@ -29,25 +29,19 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute redirectPath="/signin" />}>
             <Route path="/" element={<Layout />}>
-              <Route path="/articles" element={<Articles />}></Route>
+              <Route path="/articles" element={<Articles />} />
               <Route path="articles/:archiveId" element={<ArticleDetails />} />
-              <Route
-                path="articles/nouveau"
-                element={<CreateArticle />}
-              ></Route>
+              <Route path="articles/nouveau" element={<CreateArticle />} />
               <Route path="articles/edit/:id" element={<CreateArticle />} />
               <Route element={<AdminOnlyRoute />}>
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/nouveau" element={<CreateUser />} />
               </Route>
-              <Route
-                path="/pendingarticles"
-                element={<PendingArticle />}
-              ></Route>
+              <Route path="/pendingarticles" element={<PendingArticle />} />
               <Route
                 path="/pendingarticles/:PendingActicleDetail"
                 element={<PendingActicleDetail />}
-              ></Route>
+              />
               <Route path="/archive" element={<Archive />} />
             </Route>
           </Route>

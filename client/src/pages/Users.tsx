@@ -115,11 +115,18 @@ export default function Users() {
                 key={userData.user_id}
                 actions={UserAdminActions(userData)}
               >
-                <Flex jc="space-between" ai="flex-start" gap="50px">
-                  <div style={{ width: "100px" }}>
+                <Flex jc="space-between" ai="flex-start" gap="20px">
+                  <div style={{ width: "150px" }}>
                     <Flex jc="flex-start" gap="5px">
-                      <h4>{userData.nom}</h4>
-                      <h4>{userData.prenom}</h4>
+                      <h4
+                        style={{
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                        }}
+                      >
+                        {userData.nom} {userData.prenom}
+                      </h4>
                       {userData.user_id === user?.user_id ? (
                         <h5 style={{ color: "green" }}>(You)</h5>
                       ) : null}

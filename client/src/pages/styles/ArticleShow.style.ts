@@ -47,15 +47,15 @@ export const CardBottom = styled.div`
   width: calc(100% +20px);
 `;
 
-export const Title = styled.h1`
-  letter-spacing: 1, 7px;
-  font-size: 18px;
-  overflow-wrap: break-word;
-  max-width: 100ch;
-  overflow: hidden;
-  text-align: center;
-  font-weight: 700;
-`;
+// export const Title = styled.h1`
+//   letter-spacing: 1, 7px;
+//   font-size: 18px;
+//   overflow-wrap: break-word;
+//   max-width: 100ch;
+//   overflow: hidden;
+//   text-align: center;
+//   font-weight: 700;
+// `;
 
 export const Parag = styled.p`
   display: inline;
@@ -67,9 +67,9 @@ export const Parag = styled.p`
   font-weight: 600;
 `;
 
-export const Niveau = styled.p`
-  font-size: 20px;
-`;
+// export const Niveau = styled.p`
+//   font-size: 20px;
+// `;
 
 export const CardVoid = styled(Card)`
   justify-content: none;
@@ -121,4 +121,10 @@ export const IconCtn = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+`;
+
+// NEW
+export const Niveau = styled.h2`
+  height: 50px;
+  border-bottom: 1px solid #b8b8b8;
 `;

@@ -5,6 +5,7 @@ import {
   LinkContainer,
   Logout,
   Notification,
+  RouteName,
   SideBar,
 } from "./Style/Sidebar.styles";
 import routes from "../utils/routes";
@@ -105,7 +106,7 @@ export default function Sidebar() {
           >
             <Flex jc="flex-start" gap="7px">
               {route.icon}
-              <p>{route.name}</p>
+              <RouteName>{route.name}</RouteName>
             </Flex>
             {route.name === "pending articles" && pendingCount > 0 && (
               <Notification>{pendingCount}</Notification>

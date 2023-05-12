@@ -12,7 +12,7 @@ services:
     networks:
       - shared-network
     volumes:
-      - ./database:/var/lib/postgresql/data
+      - database:/var/lib/postgresql/data
 
   server:
     container_name: affichage_server
@@ -54,3 +54,6 @@ services:
 
 networks:
   shared-network:
+
+volumes:
+  database:

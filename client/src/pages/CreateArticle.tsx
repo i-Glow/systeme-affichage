@@ -243,6 +243,18 @@ export default function CreateArticle() {
             rules={[{ required: true }]}
             requiredMark={true}
           >
+            <Flex jc="start">
+              <Button
+                onClick={() => setContenu((prev) => prev + "[qr:]")}
+                type="text"
+                size="small"
+              >
+                QR
+              </Button>
+              <Button type="text" size="small">
+                URL
+              </Button>
+            </Flex>
             <Input.TextArea
               value={contenu}
               required

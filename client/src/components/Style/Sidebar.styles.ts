@@ -20,6 +20,11 @@ export const SideBar = styled.div`
   border-right: 1px solid rgb(var(--border));
   background-color: white;
   z-index: 10;
+
+  @media (max-width: 768px) {
+    width: 60px;
+    min-width: 60px;
+  }
 `;
 
 export const LinkContainer = styled(Link)`
@@ -41,7 +46,7 @@ export const LinkContainer = styled(Link)`
   &::before {
     content: "";
     width: 4px;
-    height: 46px;
+    height: 44px;
     border-top-right-radius: 6px;
     border-bottom-right-radius: 6px;
     background-color: ${({ isfocused }: params) =>
@@ -49,6 +54,10 @@ export const LinkContainer = styled(Link)`
     position: absolute;
     left: -11px;
     top: -2px;
+  }
+
+  @media (max-width: 768px) {
+    padding: 10px;
   }
 `;
 
@@ -80,4 +89,10 @@ export const Logout = styled.div`
   padding-left: 25px;
   color: gray;
   cursor: pointer;
+`;
+
+export const RouteName = styled.p`
+  @media (max-width: 768px) {
+    display: none;
+  }
 `;
