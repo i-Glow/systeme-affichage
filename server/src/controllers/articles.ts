@@ -106,15 +106,6 @@ const getArticle = async (req: Request, res: Response) => {
   }
 };
 
-interface SearchQuery {
-  page: number;
-  pageSize: number;
-  search: string;
-  nom: string;
-  prenom: string;
-  levels: string[];
-}
-
 const getArchive = async (req: Request, res: Response) => {
   try {
     // Check if user is an admin

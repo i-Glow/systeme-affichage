@@ -1,7 +1,9 @@
 import { Request, Response } from "express";
 import prisma from "../db";
+import CustomRequest from "../types/CustomRquest";
+import bcrypt, { hash } from "bcrypt";
 
-const getUsers = async (req: Request, res: Response) => {
+const getUsers = async (req: CustomRequest, res: Response) => {
   try {
     const users = await prisma.user.findMany({
       select: {
@@ -48,4 +50,28 @@ const suspendUser = async (req: Request, res: Response) => {
   }
 };
 
-export { getUsers, suspendUser };
+const changeUserPassword = async (req: Request, res: Response) => {
+  try {
+    const { newPassword } = req.body;
+
+    const { id } = req.params;
+
+    const hashedPassword = await bcrypt.hash(newPassword, 12);
+
+    await prisma.user.update({
+      data: {
+        password: hashedPassword,
+      },
+      where: {
+        user_id: id,
+      },
+    });
+
+    res.status(200).send({ message: "password succesfuly updated" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Couldn't change password" });
+  }
+};
+
+export { getUsers, suspendUser, changeUserPassword };

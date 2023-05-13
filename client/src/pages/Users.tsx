@@ -1,15 +1,27 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import useAxios from "../hooks/useAxios";
 import { useAuth } from "../context/AuthProvider";
 
-import { List, Popconfirm, Spin, Tooltip } from "antd";
-import { Link } from "react-router-dom";
+import {
+  Button,
+  Form,
+  Input,
+  List,
+  message,
+  Popconfirm,
+  Space,
+  Spin,
+  Tooltip,
+} from "antd";
+import { Link, useNavigate } from "react-router-dom";
 import PageHeader from "../components/PageHeader";
 import Flex from "../components/shared/Flex";
 
-import { Pause, Resume, Wrapper } from "./styles/Users.styles";
+import { Edit, Pause, Resume, Wrapper } from "./styles/Users.styles";
 
-import { user } from "../types";
+import type { user } from "../types";
+import { BsCheckLg } from "react-icons/bs";
+import { GrFormClose } from "react-icons/gr";
 
 export default function Users() {
   const [users, setUsers] = useState<user[]>([]);
@@ -17,8 +29,6 @@ export default function Users() {
   const axios = useAxios();
 
   function UserAdminActions(userData: user) {
-    if (userData.user_id === user?.user_id) return [];
-
     const actionProps = userData.suspended
       ? {
           title: "unsuspend",
@@ -33,24 +43,27 @@ export default function Users() {
           okType: "danger",
         };
 
-    return [
-      //@ts-ignore
-      <Popconfirm
-        {...actionProps}
-        cancelText="Annuler"
-        onConfirm={() => suspendUser(userData.user_id, !userData.suspended)}
-      >
-        {userData.suspended ? (
-          <Tooltip title="lift suspension">
-            <Resume />
-          </Tooltip>
-        ) : (
-          <Tooltip title="suspend account">
-            <Pause />
-          </Tooltip>
-        )}
-      </Popconfirm>,
-    ];
+    return userData.user_id !== user?.user_id
+      ? [
+          //@ts-ignore
+          <Popconfirm
+            {...actionProps}
+            cancelText="Cancel"
+            onConfirm={() => suspendUser(userData.user_id, !userData.suspended)}
+          >
+            {userData.suspended ? (
+              <Tooltip title="lift suspension">
+                <Resume />
+              </Tooltip>
+            ) : (
+              <Tooltip title="suspend account">
+                <Pause />
+              </Tooltip>
+            )}
+          </Popconfirm>,
+          <ChangePassword userid={userData.user_id} />,
+        ]
+      : [<ChangePassword userid={userData.user_id} />];
   }
 
   const suspendUser = useCallback(async (id: string, suspend: boolean) => {
@@ -152,6 +165,90 @@ export default function Users() {
           )}
         </List>
       </Wrapper>
+    </>
+  );
+}
+
+function ChangePassword({ userid }: { userid: string }) {
+  const axios = useAxios();
+  const navigate = useNavigate();
+  const { token } = useAuth();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [isChangePassword, setIsChangePassword] = useState(false);
+  const newPassword = useRef("");
+
+  async function handlePasswordChange() {
+    if (newPassword.current.length < 8) return;
+
+    try {
+      const res = await axios.put(
+        `/users/${userid}/changePassword`,
+        { newPassword: newPassword.current },
+        {
+          withCredentials: true,
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      if (res.status === 200) {
+        messageApi.open({
+          type: "success",
+          content: res.data.message,
+        });
+
+        setIsChangePassword(false);
+      }
+      navigate("/users");
+    } catch (error) {
+      console.error(error);
+      messageApi.open({
+        type: "error",
+        content: "Error",
+      });
+    }
+  }
+
+  return (
+    <>
+      {contextHolder}
+      {isChangePassword ? (
+        <>
+          <Form style={{ height: "25px" }}>
+            <Form.Item
+              rules={[
+                {
+                  required: true,
+                  message: "at least 8 characters",
+                  min: 8,
+                },
+              ]}
+              name=""
+            >
+              <Space.Compact style={{ width: "180px" }}>
+                <Input
+                  placeholder="New password"
+                  onChange={(e) => (newPassword.current = e.target.value)}
+                />
+                <Button type="primary" onClick={handlePasswordChange}>
+                  <BsCheckLg />
+                </Button>
+              </Space.Compact>
+              <Button
+                style={{ marginLeft: "4px" }}
+                type="dashed"
+                shape="circle"
+                icon={<GrFormClose />}
+                onClick={() => setIsChangePassword(false)}
+              />
+            </Form.Item>
+          </Form>
+        </>
+      ) : (
+        <Tooltip title="change password">
+          <Edit onClick={() => setIsChangePassword(true)} />
+        </Tooltip>
+      )}
     </>
   );
 }
