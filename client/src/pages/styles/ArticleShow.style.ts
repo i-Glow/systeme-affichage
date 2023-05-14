@@ -122,5 +122,3 @@ export const IconCtn = styled.div`
   justify-content: center;
   align-items: center;
 `;
-
-// NEW
