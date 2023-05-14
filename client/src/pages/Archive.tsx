@@ -278,6 +278,8 @@ export default function Archive() {
           render={(article: article) =>
             article.niveau.map((niv, key) => (
               <Tag color={levelColors.get(niv)} key={key}>
+                {" "}
+                {/* give each tag a color */}
                 {niv}
               </Tag>
             ))
@@ -286,7 +288,7 @@ export default function Archive() {
         <Column
           title="Date"
           render={({ created_at }) => (
-            <p>{created_at.replace("T", " ").split(".")[0]}</p>
+            <p>{created_at.replace("T", " ").split(".")[0]}</p> // format date
           )}
         />
         <Column

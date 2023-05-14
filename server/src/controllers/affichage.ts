@@ -1,5 +1,5 @@
 import prisma from "../db";
-import { Request, Response } from "express";
+import type { Request, Response } from "express";
 import { State } from "@prisma/client";
 
 const getAffichage = async (req: Request, res: Response) => {
@@ -48,4 +48,29 @@ const getAffichage = async (req: Request, res: Response) => {
   }
 };
 
-export { getAffichage };
+const getMobileAffichage = async (req: Request, res: Response) => {
+  try {
+    const { level }: any = req.query;
+
+    const articles = await prisma.article.findMany({
+      select: {
+        article_id: true,
+        titre: true,
+        contenu: true,
+        created_at: true,
+      },
+      where: {
+        niveau: level.length ? { hasSome: level } : { isEmpty: false },
+      },
+    });
+
+    console.log(articles);
+
+    res.status(200).send(articles);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "error getting affichage" });
+  }
+};
+
+export { getAffichage, getMobileAffichage };

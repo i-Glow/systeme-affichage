@@ -44,6 +44,16 @@ CREATE TABLE "user" (
     CONSTRAINT "user_pkey" PRIMARY KEY ("user_id")
 );
 
+-- CreateTable
+CREATE TABLE "student" (
+    "matricule" TEXT NOT NULL,
+    "nom" TEXT NOT NULL,
+    "prenom" TEXT NOT NULL,
+    "niveau" TEXT NOT NULL,
+
+    CONSTRAINT "student_pkey" PRIMARY KEY ("matricule")
+);
+
 -- CreateIndex
 CREATE INDEX "article_titre_contenu_idx" ON "article"("titre", "contenu");
 

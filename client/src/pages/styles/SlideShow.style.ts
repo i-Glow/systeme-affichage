@@ -97,7 +97,7 @@ export const Div = styled.div`
     content: "";
     display: block;
     margin-top: 20px;
-    height: 2px;
+    /* height: 2px; */
     background-color: #2a2a2a;
     width: 60%;
     margin-left: auto;
