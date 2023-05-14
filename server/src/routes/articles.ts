@@ -1,6 +1,5 @@
 import Router from "express";
 import {
-  approveArticle,
   createArticle,
   deleteArticle,
   editArticle,
@@ -29,9 +28,7 @@ router.get("/:id", getArticle);
 
 router.post("/", createArticle);
 
-router.put("/aprove/:id", approveArticle);
-
-router.put("/reject/:id", editArticleState);
+router.put("/state/:id", editArticleState);
 
 router.put("/:id", editArticle);
 

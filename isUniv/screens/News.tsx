@@ -1,6 +1,6 @@
 /*eslint-disable prettier/prettier*/
 
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -17,9 +17,11 @@ import NavBar from '../components/NavBar';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {BottomBarContext, RootStackParams} from '../App';
+import isArabic from '../utils/isArabic';
 const {height} = Dimensions.get('window');
 const BottomBar = height * 0.08;
-const contentHeight = height * 0.9 - BottomBar + 6.7;
+const contentHeight = height - BottomBar - 20;
+
 export default function News() {
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
@@ -36,7 +38,7 @@ export default function News() {
       image: require('../assets/PH1.png'),
       reason: '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
       object:
-        '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+        '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmssssssssssssssssssssssssssssssssssssssssssssssssssssssssssspnbkqlabyjvfsddddddddddddddddddddddddddddsssssssssssssssssssssssssssssssssssssssssssssssssstuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
     },
     {
       id: 2,
@@ -110,6 +112,7 @@ export default function News() {
               contentContainerStyle={styles.FlatList}
               scrollEventThrottle={16}
               renderItem={({item}) => {
+                const isArabicText = isArabic(item.titre);
                 return (
                   <TouchableOpacity
                     onPress={() => {
@@ -119,9 +122,34 @@ export default function News() {
                     style={styles.OneArticle}>
                     <Image source={item.image} style={styles.Image} />
                     <View style={styles.TextContainer}>
-                      <Text style={styles.title}>{item.titre}</Text>
-                      <Text style={styles.Reason}>{item.reason}</Text>
-                      <Text style={styles.Paragh}>{item.object}</Text>
+                      <Text
+                        style={[
+                          isArabicText
+                            ? {textAlign: 'right', writingDirection: 'rtl'}
+                            : {textAlign: 'left', writingDirection: 'ltr'},
+                          styles.title,
+                        ]}>
+                        {item.titre}
+                      </Text>
+                      <Text
+                        style={[
+                          isArabicText
+                            ? {textAlign: 'right', writingDirection: 'rtl'}
+                            : {textAlign: 'left', writingDirection: 'ltr'},
+                          styles.Reason,
+                        ]}>
+                        {item.reason}
+                      </Text>
+                      <Text
+                        numberOfLines={16}
+                        style={[
+                          isArabicText
+                            ? {textAlign: 'right', writingDirection: 'rtl'}
+                            : {textAlign: 'left', writingDirection: 'ltr'},
+                          styles.Paragh,
+                        ]}>
+                        {item.object}
+                      </Text>
                     </View>
                   </TouchableOpacity>
                 );
@@ -145,7 +173,8 @@ const styles = StyleSheet.create({
     height: BottomBar,
   },
   TextContainer: {
-    padding: '3%',
+    padding: '5%',
+    textAlign: 'left',
   },
   OneArticle: {
     width: '100%',

@@ -20,7 +20,7 @@ import TicketPage from './screens/TicketPage';
 import Testimonial from './screens/Testimonial';
 import SchoolCertificate from './screens/SchoolCertificate';
 import Login from './screens/LogIn';
-
+import Profile from './screens/Profile';
 export type RootStackParams = {
   News: undefined;
   Article: {
@@ -29,6 +29,7 @@ export type RootStackParams = {
   MenuStackPage: undefined;
   Login: undefined;
   BarCodeScanner: undefined;
+  Profile: undefined;
 };
 
 export type MenuStackParams = {
@@ -41,6 +42,7 @@ export type MenuStackParams = {
 export type SuppotStackParams = {
   Support: undefined;
   GradeRepport: undefined;
+
   TicketPage: {
     type: string;
   };
@@ -85,6 +87,7 @@ function MenuStackPage() {
       />
       <MenuStack.Screen name="Map" component={Map} />
       <MenuStack.Screen name="Affichage" component={Affichage} />
+
       <MenuStack.Screen
         name="SupportStackPage"
         component={SupportStackPage}
@@ -123,6 +126,12 @@ function App() {
               options={{headerLeft: () => <></>, headerTitle: 'News'}}
             />
             <AppStack.Screen name="Article" component={Article} />
+            <AppStack.Screen
+              name="Profile"
+              component={Profile}
+              options={{headerShown: false}}
+            />
+
             <AppStack.Screen
               name="MenuStackPage"
               component={MenuStackPage}

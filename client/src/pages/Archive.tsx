@@ -12,7 +12,7 @@ import Flex from "../components/shared/Flex";
 import { AiOutlineSearch } from "react-icons/ai";
 import { VscOpenPreview } from "react-icons/vsc";
 // types
-import { article } from "../types";
+import type { article } from "../types";
 
 const PAGE_SIZE = 10;
 
@@ -21,26 +21,47 @@ interface creator {
   prenom: string;
 }
 
+interface DefaultParams {
+  page: number;
+  pageSize: number;
+  search: string;
+  levels: string[];
+}
+
+interface SearchParams extends DefaultParams {
+  creator: creator;
+}
+
+interface URLSearchParams extends DefaultParams {
+  nom: string;
+  prenom: string;
+}
+
+// type ParamsFields = 'page' | 'pageSize' | 'search' | 'levels' | 'creator' | 'nom' | 'prenom';
+
 export default function Archive() {
   const axios = useAxios();
   const [searchParams, setSearchParams] = useSearchParams({});
   const { token } = useAuth();
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [currentPage, setCurrentPage] = useState<number>(
-    Number(searchParams.get("page")) || 1
-  );
 
   const [articles, setArticles] = useState<article[]>([]);
   const [articleCount, setArticleCount] = useState<number>(0);
+  //filters
+  const [currentPage, setCurrentPage] = useState<number>(
+    Number(searchParams.get("page")) || 1
+  );
   const [searchTerm, setSearchTerm] = useState(searchParams.get("query") || "");
+  const debouncedSearchTerm = useDebounce(searchTerm, 200);
   const [creator, setCreator] = useState<creator>({
     nom: searchParams.get("name") || "",
     prenom: searchParams.get("firstname") || "",
   });
+  const [levels, setLevels] = useState(
+    searchParams.get("levels")?.split(",") || []
+  );
   const [allCreators, setAllCreators] = useState<creator[]>([]);
-
-  const debouncedSearchTerm = useDebounce(searchTerm, 200);
 
   const handleSearchTermChange = (
     event: React.ChangeEvent<HTMLInputElement>
@@ -48,19 +69,28 @@ export default function Archive() {
     setSearchTerm(event.target.value);
   };
 
-  async function getArchive(
-    page = 1,
-    pageSize = 10,
-    search = "",
-    creator: creator
-  ) {
+  async function getArchive(params: SearchParams) {
+    const { page = 1, pageSize = 10, search = "", creator, levels } = params;
+
+    let urlSearchParams: URLSearchParams | {} = {};
+
+    //update url with only existing values
+    for (const [key, value] of Object.entries(params)) {
+      if (key === "creator") {
+        if (value.nom !== undefined && value.nom !== null && value.nom !== "") {
+          (urlSearchParams as URLSearchParams)["nom"] = value.nom;
+          (urlSearchParams as URLSearchParams)["prenom"] = value.prenom;
+        }
+      } else {
+        if (value !== undefined && value !== null && value !== "") {
+          //@ts-ignore
+          (urlSearchParams as URLSearchParams)[key] = value;
+        }
+      }
+    }
+
     //update url params
-    setSearchParams({
-      query: search,
-      page: `${page}`,
-      name: creator.nom,
-      firstname: creator.prenom,
-    });
+    setSearchParams(urlSearchParams);
     setLoading(true);
     try {
       const res = await axios.get("/articles/archive", {
@@ -70,6 +100,7 @@ export default function Archive() {
           search,
           nom: creator.nom,
           prenom: creator.prenom,
+          levels: `${levels}`,
         },
         withCredentials: true,
         headers: {
@@ -103,18 +134,53 @@ export default function Archive() {
     }
   }
 
+  //fetches search results
   useEffect(() => {
     if (debouncedSearchTerm) {
       setCurrentPage(1);
-      getArchive(currentPage, PAGE_SIZE, debouncedSearchTerm, creator);
+      getArchive({
+        page: currentPage,
+        pageSize: PAGE_SIZE,
+        search: debouncedSearchTerm,
+        creator,
+        levels,
+      });
     } else {
-      getArchive(currentPage, PAGE_SIZE, searchTerm, creator);
+      getArchive({
+        page: currentPage,
+        pageSize: PAGE_SIZE,
+        search: searchTerm,
+        creator,
+        levels,
+      });
     }
-  }, [debouncedSearchTerm, currentPage, creator]);
+  }, [debouncedSearchTerm, currentPage, creator, levels]);
 
+  // fetches all creators
   useEffect(() => {
     getAllCreators();
   }, []);
+
+  function tagRender({ label, value, onClose }: any) {
+    return (
+      <Tag
+        color={levelColors.get(value)}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          e.preventDefault();
+          setLevels((levels) => levels.filter((level) => level !== value));
+        }}
+        closable
+        onClose={() => {
+          onClose();
+          setLevels((levels) => levels.filter((level) => level !== value));
+        }}
+        style={{ marginRight: 3 }}
+      >
+        {label}
+      </Tag>
+    );
+  }
 
   return (
     <div>
@@ -134,7 +200,8 @@ export default function Archive() {
         />
         <Select
           style={{ width: 120 }}
-          value={creator.nom ? `${creator.nom}+${creator.prenom}` : "creator"}
+          value={creator.nom ? `${creator.nom}+${creator.prenom}` : null}
+          placeholder="creator"
           onChange={(value) => {
             setCurrentPage(1);
             setCreator({
@@ -149,6 +216,27 @@ export default function Archive() {
             };
           })}
           allowClear
+        />
+        <Select
+          mode="multiple"
+          showArrow
+          tagRender={tagRender}
+          placeholder="level"
+          allowClear
+          value={levels.length ? levels : undefined}
+          style={{ minWidth: "130px", paddingRight: "5px" }}
+          maxTagCount={6}
+          onChange={(value) => {
+            setLevels(value);
+          }}
+          options={[
+            { value: "L1" },
+            { value: "L2" },
+            { value: "L3" },
+            { value: "M1" },
+            { value: "M2" },
+            { value: "D" },
+          ]}
         />
       </Flex>
       <Table
@@ -183,11 +271,6 @@ export default function Archive() {
               <span>{creator.prenom}</span>
             </>
           )}
-          // filters={creators}
-          // onFilter={(value, record: article) => {
-          //   let user = record.creator.nom + " " + record.creator.prenom;
-          //   return user.includes(value as string);
-          // }}
         />
         <Column
           title="Level"

@@ -10,8 +10,10 @@ const HtmlScript = `
 	<title>Quick Start - Leaflet</title>
 	
 	<link rel="shortcut icon" type="image/x-icon" href="docs/images/favicon.ico" />
-
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin=""/>
+
+	<link rel="stylesheet" href="leaflet-routing-machine.css" />
+	<script src="leaflet-routing-machine.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
 
 	
@@ -34,9 +36,9 @@ const HtmlScript = `
 <body>
 
 
-<div id="map" style="width: 600px; height: 400px;"></div>
+<div id="map" style="width: 100%; height: 80%;"></div>
 <script>
-
+	
 	const map = L.map('map').setView([36.814016, 7.720433], 16);
 
 	const tiles = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -51,6 +53,8 @@ const HtmlScript = `
 			.openOn(map);
 	}
 	map.on('click', onMapClick);
+
+	
 
 </script>
 

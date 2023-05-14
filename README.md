@@ -4,6 +4,8 @@
 
 [PostgreSQL](https://www.postgresql.org/) - [Nodejs](https://nodejs.org/en/)
 
+### Update environment variables according to .env.example
+
 ### Install dependencies
 
 _server dependencies_
@@ -13,8 +15,10 @@ _server dependencies_
   npm install
 ```
 
+Generate Prisma Client
+
 ```bash
-  npm install -g prisma
+  npx prisma generate
 ```
 
 Migrate the database
@@ -28,6 +32,7 @@ _client dependencies_
 ```bash
   cd client
   npm install
+  npm i serve
 ```
 
 # Start apps
@@ -47,7 +52,7 @@ _client_
 _server_
 
 ```bash
-  npx tsc
+  npm run build
 ```
 
 # Run the build
@@ -55,8 +60,7 @@ _server_
 _client_
 
 ```bash
-  sudo npm install -g serve
-  serve dist -s -p 5173 -n --no-port-switching
+  npm start
 ```
 
 _server_
@@ -67,6 +71,21 @@ _server_
 
 _production database_
 
+deployment
+
+```bash
+  npx prisma db push
+```
+
+migrations
+
 ```bash
   npx prisma migrate deploy
+```
+
+## Or using Docker compose
+
+```bash
+  docker-compose build
+  docker-compose up
 ```

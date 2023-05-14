@@ -34,11 +34,11 @@ export default function Archive() {
         <VscOpenPreview fontSize={18} cursor="pointer" />
       </Link>
       <Popconfirm
-        title="supprimer"
-        description="Voulez-vous supprimer ce article?"
-        okText="Supprimer"
+        title="delete"
+        description="Are you sure you want to delete this article?"
+        okText="Delete"
         okType="danger"
-        cancelText="Annuler"
+        cancelText="Cancel"
         okButtonProps={{ loading: confirmLoading }}
         onConfirm={() => ChangeArticleState(record.article_id)}
       >
@@ -53,11 +53,11 @@ export default function Archive() {
       let config: AxiosRequestConfig;
       config = {
         method: "put",
-        url: `/articles/reject/${id}`,
+        url: `/articles/state/${id}`,
+        data: { state: "deleted" },
       };
       const res = await axios({
         ...config,
-        data,
         withCredentials: true,
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -142,7 +142,15 @@ export default function Archive() {
           rowKey="article_id"
           size="middle"
         >
-          <Column title="Title" dataIndex="titre" ellipsis={true} />
+          <Column
+            title="Title"
+            ellipsis={true}
+            render={(article: article) => (
+              <Link to={`/articles/${article.article_id}`}>
+                {article.titre}
+              </Link>
+            )}
+          />
           <Column
             title="Level"
             ellipsis={true}

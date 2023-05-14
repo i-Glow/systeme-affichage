@@ -56,17 +56,24 @@ function NavBar() {
           />
         </Pressable>
 
-        {/* <Pressable
-          style={styles.Pressable}
+        <Pressable
+          style={[
+            styles.Pressable,
+            activeScreen === 'Profile' && styles.activeButton,
+          ]}
           onPress={() => {
-            navigation.navigate('Map');
+            navigation.navigate('Profile');
           }}>
-          <Image source={require('../assets/carte.png')} style={styles.Image} />
-        </Pressable> */}
-        <Pressable style={styles.Pressable} onPress={() => {}}>
           <Image
-            source={require('../assets/cloche.png')}
-            style={styles.Image}
+            source={
+              activeScreen === 'Profile'
+                ? require('../assets/userBlack.png')
+                : require('../assets/userWhite.png')
+            }
+            style={[
+              styles.Image,
+              activeScreen === 'Profile' && styles.activeImage,
+            ]}
           />
         </Pressable>
       </View>

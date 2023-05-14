@@ -7,18 +7,11 @@
  */
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {
-  Button,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  View,
-} from 'react-native';
+import {Button, SafeAreaView, StatusBar, StyleSheet} from 'react-native';
 import {WebView} from 'react-native-webview';
+import {PermissionsAndroid} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import HtmlScript from '../utils/HtmlScript';
-import NavBar from '../components/NavBar';
 
 type Position = {
   lat: number;
@@ -33,25 +26,65 @@ type Event = {
   time: number;
 };
 
-function Map() {
-  Geolocation.requestAuthorization();
+// ask & get userPermision
+export async function requestLocationPermission() {
+  try {
+    Geolocation.requestAuthorization();
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      {
+        title: 'IsUniv',
+        message: 'Allow IsUniv to access your location ?',
+      },
+    );
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      // console.log('You can use the location');
+      // alert('You can use the location');
+    } else {
+      console.log('location permission denied');
+      alert('Location permission denied');
+    }
+  } catch (err) {
+    console.warn(err);
+  }
+}
+
+export default function Map() {
+  // ask for userPermision
+  useEffect(() => {
+    async function getLocationPermission() {
+      await requestLocationPermission();
+    }
+    getLocationPermission();
+  }, []);
+
   const mapRef = useRef<WebView>(null);
-  /* const [Place, setPlace] = useState([]);
-  const [Evenment, setEvenment] = useState([]); */
 
   const [oneTime, setOneTime] = useState(false);
   const [update, setUpdate] = useState(false);
+  const [places, setPlaces] = useState([
+    {lat: 36.812725, lon: 7.719596, description: 'bloc H'},
+    {lat: 36.812764, lon: 7.719027, description: 'bloc J'},
+    {lat: 36.813889, lon: 7.717983, description: 'Department Informatique'},
+  ]);
+
+  const [evenment, setEvenment] = useState([
+    {lat: 36.813299, lon: 7.718092, description: 'this is A', time: 5},
+    {lat: 36.813455, lon: 7.718817, description: 'this is B', time: 10},
+    {lat: 36.813085, lon: 7.719302, description: 'this is C', time: 15},
+  ]);
   const [userLocation, setUserLocation] = useState({
     lat: 0,
     lon: 0,
     description: 'current Poistion',
   });
+
   const createMark = useCallback(({lat, lon, description}: Position) => {
     if (mapRef && mapRef.current) {
       mapRef.current.injectJavaScript(`
         L.marker([${lat}, ${lon}])
           .addTo(map)
-          .bindPopup('${description}')
+          .bindPopup('${description}');
       `);
     } else {
       console.error('mapRef is null or undefined');
@@ -61,23 +94,20 @@ function Map() {
   const createEvent = useCallback(({lat, lon, description, time}: Event) => {
     const icons = [
       {
-        iconUrl:
-          'https://www.google.com/imgres?imgurl=https%3A%2F%2Fcdn-icons-png.flaticon.com%2F512%2F64%2F64665.png&tbnid=qz_12728_WgfMM&vet=12ahUKEwjyi-WMyoH-AhXvnCcCHdIJDTYQMygGegUIARDTAQ..i&imgrefurl=https%3A%2F%2Fwww.flaticon.com%2Ffree-icon%2Flocation-mark_64665&docid=-_YqYtv2vrG10M&w=512&h=512&q=icon%20mark&ved=2ahUKEwjyi-WMyoH-AhXvnCcCHdIJDTYQMygGegUIARDTAQ',
-        iconSize: [40, 40],
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/2558/2558944.png',
+        iconSize: [30, 30],
         iconAnchor: [20, 40],
         popupAnchor: [0, -40],
       },
       {
-        iconUrl:
-          'https://www.google.com/imgres?imgurl=https%3A%2F%2Fcdn.icon-icons.com%2Ficons2%2F1509%2FPNG%2F512%2Fmarklocation_104204.png&tbnid=PPd8lYY9af-uoM&vet=12ahUKEwjyi-WMyoH-AhXvnCcCHdIJDTYQMygdegUIARCPAg..i&imgrefurl=https%3A%2F%2Ficon-icons.com%2Ficon%2Fmark-location%2F104205&docid=wa-X1AXCZVQ37M&w=512&h=512&q=icon%20mark&ved=2ahUKEwjyi-WMyoH-AhXvnCcCHdIJDTYQMygdegUIARCPAg',
-        iconSize: [40, 40],
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/2558/2558944.png',
+        iconSize: [30, 30],
         iconAnchor: [20, 40],
         popupAnchor: [0, -40],
       },
       {
-        iconUrl:
-          'https://www.google.com/imgres?imgurl=https%3A%2F%2Fimg.freepik.com%2Ffree-icon%2Fplaceholder-outline-with-check-mark_318-47177.jpg&tbnid=_myJ2dDYQBrmdM&vet=12ahUKEwjyi-WMyoH-AhXvnCcCHdIJDTYQMyhAegQIARBi..i&imgrefurl=https%3A%2F%2Fwww.freepik.com%2Ffree-photos-vectors%2Fmark-icon&docid=0eNB0u9sedQHiM&w=626&h=626&q=icon%20mark&ved=2ahUKEwjyi-WMyoH-AhXvnCcCHdIJDTYQMyhAegQIARBi',
-        iconSize: [40, 40],
+        iconUrl: 'https://cdn-icons-png.flaticon.com/512/2558/2558944.png',
+        iconSize: [30, 30],
         iconAnchor: [20, 40],
         popupAnchor: [0, -40],
       },
@@ -90,12 +120,12 @@ function Map() {
     } else {
       iconIndex = 2;
     }
+
     if (mapRef.current) {
       mapRef.current.injectJavaScript(`
         L.marker([${lat}, ${lon}], {icon: L.icon({iconUrl: '${icons[iconIndex].iconUrl}', iconSize: [${icons[iconIndex].iconSize}], iconAnchor: [${icons[iconIndex].iconAnchor}], popupAnchor: [${icons[iconIndex].popupAnchor}]})})
         .addTo(map)
         .bindPopup('${description}')
-        
       `);
     }
   }, []);
@@ -113,6 +143,7 @@ function Map() {
         .addTo(map)
         .bindPopup('${description}')
         .openPopup();
+        
     `);
       } else {
         console.error('mapRef is null or undefined');
@@ -134,7 +165,7 @@ function Map() {
         const existingMarkers = document.querySelectorAll('.user-location-marker');
         existingMarkers.forEach(marker => marker.remove());
         `);
-        // update & create a marker for the user's current location
+        //  update & create a marker for the user's current location
         /*  mapRef.current.injectJavaScript(`
       L.marker([${lat}, ${lon}],{className: 'user-location-marker'})
         .addTo(map)
@@ -146,26 +177,39 @@ function Map() {
     },
     [],
   );
+  //57.74, 11.94 36.814016, 7.720433
+  //<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
+  //<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+  /* function CreateRoute() {
+    if (mapRef && mapRef.current) {
+      mapRef.current.injectJavaScript(`
+      L.Routing.control({
+        waypoints: [
+          L.latLng(36.813425 , 7.720508),
+          L.latLng(36.81693 , 7.712022)
+        ]
+        }).addTo(map);
+    }  
+      `);
+    }  */
+  const [mapReady, setMapReady] = useState(false);
+
+  const onMapReady = useCallback(() => {
+    setMapReady(true);
+  }, []);
 
   useEffect(() => {
-    const places = [
-      {lat: 36.812725, lon: 7.719596, description: 'bloc H'},
-      {lat: 36.812764, lon: 7.719027, description: 'bloc J'},
-      {lat: 36.813889, lon: 7.717983, description: 'Department Informatique'},
-    ];
-    const evenment = [
-      {lat: 36.912, lon: 7.8195, description: 'this is ', time: 5},
-      {lat: 36.912, lon: 7.819, description: 'this is ', time: 10},
-      {lat: 36.813, lon: 7.8179, description: 'this is ', time: 15},
-    ];
+    if (!mapReady) {
+      return;
+    }
+
     places.forEach(place => {
       createMark(place);
     });
     evenment.forEach(event => {
       createEvent(event);
     });
-
-    //36.238103 6.584361
 
     if (oneTime) {
       Geolocation.getCurrentPosition(
@@ -212,23 +256,28 @@ function Map() {
       };
     }
   }, [
-    createMark,
     createEvent,
+    createMark,
     createUserLocationMarker,
-    userLocation,
+    evenment,
+    mapReady,
     oneTime,
+    places,
     update,
     updateUserLocationMarker,
+    userLocation,
   ]);
+
   return (
     <>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar />
       <SafeAreaView style={styles.Container}>
         <WebView
           ref={mapRef}
           source={{html: HtmlScript}}
           style={styles.Webview}
           allowFileAccess={true}
+          onLoadEnd={onMapReady}
         />
         <Button
           title="Get My Location"
@@ -237,29 +286,18 @@ function Map() {
             setUpdate(true);
           }}
         />
-        <View style={styles.NavContainer}>
-          <NavBar />
-        </View>
       </SafeAreaView>
     </>
   );
 }
+
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: 'gray',
+    flexGrow: 1,
   },
   Webview: {
-    height: 100,
-    width: 500,
-  },
-  NavContainer: {
-    position: 'absolute',
-    bottom: 20,
-    alignItems: 'center',
-    left: 0,
-    right: 0,
+    flex: 1,
+    flexGrow: 1,
   },
 });
-export default Map;

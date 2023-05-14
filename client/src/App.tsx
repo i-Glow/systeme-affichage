@@ -13,6 +13,7 @@ import Layout from "./pages/Layout";
 import Articles from "./pages/Articles";
 import ArticleDetails from "./pages/ArticleDetails";
 import CreateArticle from "./pages/CreateArticle";
+import SlideShow from "./pages/SlideShow";
 import ArticleShow from "./pages/Affichage";
 import Signin from "./pages/Signin";
 import Users from "./pages/Users";
@@ -29,29 +30,23 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute redirectPath="/signin" />}>
             <Route path="/" element={<Layout />}>
-              <Route path="/articles" element={<Articles />}></Route>
+              <Route path="/articles" element={<Articles />} />
               <Route path="articles/:archiveId" element={<ArticleDetails />} />
-              <Route
-                path="articles/nouveau"
-                element={<CreateArticle />}
-              ></Route>
+              <Route path="articles/nouveau" element={<CreateArticle />} />
               <Route path="articles/edit/:id" element={<CreateArticle />} />
               <Route element={<AdminOnlyRoute />}>
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/nouveau" element={<CreateUser />} />
               </Route>
-              <Route
-                path="/pendingarticles"
-                element={<PendingArticle />}
-              ></Route>
+              <Route path="/pendingarticles" element={<PendingArticle />} />
               <Route
                 path="/pendingarticles/:PendingActicleDetail"
                 element={<PendingActicleDetail />}
-              ></Route>
+              />
               <Route path="/archive" element={<Archive />} />
             </Route>
           </Route>
-          <Route path="/affichage" element={<ArticleShow />}></Route>
+          <Route path="/affichage" element={<SlideShow />}></Route>
           <Route path="/signin" element={<Signin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
@@ -74,7 +69,7 @@ function AdminOnlyRoute({ redirectPath = "/" }) {
   //@ts-ignore
   const { user } = useAuth();
 
-  return user.role === roles.admin ? (
+  return user?.role === roles.admin ? (
     <Outlet />
   ) : (
     <Navigate to={redirectPath} />

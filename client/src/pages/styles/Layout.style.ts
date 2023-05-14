@@ -67,6 +67,10 @@ export const Main1 = styled.div`
   @media (min-width: 1366px) {
     margin-left: 15%;
   }
+
+  @media (max-width: 768px) {
+    margin-left: 60px;
+  }
 `;
 
 type params = {

@@ -67,6 +67,7 @@ export const AuthProvider = ({ children }: any) => {
 
       navigate("/");
     } catch (error: any) {
+      console.error(error);
       if (error.response.status === 403) {
         messageApi.open({
           type: "error",

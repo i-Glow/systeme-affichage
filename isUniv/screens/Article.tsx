@@ -8,31 +8,67 @@
  */
 // import {NativeStackScreenProps} from '@react-navigation/native-stack';
 // import {useRoute} from '@react-navigation/native';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaView, StatusBar, StyleSheet, View, Text} from 'react-native';
-
+import isArabic from '../utils/isArabic';
 export default function Article() {
   // const route = useRoute();
   // const {id} = route.params;
   /*TODO: id: Props => useEffect => useCallBack => handle the id TO FETCH DATA */
+
+  const [isArabicText, setIsArabicText] = useState(false);
+  const [Data, setData] = useState([
+    {
+      id: 1,
+      title: 'استدعاء',
+      Reason: 'أنا أكرهك',
+      Paragh: 'لماذا هذا لا يعمل بشكل صحيح',
+      time: '9',
+    },
+  ]);
+
+  useEffect(() => {
+    setIsArabicText(isArabic(Data[0].title));
+  }, [Data]);
+
   return (
     <>
       <StatusBar />
       <SafeAreaView style={{flex: 1}}>
-        <View style={styles.Container}>
-          {/* <Image source={require('../assets/PH1.png')} style={styles.Image} /> */}
-          <View style={styles.TextContainer}>
-            <Text style={styles.title}>THERE IS SOME TEXT</Text>
-            <Text style={{color: 'whitesmoke'}}>9 hours by Admin</Text>
-            <Text style={styles.Reason}>
-              Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc
-            </Text>
-            <Text style={styles.Paragh}>
-              Object
-              1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt
-            </Text>
+        {Data.map(item => (
+          <View style={styles.Container} key={item.id}>
+            <View style={styles.TextContainer}>
+              <Text
+                style={[
+                  isArabicText ? {direction: 'rtl'} : {direction: 'ltr'},
+                  styles.title,
+                ]}>
+                {item.title}
+              </Text>
+              <Text
+                style={[
+                  isArabicText ? {textAlign: 'right'} : {textAlign: 'left'},
+                  styles.Reason,
+                ]}>
+                {item.time}
+              </Text>
+              <Text
+                style={[
+                  isArabicText ? {direction: 'rtl'} : {direction: 'ltr'},
+                  styles.Reason,
+                ]}>
+                {item.Reason}
+              </Text>
+              <Text
+                style={[
+                  isArabicText ? {direction: 'rtl'} : {direction: 'ltr'},
+                  styles.Paragh,
+                ]}>
+                {item.Paragh}
+              </Text>
+            </View>
           </View>
-        </View>
+        ))}
       </SafeAreaView>
     </>
   );
@@ -46,20 +82,20 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: 'white',
+    color: 'black',
   },
   Reason: {
     fontSize: 18,
     marginTop: 15,
     fontWeight: '600',
-    color: 'white',
+    color: 'black',
   },
   Paragh: {
     fontSize: 16,
     overflow: 'hidden',
     flexShrink: 1,
     marginTop: 15,
-    color: 'white',
+    color: 'black',
   },
   Button: {
     width: '100%',
@@ -72,7 +108,7 @@ const styles = StyleSheet.create({
     paddingTop: '3.5%',
     paddingLeft: '5%',
     paddingRight: '5%',
-    backgroundColor: '#15161d',
+    backgroundColor: '#ffffff',
   },
   Link: {
     width: 80,

@@ -5,6 +5,7 @@ import {
   LinkContainer,
   Logout,
   Notification,
+  RouteName,
   SideBar,
 } from "./Style/Sidebar.styles";
 import routes from "../utils/routes";
@@ -13,7 +14,6 @@ import { roles } from "../utils/roles";
 import { useLocation, useNavigate } from "react-router-dom";
 import { EventSourcePolyfill } from "event-source-polyfill";
 import { Button, notification } from "antd";
-import Link from "./shared/Link";
 import { usePendingArticles } from "../context/PendingArticlesContext";
 
 const SSE_HEARTBEAT_TIMEMOUT = 300000;
@@ -24,9 +24,8 @@ export default function Sidebar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [api, contextHolder] = notification.useNotification();
-  const { setPendingArticles } = usePendingArticles();
-
-  const [pendingCount, setPendingCount] = useState<number>(0);
+  const { setPendingArticles, pendingCount, setPendingCount } =
+    usePendingArticles();
 
   const getArticlesCount = async () => {
     const events = new EventSourcePolyfill(
@@ -98,16 +97,16 @@ export default function Sidebar() {
     <SideBar>
       {contextHolder}
       {routes.map((route, key) =>
-        user.role === route.authorization || user.role === roles.admin ? (
+        user?.role === route.authorization || user?.role === roles.admin ? (
           <LinkContainer
-            isFocused={key === openTab}
+            isfocused={key === openTab}
             to={route.link}
             key={key}
             onClick={() => setOpenTab(key)}
           >
             <Flex jc="flex-start" gap="7px">
               {route.icon}
-              <p>{route.name}</p>
+              <RouteName>{route.name}</RouteName>
             </Flex>
             {route.name === "pending articles" && pendingCount > 0 && (
               <Notification>{pendingCount}</Notification>

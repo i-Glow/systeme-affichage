@@ -6,12 +6,14 @@
   "main": "build/app.js",
   "scripts": {
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q build/app.js\"",
+    "build": "npx tsc",
     "start": "node build/app.js"
   },
   "author": "Abdelmalek Bouhalassa",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^4.10.1",
+    "axios": "^1.3.5",
     "bcrypt": "^5.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",

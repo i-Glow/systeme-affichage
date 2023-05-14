@@ -27,8 +27,10 @@ export default function LatestArticles({ newArticles }: props) {
           >
             <h4>{article.contenu}</h4>
             <Flex jc="flex-end" gap="7px">
+              {/* @ts-ignore */}
               <h4>{article.date_debut.replace("T", " ").split(".")[0]}</h4>
               <AiOutlineSwapRight />
+              {/* @ts-ignore */}
               <h4>{article.date_fin.replace("T", " ").split(".")[0]}</h4>
               <h3>-</h3>
               {article.niveau.map((niv, key) => (

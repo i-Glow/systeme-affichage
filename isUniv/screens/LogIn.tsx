@@ -30,9 +30,9 @@ const Login: React.FC<LogInProps> = ({onLogin}) => {
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
   const handleLogin = () => {
-    if (username === 'h1' && password === '123') {
-      navigation.navigate('News');
-    }
+    navigation.navigate('News');
+    /*  if (username === 'h1' && password === '123') {
+    } */
   };
   return (
     <View style={{flexGrow: 1, flex: 1}}>
