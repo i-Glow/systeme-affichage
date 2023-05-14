@@ -41,6 +41,9 @@ type params = {
   dir?: string;
   zi?: string;
   po?: string;
+  ds?: string;
+  ga?: string;
+  fd?: string;
   index?: number;
 };
 export const Text = styled.p`
@@ -62,6 +65,10 @@ export const Level = styled.p`
   margin-bottom: ${({ mb }: params) => mb};
   z-index: ${({ zi }: params) => zi};
   position: ${({ po }: params) => po};
+  display: ${({ ds }: params) => ds};
+  flex-direction: ${({ fd }: params) => fd};
+  gap: ${({ ga }: params) => ga};
+  justify-content: center;
 `;
 
 export const Title = styled.h1`
@@ -141,3 +148,5 @@ export const WhiteDiv = styled.div`
     aspect-ratio: 1/1;
   }
 `;
+
+export const TextQr = styled.div``;
