@@ -13,6 +13,7 @@ import Layout from "./pages/Layout";
 import Articles from "./pages/Articles";
 import ArticleDetails from "./pages/ArticleDetails";
 import CreateArticle from "./pages/CreateArticle";
+import SlideShow from "./pages/SlideShow";
 import ArticleShow from "./pages/Affichage";
 import Signin from "./pages/Signin";
 import Users from "./pages/Users";
@@ -45,7 +46,7 @@ function App() {
               <Route path="/archive" element={<Archive />} />
             </Route>
           </Route>
-          <Route path="/affichage" element={<ArticleShow />}></Route>
+          <Route path="/affichage" element={<SlideShow />}></Route>
           <Route path="/signin" element={<Signin />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
