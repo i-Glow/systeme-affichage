@@ -128,7 +128,7 @@ export default function () {
                   return (
                     <Flex>
                       <p key={ind}> {Levels.get(niv)} </p>
-                      {niv.match("D") ? <></> : <GoPrimitiveDot size={15} />}
+                      {/* {niv.match("D") ? <></> : <GoPrimitiveDot size={15} />} */}
                     </Flex>
                   );
                 })}
@@ -189,7 +189,8 @@ function Content({ content, title }: { content: string; title: string }) {
             fz="48px"
             pd="30px"
             style={{
-              textAlign: isArabic(title) ? "end" : "start",
+              // textAlign: isArabic(title) ? "end" : "start",
+              direction: isArabic(title) ? "rtl" : "ltr",
             }}
           >
             {text.join("")}
@@ -207,7 +208,8 @@ function Content({ content, title }: { content: string; title: string }) {
           fz="48px"
           pd="30px"
           style={{
-            textAlign: isArabic(title) ? "end" : "start",
+            // textAlign: isArabic(title) ? "end" : "start",
+            direction: isArabic(title) ? "rtl" : "ltr",
           }}
         >
           {text.join("")}
