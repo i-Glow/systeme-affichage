@@ -84,7 +84,7 @@ export default function () {
     if (data) {
       slideTimer = setTimeout(() => {
         setIndex((index) => (index + 1 < data.length ? index + 1 : 0));
-      }, 200000000);
+      }, 5000);
     }
 
     return () => clearTimeout(slideTimer);
