@@ -11,7 +11,6 @@ import {
   CenterDiv,
   Card,
   Title,
-  Parag,
   Niveau,
   CardVoid,
   CardTop,

@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import prisma from "../db";
 import bcrypt from "bcrypt";
 import { createAccessToken } from "../utils/auth";
-import jwt, { Secret } from "jsonwebtoken";
 
 const signin = async (req: Request, res: Response) => {
   try {
