@@ -52,4 +52,7 @@ export const GlobalStyles = createGlobalStyle`
     body {
       min-height: 100vh;
     }
+    input, textarea {
+      border-color: #787276 !important;
+    }
 `;

@@ -22,6 +22,8 @@ import CreateUser from "./pages/CreateUser";
 import PendingArticle from "./pages/PendingArticle";
 import PendingActicleDetail from "./pages/PendingActicleDetail";
 import Archive from "./pages/Archive";
+import Events from "./pages/Events";
+import CreateEvent from "./pages/CreateEvent";
 
 function App() {
   return (
@@ -44,6 +46,8 @@ function App() {
                 element={<PendingActicleDetail />}
               />
               <Route path="/archive" element={<Archive />} />
+              <Route path="/geo" element={<Events />} />
+              <Route path="/geo/event" element={<CreateEvent />} />
             </Route>
           </Route>
           <Route path="/affichage" element={<SlideShow />}></Route>
