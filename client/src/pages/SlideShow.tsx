@@ -10,6 +10,9 @@ import {
   Level,
   Div,
   WhiteDiv,
+  QrCodeContainer,
+  TextQr,
+  AboveQr,
 } from "./styles/SlideShow.style";
 import { GoPrimitiveDot } from "react-icons/go";
 import axios from "../api";
@@ -77,7 +80,6 @@ export default function () {
 
   useEffect(() => {
     getData();
-
     //short polling
     const interval = setInterval(() => {
       getData(); // Fetch data at regular intervals
@@ -88,15 +90,24 @@ export default function () {
 
   useEffect(() => {
     let slideTimer: any;
-    if (data) {
+
+    if (data && data.length > 0) {
       slideTimer = setTimeout(() => {
         setIndex((index) => (index + 1 < data.length ? index + 1 : 0));
       }, data[index].duration);
-    }
-
-    return () => clearTimeout(slideTimer);
+    } else return () => clearTimeout(slideTimer);
   }, [data, index]);
-  console.log(data);
+
+  ////
+  const listRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (listRef.current) {
+      if (index % 6 === 0) {
+        const scrollTop = index * 150; // calculate the desired scroll position
+        listRef.current.scrollTop = scrollTop;
+      }
+    }
+  }, [index]);
   return (
     <Container>
       <RightContainer>
@@ -105,17 +116,16 @@ export default function () {
         </DateCtainer>
 
         <Affichage>
-          {data ? (
+          {data && data.length > 0 ? (
             <>
               <Title ta="center" fz="48px">
                 {data[index].titre}
               </Title>
-              <Text>
-                <Content
-                  content={data[index].contenu}
-                  title={data[index].titre}
-                />
-              </Text>
+
+              <Content
+                content={data[index].contenu}
+                title={data[index].titre}
+              />
               <Level
                 ta="center"
                 fz="32px"
@@ -128,19 +138,28 @@ export default function () {
                   return (
                     <Flex>
                       <p key={ind}> {Levels.get(niv)} </p>
-                      {/* {niv.match("D") ? <></> : <GoPrimitiveDot size={15} />} */}
+                      {ind + 1 < data[index].niveau.length ? (
+                        <GoPrimitiveDot size={15} />
+                      ) : (
+                        <></>
+                      )}
                     </Flex>
                   );
                 })}
               </Level>
             </>
           ) : (
-            <></>
+            <>
+              <Title ta="center" fz="48px">
+                Pas D'affichage
+              </Title>
+            </>
           )}
         </Affichage>
       </RightContainer>
-      <ArticlList>
-        <WhiteDiv index={index}></WhiteDiv>
+      <ArticlList ref={listRef}>
+        {data && data.length > 0 ? <WhiteDiv index={index}></WhiteDiv> : <></>}
+
         {data &&
           data.map((art, key) => {
             return (
@@ -165,6 +184,91 @@ const regex = /(\[url:(?:(?:https?:\/\/)?[\w-]+\.[\w-]+\S*)\])|(\[qr:.*?\])/g;
 function Content({ content, title }: { content: string; title: string }) {
   const parts = content.split(regex).filter(Boolean);
   const ref = useRef<HTMLDivElement>(null);
+  const reg = /^(.{300}[^\s]*).*/;
+  const qrcode = parts
+    .map((part) => part.match(/\[qr:(.*?)\]/)?.[1])
+    .filter(Boolean);
+
+  // console.log(parts);
+  const text = parts.map((part) => part.replace(qrRegex, "")).filter(Boolean);
+  let text1 = "";
+  let text2 = "";
+
+  if (text[0].length >= 300 && qrcode.length > 0) {
+    const matchResult = text[0].match(reg);
+    text1 = matchResult?.[1] || " ";
+    // console.log(matchResult);
+    text2 = text[0].slice(text1.length);
+  }
+  return (
+    <QrCodeContainer
+      ref={ref}
+      style={{
+        direction: isArabic(title) ? "rtl" : "ltr",
+        fontFamily: isArabic(title)
+          ? "'Inter', sans-serif"
+          : "'ReadexPro', sans-serif",
+        fontSize: isArabic(title) ? "22px" : "18px",
+      }}
+    >
+      {qrcode.length > 0 ? (
+        <>
+          <Text
+            fz="48px"
+            pd="30px 30px 0 30px"
+            style={{
+              // textAlign: isArabic(title) ? "end" : "start",
+              direction: isArabic(title) ? "rtl" : "ltr",
+            }}
+          >
+            {text1}
+          </Text>
+          <TextQr pd="0 30px 30px 30px">
+            <Text
+              fz="48px"
+              pd="0 0px 30px 30px"
+              wd="80%"
+              style={{
+                // textAlign: isArabic(title) ? "end" : "start",
+                direction: isArabic(title) ? "rtl" : "ltr",
+                flexGrow: 1,
+              }}
+            >
+              {text2}
+            </Text>
+            {qrcode.length > 0 && (
+              <AboveQr
+                style={{ width: "20%", margin: "0 auto", height: "auto" }}
+              >
+                <QRCode
+                  errorLevel="L"
+                  value={qrcode[0] || ""}
+                  style={{ width: "20%", margin: "0 auto", height: "auto" }}
+                />
+              </AboveQr>
+            )}
+          </TextQr>
+        </>
+      ) : (
+        <Text
+          fz="48px"
+          pd="30px"
+          style={{
+            // textAlign: isArabic(title) ? "end" : "start",
+            direction: isArabic(title) ? "rtl" : "ltr",
+          }}
+        >
+          {text[0]}
+        </Text>
+      )}
+    </QrCodeContainer>
+  );
+}
+
+/*
+function Content({ content, title }: { content: string; title: string }) {
+  const parts = content.split(regex).filter(Boolean);
+  const ref = useRef<HTMLDivElement>(null);
 
   const qrcode = parts
     .map((part) => part.match(/\[qr:(.*?)\]/)?.[1])
@@ -173,7 +277,7 @@ function Content({ content, title }: { content: string; title: string }) {
   const text = parts.map((part) => part.replace(qrRegex, "")).filter(Boolean);
 
   return (
-    <div
+    <QrCodeContainer
       ref={ref}
       style={{
         direction: isArabic(title) ? "rtl" : "ltr",
@@ -191,6 +295,7 @@ function Content({ content, title }: { content: string; title: string }) {
             style={{
               // textAlign: isArabic(title) ? "end" : "start",
               direction: isArabic(title) ? "rtl" : "ltr",
+              flexGrow: 1,
             }}
           >
             {text.join("")}
@@ -215,9 +320,29 @@ function Content({ content, title }: { content: string; title: string }) {
           {text.join("")}
         </Text>
       )}
-    </div>
+    </QrCodeContainer>
   );
 }
+*/
+/* 
+  <ArticlList ref={listRef} onScroll={handleScroll}>
+      {data &&
+        data.slice(0, index + 1).map((art, key) => (
+          <Div
+            key={key}
+            style={key === index ? { border: "none" } : {}}
+          >
+            <Text ta="center" mb="15px" fz="24px" zi="1" po="relative">
+              {art.titre}
+            </Text>
+            <Level ta="center" fz="24px" zi="1" po="relative">
+              {art.niveau}
+            </Level>
+          </Div>
+        ))}
+      {index < data.length - 1 && <LoadingText>Loading...</LoadingText>}
+    </ArticlList>
+*/
 
 /* 
   {parts.map((part, key) => {

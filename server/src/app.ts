@@ -30,17 +30,17 @@ app.use(router);
 app.listen(PORT, async () => {
   console.log(`Server is running at http://localhost:${PORT}`);
 
-  if (process.env.NODE_ENV !== "development") {
-    const hashedPassword = await bcrypt.hash("admin", 12);
+  //   if (process.env.NODE_ENV !== "development") {
+  //     const hashedPassword = await bcrypt.hash("admin", 12);
 
-    await prisma.user.create({
-      data: {
-        nom: "admin",
-        prenom: "admin",
-        username: "admin",
-        password: hashedPassword,
-        role: Role.super_user,
-      },
-    });
-  }
+  //     await prisma.user.create({
+  //       data: {
+  //         nom: "admin",
+  //         prenom: "admin",
+  //         username: "admin",
+  //         password: hashedPassword,
+  //         role: Role.super_user,
+  //       },
+  //     });
+  //   }
 });

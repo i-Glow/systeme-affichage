@@ -9,7 +9,12 @@ export const ArticlList = styled.div`
   width: 20%;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  ::-webkit-scrollbar {
+    display: none;
+    transition: all 4s ease;
+  }
   background-color: ${({ bc }: params) => (bc ? bc : "#ecf6ff")};
   position: relative;
 `;
@@ -44,6 +49,7 @@ type params = {
   ds?: string;
   ga?: string;
   fd?: string;
+  wd?: string;
   index?: number;
 };
 export const Text = styled.p`
@@ -56,6 +62,7 @@ export const Text = styled.p`
   direction: ${({ dir }: params) => dir};
   z-index: ${({ zi }: params) => zi};
   position: ${({ po }: params) => po};
+  width: ${({ wd }: params) => wd};
 `;
 
 export const Level = styled.p`
@@ -91,6 +98,7 @@ export const Div = styled.div`
   justify-content: center;
   padding: 15px 5px 15px 5px;
   height: 150px;
+  min-height: 150px;
   border-left: 1px solid #d9d9d9;
 
   &::after {
@@ -149,4 +157,18 @@ export const WhiteDiv = styled.div`
   }
 `;
 
-export const TextQr = styled.div``;
+export const QrCodeContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const TextQr = styled.div`
+  display: flex;
+  padding: ${({ pd }: params) => pd};
+`;
+export const AboveQr = styled.div`
+  > div {
+    width: 100%;
+    height: 100%;
+  }
+`;
