@@ -5,7 +5,7 @@ import { Wrapper } from "./styles/Events.styles";
 function CreateEvent() {
   return (
     <Wrapper>
-      <h3>New Event</h3>
+      <h3 style={{ marginBottom: "20px" }}>New Event</h3>
       <Map />
     </Wrapper>
   );

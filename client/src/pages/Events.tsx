@@ -86,7 +86,7 @@ function Event() {
     try {
       const res = await axios.delete(`/map/event/${id}`);
 
-      if (res.status === 200) {
+      if (res.status === 201) {
         const newEvents = events.filter((el: any) => el.event_id !== id);
 
         dispatch({
