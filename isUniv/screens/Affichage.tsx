@@ -6,7 +6,7 @@
  *
  * @format
  */
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -23,43 +23,52 @@ import {RootStackParams} from '../App';
 import isArabic from '../utils/isArabic';
 
 function News() {
-  const [Articles, setArticles] = useState([
-    {
-      id: 1,
-      titre: 'Article 1phasiuuhqqvnuelzt',
-      time: '6h',
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-    {
-      id: 2,
-      titre: 'Article 1phasiuuhqqvnuelzt',
-      time: '6h',
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
+  const [affichage, setAffichage] = useState([]);
 
-    {
-      id: 3,
-      titre: 'Article 1phasiuuhqqvnuelzt',
-      time: '6h',
-      image: require('../assets/PH1.png'),
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-    {
-      id: 4,
-      titre: 'استدعاء',
-      time: '6h',
-      image: '../assets/PH1.png',
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-  ]);
+  useEffect(() => {
+    fetch('168.192.244.147:8080/api/affichage/mobile?level=')
+      // fetch('https://api.sampleapis.com/coffee/hot')
+      .then(res => res.json())
+      .then(data => console.log(data));
+  }, []);
+
+  // const [Articles, setArticles] = useState([
+  //   {
+  //     id: 1,
+  //     titre: 'Article 1phasiuuhqqvnuelzt',
+  //     time: '6h',
+  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+  //     object:
+  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+  //   },
+  //   {
+  //     id: 2,
+  //     titre: 'Article 1phasiuuhqqvnuelzt',
+  //     time: '6h',
+  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+  //     object:
+  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+  //   },
+
+  //   {
+  //     id: 3,
+  //     titre: 'Article 1phasiuuhqqvnuelzt',
+  //     time: '6h',
+  //     image: require('../assets/PH1.png'),
+  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+  //     object:
+  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+  //   },
+  //   {
+  //     id: 4,
+  //     titre: 'استدعاء',
+  //     time: '6h',
+  //     image: '../assets/PH1.png',
+  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
+  //     object:
+  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
+  //   },
+  // ]);
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
   const renderItem = ({item}: any) => {
@@ -111,9 +120,9 @@ function News() {
         <View style={styles.Container}>
           <View style={styles.CardContainer}>
             <FlatList
-              data={Articles}
+              data={affichage}
               renderItem={renderItem}
-              keyExtractor={(Article: any) => Article.id}
+              keyExtractor={(affichage: any) => affichage.article_id}
               contentContainerStyle={styles.FlatList}
             />
           </View>

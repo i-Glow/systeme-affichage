@@ -9,7 +9,12 @@ export const ArticlList = styled.div`
   width: 20%;
   display: flex;
   flex-direction: column;
-  overflow-y: hidden;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+  ::-webkit-scrollbar {
+    display: none;
+    transition: all 4s ease;
+  }
   background-color: ${({ bc }: params) => (bc ? bc : "#ecf6ff")};
   position: relative;
 `;
@@ -41,6 +46,10 @@ type params = {
   dir?: string;
   zi?: string;
   po?: string;
+  ds?: string;
+  ga?: string;
+  fd?: string;
+  wd?: string;
   index?: number;
 };
 export const Text = styled.p`
@@ -53,6 +62,7 @@ export const Text = styled.p`
   direction: ${({ dir }: params) => dir};
   z-index: ${({ zi }: params) => zi};
   position: ${({ po }: params) => po};
+  width: ${({ wd }: params) => wd};
 `;
 
 export const Level = styled.p`
@@ -62,6 +72,10 @@ export const Level = styled.p`
   margin-bottom: ${({ mb }: params) => mb};
   z-index: ${({ zi }: params) => zi};
   position: ${({ po }: params) => po};
+  display: ${({ ds }: params) => ds};
+  flex-direction: ${({ fd }: params) => fd};
+  gap: ${({ ga }: params) => ga};
+  justify-content: center;
 `;
 
 export const Title = styled.h1`
@@ -84,13 +98,14 @@ export const Div = styled.div`
   justify-content: center;
   padding: 15px 5px 15px 5px;
   height: 150px;
+  min-height: 150px;
   border-left: 1px solid #d9d9d9;
 
   &::after {
     content: "";
     display: block;
     margin-top: 20px;
-    height: 2px;
+    /* height: 2px; */
     background-color: #2a2a2a;
     width: 60%;
     margin-left: auto;
@@ -139,5 +154,21 @@ export const WhiteDiv = styled.div`
     border-top: 1px solid #d9d9d9;
     border-left: 1px solid #d9d9d9;
     aspect-ratio: 1/1;
+  }
+`;
+
+export const QrCodeContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+export const TextQr = styled.div`
+  display: flex;
+  padding: ${({ pd }: params) => pd};
+`;
+export const AboveQr = styled.div`
+  > div {
+    width: 100%;
+    height: 100%;
   }
 `;

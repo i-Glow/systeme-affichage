@@ -3,6 +3,9 @@ import cors from "cors";
 import * as dotenv from "dotenv";
 import router from "./routes";
 import morgan from "morgan";
+import bcrypt from "bcrypt";
+import prisma from "./db";
+import { Role } from "@prisma/client";
 
 //initialisation
 dotenv.config();
@@ -24,6 +27,20 @@ app.use(express.json({ limit: "5mb" }));
 app.use(router);
 
 //starting server
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server is running at http://localhost:${PORT}`);
+
+  //   if (process.env.NODE_ENV !== "development") {
+  //     const hashedPassword = await bcrypt.hash("admin", 12);
+
+  //     await prisma.user.create({
+  //       data: {
+  //         nom: "admin",
+  //         prenom: "admin",
+  //         username: "admin",
+  //         password: hashedPassword,
+  //         role: Role.super_user,
+  //       },
+  //     });
+  //   }
 });

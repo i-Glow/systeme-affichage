@@ -48,6 +48,13 @@ model user {
   article   article[]
 }
 
+model student {
+  matricule String @id
+  nom       String
+  prenom    String
+  niveau    String
+}
+
 enum Role {
   responsable_affichage
   super_user
