@@ -3,6 +3,7 @@ import React, { useEffect, useState, useReducer } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { GrMapLocation } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
+import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import Flex from "../components/shared/Flex";
 import useAxios from "../hooks/useAxios";
@@ -19,6 +20,16 @@ function eventsReducer(state: any, action: any) {
       return {
         ...state,
         eventsLoading: action.payload,
+      };
+    case "SET_BLOCS_DATA":
+      return {
+        ...state,
+        blocs: action.payload,
+      };
+    case "SET_BLOCS_LOADING":
+      return {
+        ...state,
+        blocsLoading: action.payload,
       };
     default:
       return state;
@@ -60,8 +71,6 @@ function Event() {
           start_date: new Date(el.start_date).toDateString(),
           end_date: new Date(el.end_date).toDateString(),
         }));
-        console.log("first");
-        console.log({ newData });
         dispatch({ type: "SET_EVENTS_DATA", payload: newData });
         dispatch({ type: "SET_EVENTS_LOADING", payload: false });
       }
@@ -125,6 +134,7 @@ function Event() {
           : events.length > 0 &&
             events.map((el: any) => (
               <Card
+                key={el.event_id}
                 style={{ marginBottom: "20px" }}
                 actions={[
                   <AiOutlineEdit size={18} key="edit" />,
@@ -175,9 +185,94 @@ function Event() {
     </Flex>
   );
 }
-
 function Bloc() {
-  return <>Bloc</>;
+  const axios = useAxios();
+  const navigate = useNavigate();
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const [state, dispatch] = useReducer(eventsReducer, {
+    blocs: [],
+    blocsLoading: true,
+  });
+
+  const { blocs, blocsLoading } = state;
+
+  async function getEvents() {
+    try {
+      const res = await axios.get("/map/bloc");
+      if (res.status === 200) {
+        dispatch({ type: "SET_BLOCS_DATA", payload: res.data });
+        dispatch({ type: "SET_BLOCS_LOADING", payload: false });
+      }
+    } catch (error: any) {
+      if (error.response?.status === 403) {
+        messageApi.open({
+          type: "error",
+          content: "Please log in",
+        });
+        dispatch({ type: "SET_BLOCS_LOADING", payload: false });
+      } else if (error.code === "ERR_NETWORK") {
+        messageApi.open({
+          type: "error",
+          content: "network error",
+        });
+        dispatch({ type: "SET_BLOCS_LOADING", payload: false });
+      }
+    }
+  }
+
+  async function deleteEvent(id: string) {
+    try {
+      const res = await axios.delete(`/map/bloc/${id}`);
+
+      if (res.status === 201) {
+        const newBlocs = blocs.filter((el: any) => el.event_id !== id);
+
+        dispatch({
+          type: "SET_BLOCS_DATA",
+          payload: newBlocs,
+        });
+      }
+    } catch (error) {
+      messageApi.open({
+        type: "error",
+        content: "Error deleting event",
+      });
+    }
+  }
+
+  useEffect(() => {
+    getEvents();
+  }, []);
+
+  return (
+    <>
+      <Flex jc="space-between" mb="20px">
+        <h2>Blocs</h2>
+        <Button type="primary" size="middle" onClick={() => navigate("bloc")}>
+          New
+        </Button>
+      </Flex>
+      <Flex w="100%" gap="40px" ai="start" jc="start">
+        {contextHolder}
+        <MapContainer
+          center={[36.813889, 7.717983]}
+          zoom={17}
+          scrollWheelZoom={false}
+          style={{ flex: 1, height: 360, width: "100%" }}
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          {blocs.length > 0 &&
+            blocs.map((bloc: any) => (
+              <Marker
+                key={bloc.bloc_id}
+                position={[bloc.latitude, bloc.longitude]}
+              ></Marker>
+            ))}
+        </MapContainer>
+      </Flex>
+    </>
+  );
 }
 
 export default Events;

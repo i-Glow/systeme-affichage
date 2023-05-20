@@ -258,8 +258,8 @@ const postToFacebook = async (
 
     return response.data.id;
   } catch (error: any) {
-    console.error(error.response.data.error);
-    return new Error(error.response.data.error.message);
+    console.error(error);
+    return new Error(error);
   }
 };
 

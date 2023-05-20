@@ -1,20 +1,21 @@
-import React, { useEffect, useRef, useState } from "react";
-import {
-  CircleMarker,
-  MapContainer,
-  Marker,
-  Popup,
-  TileLayer,
-  useMap,
-  useMapEvent,
-} from "react-leaflet";
+import { useRef, useState } from "react";
+import { MapContainer, TileLayer, useMap, useMapEvent } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import { FaMapMarkerAlt } from "react-icons/fa";
 import { Button, DatePicker, Form, Input, message, Space } from "antd";
-import Flex from "./shared/Flex";
-import { FormWrapper } from "./Style/Map.styles";
-import dayjs from "dayjs";
+import Flex from "../components/shared/Flex";
+import { FormWrapper } from "../components/Style/Map.styles";
 import useAxios from "../hooks/useAxios";
+import { Wrapper } from "./styles/Events.styles";
+
+function CreateBloc() {
+  return (
+    <Wrapper>
+      <h3 style={{ marginBottom: "20px" }}>New Bloc</h3>
+      <Map />
+    </Wrapper>
+  );
+}
 
 function Map() {
   const [position, setPosition] = useState([36.813889, 7.717983]);
@@ -34,7 +35,7 @@ function Map() {
             position: "absolute",
             left: "50%",
             top: "50%",
-            transform: "translate(-50%, -50%)",
+            transform: "translate(-50%, -100%)",
             zIndex: 4000,
           }}
         />
@@ -54,36 +55,22 @@ function DataForm({ position }: any) {
   const [messageApi, contextHolder] = message.useMessage();
 
   const name = useRef("");
-  const startDate = useRef("");
-  const endDate = useRef("");
-  const description = useRef("");
 
   const [loading, setLoading] = useState(false);
-
-  function dateChangeHandler(value: any) {
-    startDate.current = value[0].$d.toISOString();
-    endDate.current = value[1].$d.toISOString();
-  }
 
   async function createEvent() {
     try {
       setLoading(true);
       console.log({
         name: name.current,
-        startDate: startDate.current,
-        endDate: endDate.current,
-        description: description.current,
         position,
       });
 
       const res = await axios({
         method: "post",
-        url: "/map/event",
+        url: "/map/bloc",
         data: {
           name: name.current,
-          start_date: startDate.current,
-          end_date: endDate.current,
-          description: description.current,
           latitude: position[0],
           longitude: position[1],
         },
@@ -92,7 +79,7 @@ function DataForm({ position }: any) {
       if (res.status === 200) {
         messageApi.open({
           type: "success",
-          content: "Event created",
+          content: "Bloc created",
         });
       }
     } catch (error: any) {
@@ -122,34 +109,7 @@ function DataForm({ position }: any) {
                 required
               />
             </Form.Item>
-            <Flex gap="20px">
-              <DatePicker.RangePicker
-                style={{
-                  borderColor: "#787276",
-                }}
-                allowEmpty={[false, false]}
-                onChange={(value) => dateChangeHandler(value)}
-                placeholder={["de", "à"]}
-                showTime={{
-                  hideDisabledOptions: true,
-                  defaultValue: [
-                    dayjs("00:00:00", "HH:mm:ss"),
-                    dayjs("11:59:59", "HH:mm:ss"),
-                  ],
-                }}
-                format="YYYY-MM-DD HH:mm:ss"
-              />
-            </Flex>
           </Flex>
-          <Form.Item label="Description">
-            <Input.TextArea
-              style={{ height: 140, resize: "none" }}
-              showCount
-              maxLength={200}
-              onChange={(e) => (description.current = e.target.value)}
-              required
-            />
-          </Form.Item>
         </Form.Item>
         <Flex>
           <Button
@@ -179,4 +139,4 @@ function MapMoveHandler({ setLocation }: any) {
   return null;
 }
 
-export default Map;
+export default CreateBloc;

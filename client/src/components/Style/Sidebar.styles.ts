@@ -36,7 +36,7 @@ export const LinkContainer = styled(Link)`
   cursor: pointer;
   position: relative;
 
-  background-color: ${({ isfocused: isfocused }: { isfocused: boolean }) =>
+  background-color: ${({ isfocused: isfocused }: { isfocused: number }) =>
     isfocused ? "rgba(var(--blue), 0.09)" : "transparent"};
 
   &:hover {
@@ -78,7 +78,7 @@ export const Notification = styled.div`
 `;
 
 type params = {
-  isfocused?: boolean;
+  isfocused?: number;
 };
 
 export const Logout = styled.div`
