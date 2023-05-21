@@ -20,7 +20,7 @@ import {BottomBarContext, RootStackParams} from '../App';
 import isArabic from '../utils/isArabic';
 const {height} = Dimensions.get('window');
 const BottomBar = height * 0.08;
-const contentHeight = height - BottomBar - 20;
+const contentHeight = height - BottomBar;
 
 export default function News() {
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();

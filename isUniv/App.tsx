@@ -24,7 +24,9 @@ import Profile from './screens/Profile';
 export type RootStackParams = {
   News: undefined;
   Article: {
-    id: number;
+    title: string;
+    Paragh: string;
+    time: string;
   };
   MenuStackPage: undefined;
   Login: undefined;

@@ -62,17 +62,31 @@ export default function Map() {
 
   const [oneTime, setOneTime] = useState(false);
   const [update, setUpdate] = useState(false);
-  const [places, setPlaces] = useState([
-    {lat: 36.812725, lon: 7.719596, description: 'bloc H'},
-    {lat: 36.812764, lon: 7.719027, description: 'bloc J'},
-    {lat: 36.813889, lon: 7.717983, description: 'Department Informatique'},
-  ]);
 
-  const [evenment, setEvenment] = useState([
-    {lat: 36.813299, lon: 7.718092, description: 'this is A', time: 5},
+  useEffect(() => {
+    fetch('http://192.168.43.137:8080/api/map/bloc')
+      // fetch('https://api.sampleapis.com/coffee/hot')
+      .then(res => res.json())
+      .then(data => console.log(data))
+      .catch(error => {
+        console.error('Error:', error.message);
+      });
+    fetch('http://192.168.43.137:8080/api/map/event')
+      // fetch('https://api.sampleapis.com/coffee/hot')
+      .then(res => res.json())
+      .then(data => setEvenment(data))
+      .catch(error => {
+        console.error('Error:', error.message);
+      });
+  }, []);
+
+  const [places, setPlaces] = useState([]);
+  /* {lat: 36.812725, lon: 7.719596, description: 'bloc H'},
+    {lat: 36.812764, lon: 7.719027, description: 'bloc J'},
+    {lat: 36.813889, lon: 7.717983, description: 'Department Informatique'},  {lat: 36.813299, lon: 7.718092, description: 'this is A', time: 5},
     {lat: 36.813455, lon: 7.718817, description: 'this is B', time: 10},
-    {lat: 36.813085, lon: 7.719302, description: 'this is C', time: 15},
-  ]);
+    {lat: 36.813085, lon: 7.719302, description: 'this is C', time: 15},*/
+  const [evenment, setEvenment] = useState([]);
   const [userLocation, setUserLocation] = useState({
     lat: 0,
     lon: 0,
