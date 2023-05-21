@@ -55,6 +55,23 @@ model student {
   niveau    String
 }
 
+model event {
+  event_id    String   @id @default(cuid())
+  longitude   Decimal
+  latitude    Decimal
+  name        String
+  description String
+  start_date  DateTime
+  end_date    DateTime
+}
+
+model bloc {
+  bloc_id   String  @id @default(cuid())
+  longitude Decimal
+  latitude  Decimal
+  name      String
+}
+
 enum Role {
   responsable_affichage
   super_user

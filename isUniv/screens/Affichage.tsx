@@ -16,6 +16,7 @@ import {
   FlatList,
   TouchableOpacity,
 } from 'react-native';
+import axios from 'axios';
 
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -25,50 +26,22 @@ import isArabic from '../utils/isArabic';
 function News() {
   const [affichage, setAffichage] = useState([]);
 
+  async function fetcher() {
+    try {
+      const res = await axios.get(
+        'http://192.168.113.147:8080/api/affichage/mobile?level=',
+      );
+
+      setAffichage(res.data);
+    } catch (error) {
+      console.error({error});
+    }
+  }
+
   useEffect(() => {
-    fetch('168.192.244.147:8080/api/affichage/mobile?level=')
-      // fetch('https://api.sampleapis.com/coffee/hot')
-      .then(res => res.json())
-      .then(data => console.log(data));
+    fetcher();
   }, []);
 
-  // const [Articles, setArticles] = useState([
-  //   {
-  //     id: 1,
-  //     titre: 'Article 1phasiuuhqqvnuelzt',
-  //     time: '6h',
-  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-  //     object:
-  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  //   },
-  //   {
-  //     id: 2,
-  //     titre: 'Article 1phasiuuhqqvnuelzt',
-  //     time: '6h',
-  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-  //     object:
-  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  //   },
-
-  //   {
-  //     id: 3,
-  //     titre: 'Article 1phasiuuhqqvnuelzt',
-  //     time: '6h',
-  //     image: require('../assets/PH1.png'),
-  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-  //     object:
-  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  //   },
-  //   {
-  //     id: 4,
-  //     titre: 'استدعاء',
-  //     time: '6h',
-  //     image: '../assets/PH1.png',
-  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-  //     object:
-  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  //   },
-  // ]);
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
   const renderItem = ({item}: any) => {
@@ -135,6 +108,7 @@ function News() {
 const styles = StyleSheet.create({
   Container: {
     /* height: screenHeight, */
+    width: '100%',
     flex: 1,
     flexGrow: 1,
   },

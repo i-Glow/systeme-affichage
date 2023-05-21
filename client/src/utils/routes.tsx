@@ -1,7 +1,7 @@
 import { roles } from "./roles";
 import { RiArticleLine, RiSlideshow3Line } from "react-icons/ri";
 import { TbUsers } from "react-icons/tb";
-import { BsArchive } from "react-icons/bs";
+import { BsArchive, BsGeoAlt } from "react-icons/bs";
 import { MdOutlinePendingActions } from "react-icons/md";
 
 type link = {
@@ -47,5 +47,12 @@ export default [
     link: "/affichage",
     authorization: roles.affichage,
     icon: <RiSlideshow3Line size={18} style={{ minWidth: "20px" }} />,
+  },
+  {
+    key: 5,
+    name: "geo guide",
+    link: "/geo",
+    authorization: roles.affichage,
+    icon: <BsGeoAlt size={18} style={{ minWidth: "20px" }} />,
   },
 ] as link[];
