@@ -99,7 +99,7 @@ export default function Sidebar() {
       {routes.map((route, key) =>
         user?.role === route.authorization || user?.role === roles.admin ? (
           <LinkContainer
-            isfocused={key === openTab}
+            isfocused={key === openTab ? 1 : 0}
             to={route.link}
             key={key}
             onClick={() => setOpenTab(key)}

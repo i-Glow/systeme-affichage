@@ -17,6 +17,7 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
+import axios from 'axios';
 
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
@@ -29,7 +30,20 @@ const item_height = height * 0.4;
 function News() {
   const [affichage, setAffichage] = useState([]);
 
+  async function fetcher() {
+    try {
+      const res = await axios.get(
+        'http://192.168.113.147:8080/api/affichage/mobile?level=',
+      );
+
+      setAffichage(res.data);
+    } catch (error) {
+      console.error({error});
+    }
+  }
+
   useEffect(() => {
+
     fetch('http://192.168.43.137:8080/api/affichage/mobile?level=')
       // fetch('https://api.sampleapis.com/coffee/hot')
       .then(res => res.json())
@@ -37,6 +51,7 @@ function News() {
       .catch(error => {
         console.error('Error:', error.message);
       });
+
   }, []);
 
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
@@ -123,6 +138,7 @@ function News() {
 const styles = StyleSheet.create({
   Container: {
     /* height: screenHeight, */
+    width: '100%',
     flex: 1,
     flexGrow: 1,
   },
