@@ -9,66 +9,78 @@
 // import {NativeStackScreenProps} from '@react-navigation/native-stack';
 // import {useRoute} from '@react-navigation/native';
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, StatusBar, StyleSheet, View, Text} from 'react-native';
+import {
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  View,
+  Text,
+  TouchableOpacity,
+  Linking,
+} from 'react-native';
 import isArabic from '../utils/isArabic';
+import {RouteProp, useRoute} from '@react-navigation/native';
+
+type RootStackParamList = {
+  Article: {
+    title: string;
+    Paragh: string;
+    time: string;
+  };
+};
+
 export default function Article() {
-  // const route = useRoute();
-  // const {id} = route.params;
-  /*TODO: id: Props => useEffect => useCallBack => handle the id TO FETCH DATA */
+  const route = useRoute<RouteProp<RootStackParamList, 'Article'>>();
+  const {title, Paragh, time} = route.params;
 
   const [isArabicText, setIsArabicText] = useState(false);
-  const [Data, setData] = useState([
-    {
-      id: 1,
-      title: 'استدعاء',
-      Reason: 'أنا أكرهك',
-      Paragh: 'لماذا هذا لا يعمل بشكل صحيح',
-      time: '9',
-    },
-  ]);
 
   useEffect(() => {
-    setIsArabicText(isArabic(Data[0].title));
-  }, [Data]);
+    setIsArabicText(isArabic(title));
+  }, [title]);
+  const linkMatch = Paragh.match(/\[qr:(.*?)\]/);
+  const link = linkMatch ? linkMatch[1] : null;
+  const NewParagh = Paragh.replace(/\[qr:(.*?)\]/, '');
+
+  const handleLinkPress = (pressedLink: string) => {
+    Linking.openURL(pressedLink);
+  };
 
   return (
     <>
       <StatusBar />
       <SafeAreaView style={{flex: 1}}>
-        {Data.map(item => (
-          <View style={styles.Container} key={item.id}>
-            <View style={styles.TextContainer}>
-              <Text
-                style={[
-                  isArabicText ? {direction: 'rtl'} : {direction: 'ltr'},
-                  styles.title,
-                ]}>
-                {item.title}
-              </Text>
-              <Text
-                style={[
-                  isArabicText ? {textAlign: 'right'} : {textAlign: 'left'},
-                  styles.Reason,
-                ]}>
-                {item.time}
-              </Text>
-              <Text
-                style={[
-                  isArabicText ? {direction: 'rtl'} : {direction: 'ltr'},
-                  styles.Reason,
-                ]}>
-                {item.Reason}
-              </Text>
-              <Text
-                style={[
-                  isArabicText ? {direction: 'rtl'} : {direction: 'ltr'},
-                  styles.Paragh,
-                ]}>
-                {item.Paragh}
-              </Text>
-            </View>
+        <View style={styles.Container}>
+          <View style={styles.TextContainer}>
+            <Text style={styles.title}>{title}</Text>
+            <Text
+              style={[
+                isArabicText ? {textAlign: 'right'} : {textAlign: 'left'},
+              ]}>
+              {isArabicText ? 'قبل ' : ''}
+              {time}
+            </Text>
+
+            <Text
+              style={[
+                isArabicText ? {direction: 'rtl'} : {direction: 'ltr'},
+                styles.Paragh,
+              ]}>
+              {NewParagh}
+              {link && (
+                <TouchableOpacity onPress={() => handleLinkPress(link)}>
+                  <Text
+                    style={{
+                      textDecorationLine: 'underline',
+                      color: 'blue',
+                    }}>
+                    {link}
+                  </Text>
+                </TouchableOpacity>
+              )}
+            </Text>
           </View>
-        ))}
+        </View>
       </SafeAreaView>
     </>
   );
@@ -83,6 +95,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: 'black',
+    textAlign: 'center',
   },
   Reason: {
     fontSize: 18,

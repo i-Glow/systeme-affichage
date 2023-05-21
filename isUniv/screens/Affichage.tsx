@@ -15,6 +15,7 @@ import {
   SafeAreaView,
   FlatList,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 
 import {useNavigation} from '@react-navigation/native';
@@ -22,92 +23,79 @@ import {StackNavigationProp} from '@react-navigation/stack';
 import {RootStackParams} from '../App';
 import isArabic from '../utils/isArabic';
 
+const {width, height} = Dimensions.get('window');
+const item_width = width * 0.9;
+const item_height = height * 0.4;
 function News() {
   const [affichage, setAffichage] = useState([]);
 
   useEffect(() => {
-    fetch('168.192.244.147:8080/api/affichage/mobile?level=')
+    fetch('http://192.168.43.137:8080/api/affichage/mobile?level=')
       // fetch('https://api.sampleapis.com/coffee/hot')
       .then(res => res.json())
-      .then(data => console.log(data));
+      .then(data => setAffichage(data))
+      .catch(error => {
+        console.error('Error:', error.message);
+      });
   }, []);
 
-  // const [Articles, setArticles] = useState([
-  //   {
-  //     id: 1,
-  //     titre: 'Article 1phasiuuhqqvnuelzt',
-  //     time: '6h',
-  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-  //     object:
-  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  //   },
-  //   {
-  //     id: 2,
-  //     titre: 'Article 1phasiuuhqqvnuelzt',
-  //     time: '6h',
-  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-  //     object:
-  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  //   },
-
-  //   {
-  //     id: 3,
-  //     titre: 'Article 1phasiuuhqqvnuelzt',
-  //     time: '6h',
-  //     image: require('../assets/PH1.png'),
-  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-  //     object:
-  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  //   },
-  //   {
-  //     id: 4,
-  //     titre: 'استدعاء',
-  //     time: '6h',
-  //     image: '../assets/PH1.png',
-  //     reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
-  //     object:
-  //       'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-  //   },
-  // ]);
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
   const renderItem = ({item}: any) => {
     const isArabicText = isArabic(item.titre);
 
+    const currentTime = new Date().getTime();
+    const createdAtTime = new Date(item.created_at).getTime();
+    const timeDiff = currentTime - createdAtTime;
+    const minutesDiff = Math.floor(timeDiff / (1000 * 60));
+    const hoursDiff = Math.floor(timeDiff / (1000 * 60 * 60));
+    const daysDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+    let timeMessage = '';
+    if (daysDiff > 0) {
+      timeMessage = `${daysDiff} ${isArabicText ? 'أيام' : 'days ago'}`;
+    } else if (hoursDiff > 0) {
+      timeMessage = `${hoursDiff} ${isArabicText ? 'ساعات' : 'hours ago'} `;
+    } else {
+      timeMessage = `${minutesDiff} ${isArabicText ? 'دقائق' : 'minutes ago'} `;
+    }
+    const linkMatch = item.contenu.match(/\[qr:(.*?)\]/);
+    const link = linkMatch ? linkMatch[1] : null;
+    const NewParagh = item.contenu.replace(/\[qr:(.*?)\]/, '');
     return (
       <TouchableOpacity
         onPress={() => {
-          navigation.navigate('Article', {id: item.id});
+          navigation.navigate('Article', {
+            title: item.titre,
+            Paragh: item.contenu,
+            time: timeMessage,
+          });
         }}
         style={styles.OneArticle}>
+        <Text style={styles.title}>{item.titre}</Text>
         <Text
-          style={[
-            isArabicText ? {textAlign: 'right'} : {textAlign: 'left'},
-            styles.title,
-          ]}>
-          {item.titre}
-        </Text>
-        <Text
-          style={[
-            isArabicText ? {textAlign: 'right'} : {textAlign: 'left'},
-            styles.Reason,
-          ]}>
-          {item.reason}
-        </Text>
-        <Text
-          numberOfLines={7}
+          numberOfLines={10}
           style={[
             isArabicText ? {textAlign: 'right'} : {textAlign: 'left'},
             styles.Paragh,
           ]}>
-          {item.object}
+          {NewParagh}
+          {link && (
+            <Text
+              style={{
+                textDecorationLine: 'underline',
+                color: 'blue',
+              }}>
+              {' '}
+              {link}
+            </Text>
+          )}
         </Text>
         <Text
           style={[
             isArabicText ? {textAlign: 'right'} : {textAlign: 'left'},
             styles.TimeParagh,
           ]}>
-          {isArabicText ? 'قبل' : 'il ya'} {item.time}
+          {isArabicText ? 'قبل' : ''} {timeMessage}
         </Text>
       </TouchableOpacity>
     );
@@ -120,7 +108,7 @@ function News() {
         <View style={styles.Container}>
           <View style={styles.CardContainer}>
             <FlatList
-              data={affichage}
+              data={affichage.reverse()}
               renderItem={renderItem}
               keyExtractor={(affichage: any) => affichage.article_id}
               contentContainerStyle={styles.FlatList}
@@ -153,8 +141,8 @@ const styles = StyleSheet.create({
   },
   OneArticle: {
     padding: '5%',
-    height: 290,
-    width: '90%',
+    height: item_height,
+    width: item_width,
     backgroundColor: 'whitesmoke',
     marginTop: '10%',
     borderRadius: 15,
@@ -168,6 +156,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: 'bold',
     color: 'black',
+    textAlign: 'center',
   },
   Reason: {fontSize: 18, marginTop: 15, fontWeight: '600', color: 'black'},
   Paragh: {

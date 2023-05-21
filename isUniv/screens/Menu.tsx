@@ -47,12 +47,6 @@ export default function Menu() {
       screen: 'SupportStackPage',
       titre: 'Support',
     },
-    {
-      id: 4,
-      imageUrl: require('../assets/Support.png'),
-      screen: 'GoogleMap',
-      titre: 'GoogleMap',
-    },
   ];
   const navigation = useNavigation();
 
