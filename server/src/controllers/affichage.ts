@@ -64,8 +64,6 @@ const getMobileAffichage = async (req: Request, res: Response) => {
       },
     });
 
-    console.log(articles);
-
     res.status(200).send(articles);
   } catch (error) {
     console.error(error);

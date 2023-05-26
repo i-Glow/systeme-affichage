@@ -5,7 +5,13 @@
  * @format
  */
 
-import React, {Dispatch, SetStateAction, createContext, useState} from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
@@ -21,6 +27,7 @@ import Testimonial from './screens/Testimonial';
 import SchoolCertificate from './screens/SchoolCertificate';
 import Login from './screens/LogIn';
 import Profile from './screens/Profile';
+
 export type RootStackParams = {
   News: undefined;
   Article: {
@@ -123,16 +130,16 @@ function App() {
             />
 
             <AppStack.Screen
+              name="Profile"
+              component={Profile}
+              options={{headerShown: false}}
+            />
+            <AppStack.Screen
               name="News"
               component={News}
               options={{headerLeft: () => <></>, headerTitle: 'News'}}
             />
             <AppStack.Screen name="Article" component={Article} />
-            <AppStack.Screen
-              name="Profile"
-              component={Profile}
-              options={{headerShown: false}}
-            />
 
             <AppStack.Screen
               name="MenuStackPage"

@@ -1,6 +1,6 @@
 /*eslint-disable prettier/prettier*/
 
-import React, {useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   View,
   TextInput,
@@ -11,29 +11,92 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, StackActions} from '@react-navigation/native';
 import {RootStackParams} from '../App';
 import {StackNavigationProp} from '@react-navigation/stack';
-
-interface LogInProps {
-  onLogin: () => void;
-}
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const {height} = Dimensions.get('window');
 
 const UpperContainer = height * 0.7;
 const Input = height * 0.065;
 
-const Login: React.FC<LogInProps> = ({onLogin}) => {
+const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
-  const handleLogin = () => {
-    navigation.navigate('News');
-    /*  if (username === 'h1' && password === '123') {
-    } */
+  const [shouldLogin, setShouldLogin] = useState(false);
+  const handleLogin = async () => {
+    try {
+      const response = await fetch(
+        'http://192.168.43.137:8080/api/student/checkStudent',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+        },
+      );
+      if (response.status === 200) {
+        const data = await response.json();
+        await AsyncStorage.setItem('authData', JSON.stringify(data.data));
+
+        // Proceed with navigation or further processing
+        navigation.dispatch(StackActions.replace('News'));
+      } else if (response.status === 401) {
+        // Invalid username or password
+        console.log('Invalid username or password');
+        // Handle the error case
+      } else {
+        // Other error occurred
+        console.log(response.status, 'An error occurred');
+        // Handle the error case
+      }
+    } catch (error) {
+      console.error(error);
+      // Handle the error
+    }
   };
+  const autoAuth = async () => {
+    try {
+      // Retrieve the stored authentication data
+      const authData = await AsyncStorage.getItem('authData');
+
+      if (authData) {
+        return JSON.parse(authData);
+      }
+    } catch (error) {
+      console.error(error);
+      // Handle the error
+    }
+  };
+  useEffect(() => {
+    // const clearLocalStorage = async () => {
+    //   await AsyncStorage.clear();
+    // };
+    const fetchData = async () => {
+      const data = await autoAuth();
+      if (data) {
+        console.log('Auto authentication successful');
+        // Extract the username and password from the stored authentication data
+        const {nom, matricule} = data;
+        setUsername(nom);
+        setPassword(matricule);
+        setShouldLogin(true);
+      }
+    };
+    // clearLocalStorage();
+    fetchData();
+    if (username && password) {
+      handleLogin();
+    }
+  }, [shouldLogin]);
+
   return (
     <View style={{flexGrow: 1, flex: 1}}>
       <ScrollView contentContainerStyle={styles.Container}>

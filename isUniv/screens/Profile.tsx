@@ -1,9 +1,10 @@
 /*eslint-disable prettier/prettier*/
 
-import React, {useContext} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   Dimensions,
   Image,
+  Modal,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -13,38 +14,117 @@ import {
 } from 'react-native';
 import NavBar from '../components/NavBar';
 import {BottomBarContext} from '../App';
-import {useFocusEffect} from '@react-navigation/native';
-
-const {height} = Dimensions.get('window');
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {StackNavigationProp} from '@react-navigation/stack';
+import {RootStackParams} from '../App';
+const {height, width} = Dimensions.get('window');
 
 const BottomBar = height * 0.08;
-const ItemBox = height * 0.08;
+const heightCashedDiv = height * 0.2;
+const widthCashedDiv = width * 0.6;
 export default function Profile() {
   const {setActiveScreen} = useContext(BottomBarContext);
+  const [modalVisible, setModalVisible] = useState(false);
+  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
   useFocusEffect(() => {
     setActiveScreen('Profile');
   });
+  type ProfileData = {
+    nom: string;
+    prenom: string;
+    matricule: string;
+    niveau: string;
+  };
+  const [profileData, setProfileData] = useState<ProfileData>({});
+  const Levels = new Map([
+    ['L1', 'License 1 ليسانس'],
+    ['L2', 'License 2 ليسانس'],
+    ['L3', 'License 3 ليسانس'],
+    ['M1', 'Master 1 ماستر'],
+    ['M2', 'Master 2 ماستر'],
+    ['D', 'Doctorat  دكتور'],
+  ]);
+  const autoAuth = async () => {
+    try {
+      // Retrieve the stored authentication data
+      const authData = await AsyncStorage.getItem('authData');
 
-  const Data = [
-    {
-      id: 1,
-      Nom: 'Zebiri',
-      Prenom: 'Azedine',
-      birthday: ' 2002-05-01',
-      placeOfBirth: 'El-Khroub-Constantine',
-    },
-  ];
-
+      if (authData) {
+        return JSON.parse(authData);
+      }
+    } catch (error) {
+      console.error(error);
+      // Handle the error
+    }
+  };
+  function handleLogout() {
+    const clearLocalStorage = async () => {
+      await AsyncStorage.clear();
+    };
+    clearLocalStorage();
+    navigation.navigate('Login');
+  }
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await autoAuth();
+      if (data) {
+        setProfileData(data);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <>
       <StatusBar />
       <SafeAreaView style={{flex: 1, flexGrow: 1}}>
         <View style={styles.Container}>
+          <Modal
+            animationType="fade"
+            transparent
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalContent}>
+                <Text
+                  style={{
+                    color: 'black',
+                    fontSize: 20,
+                    textAlign: 'center',
+                    marginTop: 20,
+                  }}>
+                  You will be Loged out are you sure ?
+                </Text>
+                <View style={styles.formbuttonLogOut}>
+                  <TouchableOpacity
+                    style={styles.buttonLogOut}
+                    onPress={() => {
+                      handleLogout();
+                    }}>
+                    <Text
+                      style={{color: 'white', fontSize: 16, fontWeight: 600}}>
+                      Logout
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.buttonCencel}
+                    onPress={() => {
+                      setModalVisible(false);
+                    }}>
+                    <Text>Cancel</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
           <View style={styles.Body}>
             <View style={styles.HeaderBar}>
               <Text style={styles.title}>Mon Profile</Text>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalVisible(true);
+                }}>
                 <Image
                   style={styles.Image}
                   source={require('../assets/logout.png')}
@@ -62,7 +142,7 @@ export default function Profile() {
                   <Text>Nom & Prenom</Text>
                   <Text
                     style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
-                    Azedine Zebiri
+                    {profileData.nom + ' ' + profileData.prenom}
                   </Text>
                 </View>
               </View>
@@ -105,12 +185,35 @@ export default function Profile() {
                 </View>
               </View>
               {/*  */}
+
+              <View style={styles.IdentifiantStyleBox1}>
+                <Image
+                  style={styles.Image}
+                  source={require('../assets/userProfile.png')}
+                />
+                <View>
+                  <Text>Matricule</Text>
+                  <Text
+                    style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
+                    {profileData.matricule}
+                  </Text>
+                </View>
+              </View>
+
+              <View style={styles.IdentifiantStyleBox1}>
+                <Image
+                  style={styles.Image}
+                  source={require('../assets/userProfile.png')}
+                />
+                <View>
+                  <Text>Niveau</Text>
+                  <Text
+                    style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
+                    {Levels.get(profileData.niveau)}
+                  </Text>
+                </View>
+              </View>
             </View>
-            <TouchableOpacity style={styles.Button}>
-              <Text style={{color: 'black', fontSize: 16, fontWeight: '500'}}>
-                Deconnecte
-              </Text>
-            </TouchableOpacity>
           </View>
           <View style={styles.NavContainer}>
             <NavBar />
@@ -188,5 +291,46 @@ const styles = StyleSheet.create({
   Image: {
     width: 30,
     height: 30,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 8,
+    height: heightCashedDiv,
+    width: widthCashedDiv,
+    display: 'flex',
+    alignItems: 'center',
+  },
+  formbuttonLogOut: {
+    flex: 1,
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'center',
+    gap: 20,
+  },
+  buttonLogOut: {
+    alignItems: 'center',
+    width: '40%',
+    borderColor: 'red',
+    padding: 8,
+    borderWidth: 1,
+    borderRadius: 8,
+    backgroundColor: 'red',
+  },
+  buttonCencel: {
+    alignItems: 'center',
+    width: '40%',
+    padding: 8,
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 8,
   },
 });

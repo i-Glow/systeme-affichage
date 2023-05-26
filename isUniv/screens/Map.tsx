@@ -14,16 +14,17 @@ import Geolocation from '@react-native-community/geolocation';
 import HtmlScript from '../utils/HtmlScript';
 
 type Position = {
-  lat: number;
-  lon: number;
-  description: string;
+  latitude: number;
+  longitude: number;
+  name: string;
 };
 
 type Event = {
-  lat: number;
-  lon: number;
+  latitude: number;
+  longitude: number;
   description: string;
-  time: number;
+  name: string;
+  endDate: string;
 };
 
 // ask & get userPermision
@@ -67,7 +68,7 @@ export default function Map() {
     fetch('http://192.168.43.137:8080/api/map/bloc')
       // fetch('https://api.sampleapis.com/coffee/hot')
       .then(res => res.json())
-      .then(data => console.log(data))
+      .then(data => setPlaces(data))
       .catch(error => {
         console.error('Error:', error.message);
       });
@@ -93,56 +94,69 @@ export default function Map() {
     description: 'current Poistion',
   });
 
-  const createMark = useCallback(({lat, lon, description}: Position) => {
+  const createMark = useCallback(({latitude, longitude, name}: Position) => {
     if (mapRef && mapRef.current) {
       mapRef.current.injectJavaScript(`
-        L.marker([${lat}, ${lon}])
+        L.marker([${latitude}, ${longitude}])
           .addTo(map)
-          .bindPopup('${description}');
+          .bindPopup('${name}');
       `);
     } else {
       console.error('mapRef is null or undefined');
     }
   }, []);
 
-  const createEvent = useCallback(({lat, lon, description, time}: Event) => {
-    const icons = [
-      {
-        iconUrl: 'https://cdn-icons-png.flaticon.com/512/2558/2558944.png',
-        iconSize: [30, 30],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40],
-      },
-      {
-        iconUrl: 'https://cdn-icons-png.flaticon.com/512/2558/2558944.png',
-        iconSize: [30, 30],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40],
-      },
-      {
-        iconUrl: 'https://cdn-icons-png.flaticon.com/512/2558/2558944.png',
-        iconSize: [30, 30],
-        iconAnchor: [20, 40],
-        popupAnchor: [0, -40],
-      },
-    ];
-    let iconIndex;
-    if (time === 5) {
-      iconIndex = 0;
-    } else if (time === 10) {
-      iconIndex = 1;
-    } else {
-      iconIndex = 2;
-    }
+  const createEvent = useCallback(
+    ({latitude, longitude, description, name, endDate}: Event) => {
+      const icons = [
+        {
+          iconUrl: 'https://cdn-icons-png.flaticon.com/512/2558/2558944.png',
+          iconSize: [30, 30],
+          iconAnchor: [20, 40],
+          popupAnchor: [0, 0],
+        },
+        {
+          iconUrl: 'https://cdn-icons-png.flaticon.com/512/2558/2558944.png',
+          iconSize: [30, 30],
+          iconAnchor: [20, 40],
+          popupAnchor: [0, 0],
+        },
+        {
+          iconUrl: 'https://cdn-icons-png.flaticon.com/512/2558/2558944.png',
+          iconSize: [30, 30],
+          iconAnchor: [20, 40],
+          popupAnchor: [0, 0],
+        },
+      ];
+      const limitTime: Date = new Date(endDate);
+      const currentDate: Date = new Date();
+      const timeDiff: number = Math.ceil(
+        (limitTime.getTime() - currentDate.getTime()) / (1000 * 60 * 60 * 24),
+      ); // Calculate the difference in days
 
-    if (mapRef.current) {
-      mapRef.current.injectJavaScript(`
-        L.marker([${lat}, ${lon}], {icon: L.icon({iconUrl: '${icons[iconIndex].iconUrl}', iconSize: [${icons[iconIndex].iconSize}], iconAnchor: [${icons[iconIndex].iconAnchor}], popupAnchor: [${icons[iconIndex].popupAnchor}]})})
+      let iconIndex;
+      if (timeDiff < 1) {
+        iconIndex = 0;
+      } else if (timeDiff <= 3) {
+        iconIndex = 1;
+      } else {
+        iconIndex = 2;
+      }
+
+      if (mapRef.current) {
+        mapRef.current.injectJavaScript(`
+        L.marker([${latitude}, ${longitude}], {icon: L.icon({iconUrl: '${
+          icons[iconIndex].iconUrl
+        }', iconSize: [${icons[iconIndex].iconSize}], iconAnchor: [${
+          icons[iconIndex].iconAnchor
+        }], popupAnchor: [${icons[iconIndex].popupAnchor}]})})
         .addTo(map)
-        .bindPopup('${description}')
+        .bindPopup('${name + '/n ' + description}')
       `);
-    }
-  }, []);
+      }
+    },
+    [],
+  );
 
   const createUserLocationMarker = useCallback(
     ({lat, lon, description}: Position) => {
@@ -217,13 +231,16 @@ export default function Map() {
     if (!mapReady) {
       return;
     }
-
-    places.forEach(place => {
-      createMark(place);
-    });
-    evenment.forEach(event => {
-      createEvent(event);
-    });
+    if (places && Array.isArray(places)) {
+      places.forEach(place => {
+        createMark(place);
+      });
+    }
+    if (places && Array.isArray(evenment)) {
+      evenment.forEach(event => {
+        createEvent(event);
+      });
+    }
 
     if (oneTime) {
       Geolocation.getCurrentPosition(
@@ -293,13 +310,13 @@ export default function Map() {
           allowFileAccess={true}
           onLoadEnd={onMapReady}
         />
-        <Button
+        {/* <Button
           title="Get My Location"
           onPress={() => {
             setOneTime(true);
             setUpdate(true);
           }}
-        />
+        /> */}
       </SafeAreaView>
     </>
   );
