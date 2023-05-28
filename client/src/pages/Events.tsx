@@ -129,58 +129,60 @@ function Event() {
             New
           </Button>
         </Flex>
-        {eventsLoading
-          ? "loading"
-          : events.length > 0 &&
-            events.map((el: any) => (
-              <Card
-                key={el.event_id}
-                style={{ marginBottom: "20px" }}
-                actions={[
-                  <AiOutlineEdit size={18} key="edit" />,
-                  <Popconfirm
-                    title="delete"
-                    description="Are you sure you want to delete this article?"
-                    okText="Delete"
-                    okType="danger"
-                    cancelText="Cancel"
-                    // okButtonProps={{ loading: confirmLoading }}
-                    onConfirm={() => deleteEvent(el.event_id)}
-                  >
-                    <MdOutlineDeleteOutline
-                      size={18}
-                      key="delete"
-                      onClick={() => {}}
-                    />
-                    ,
-                  </Popconfirm>,
-                ]}
-              >
-                <Flex jc="space-between">
-                  <h3>{el.name}</h3>
-                  <Flex gap="7px">
-                    Starts
-                    <h4>{el.start_date}</h4>
-                  </Flex>
+        {eventsLoading ? (
+          "loading"
+        ) : events.length > 0 ? (
+          events.map((el: any) => (
+            <Card
+              key={el.event_id}
+              style={{ marginBottom: "20px" }}
+              actions={[
+                <Popconfirm
+                  title="delete"
+                  description="Are you sure you want to delete this article?"
+                  okText="Delete"
+                  okType="danger"
+                  cancelText="Cancel"
+                  // okButtonProps={{ loading: confirmLoading }}
+                  onConfirm={() => deleteEvent(el.event_id)}
+                >
+                  <MdOutlineDeleteOutline
+                    size={18}
+                    key="delete"
+                    onClick={() => {}}
+                  />
+                  ,
+                </Popconfirm>,
+              ]}
+            >
+              <Flex jc="space-between">
+                <h3>{el.name}</h3>
+                <Flex gap="7px">
+                  Starts
+                  <h4>{el.start_date}</h4>
                 </Flex>
-                <Description>{el.description}</Description>
-                <Flex jc="space-between">
-                  <Flex gap="5px">
-                    <Tag color="#e7f2fd">
-                      <p style={{ color: "black", padding: "3px 5px" }}>
-                        Competition
-                      </p>
-                    </Tag>
-                    <Tag color="#e7f2fd">
-                      <p style={{ color: "black", padding: "3px 5px" }}>
-                        Competition
-                      </p>
-                    </Tag>
-                  </Flex>
-                  <GrMapLocation size={24} />
+              </Flex>
+              <Description>{el.description}</Description>
+              <Flex jc="space-between">
+                <Flex gap="5px">
+                  <Tag color="#e7f2fd">
+                    <p style={{ color: "black", padding: "3px 5px" }}>
+                      Competition
+                    </p>
+                  </Tag>
+                  <Tag color="#e7f2fd">
+                    <p style={{ color: "black", padding: "3px 5px" }}>
+                      Competition
+                    </p>
+                  </Tag>
                 </Flex>
-              </Card>
-            ))}
+                <GrMapLocation size={24} />
+              </Flex>
+            </Card>
+          ))
+        ) : (
+          <h3>No ongoing events</h3>
+        )}
       </div>
     </Flex>
   );

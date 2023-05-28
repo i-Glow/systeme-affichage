@@ -124,9 +124,6 @@ function DataForm({ position }: any) {
             </Form.Item>
             <Flex gap="20px">
               <DatePicker.RangePicker
-                style={{
-                  borderColor: "#787276",
-                }}
                 allowEmpty={[false, false]}
                 onChange={(value) => dateChangeHandler(value)}
                 placeholder={["de", "à"]}
