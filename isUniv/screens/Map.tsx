@@ -8,13 +8,11 @@
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
-  Button,
   Image,
   SafeAreaView,
   StatusBar,
   StyleSheet,
   TouchableOpacity,
-  View,
 } from 'react-native';
 import {WebView} from 'react-native-webview';
 import {PermissionsAndroid} from 'react-native';
@@ -209,9 +207,6 @@ export default function Map() {
     },
     [],
   );
-  //57.74, 11.94 36.814016, 7.720433
-  //<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
-  //<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
 
   /* function CreateRoute() {
     if (mapRef && mapRef.current) {

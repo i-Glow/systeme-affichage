@@ -15,7 +15,6 @@ import {useNavigation, StackActions} from '@react-navigation/native';
 import {RootStackParams} from '../App';
 import {StackNavigationProp} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Toast from 'react-native-toast-message';
 import {ToastAndroid, Platform, AlertIOS} from 'react-native';
 const {height} = Dimensions.get('window');
 

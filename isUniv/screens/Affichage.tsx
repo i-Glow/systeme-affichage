@@ -214,14 +214,6 @@ const styles = StyleSheet.create({
     right: 15,
     bottom: 8,
   },
-
-  /* NavContainer: {
-    position: 'absolute',
-    bottom: 20,
-    alignItems: 'center',
-    left: 0,
-    right: 0,
-  }, */
 });
 
 export default News;
