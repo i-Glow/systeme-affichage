@@ -30,14 +30,16 @@ export default function CreateUser() {
       });
 
       if (res.status === 200) {
+        // show toast
         messageApi.open({
           type: "success",
           content: "User created",
         });
       }
+      //go back to users page
       navigate("/users");
     } catch (error) {
-      console.error(error);
+      // show toast
       messageApi.open({
         type: "error",
         content: "Error",
