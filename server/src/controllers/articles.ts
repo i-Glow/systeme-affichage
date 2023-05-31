@@ -3,12 +3,12 @@ import { Request, Response } from "express";
 import prisma from "../db";
 import pendingCountEventEmmiter from "../utils/EventEmmiter";
 import axios from "axios";
+import type CustomRequest from "../types/CustomRquest";
 
-const getAll = async (req: Request, res: Response) => {
+const getAll = async (req: CustomRequest, res: Response) => {
   try {
     const whereClause: Prisma.articleWhereInput =
-      //@ts-ignore
-      req.user.role === Role.super_user
+      req.user?.role === Role.super_user
         ? {
             date_fin: {
               gt: new Date().toISOString(),
@@ -20,8 +20,7 @@ const getAll = async (req: Request, res: Response) => {
               gt: new Date().toISOString(),
             },
             state: State.approved,
-            //@ts-ignore
-            creator_id: req.user.uid,
+            creator_id: req.user?.uid,
           };
 
     const articles = await prisma.article.findMany({
@@ -44,7 +43,7 @@ const getAll = async (req: Request, res: Response) => {
   }
 };
 
-const getArticle = async (req: Request, res: Response) => {
+const getArticle = async (req: CustomRequest, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -79,10 +78,8 @@ const getArticle = async (req: Request, res: Response) => {
     }
 
     if (
-      //@ts-ignore
-      article.creator.user_id !== req.user.uid &&
-      //@ts-ignore
-      req.user.role !== Role.super_user
+      article.creator.user_id !== req.user?.uid &&
+      req.user?.role !== Role.super_user
     ) {
       throw new Error("NOT_AUTHORIZED");
     }
@@ -106,11 +103,11 @@ const getArticle = async (req: Request, res: Response) => {
   }
 };
 
-const getArchive = async (req: Request, res: Response) => {
+const getArchive = async (req: CustomRequest, res: Response) => {
   try {
     // Check if user is an admin
-    //@ts-ignore
-    if (req.user.role !== Role.super_user) {
+
+    if (req.user?.role !== Role.super_user) {
       throw new Error("NOT_AUTHORIZED");
     }
 
@@ -277,9 +274,11 @@ const createArticle = async (req: Request, res: Response) => {
     //@ts-ignore
     const { role, uid } = req.user;
     let newArticle: article;
+    let fbPostId;
 
+    // if the user is an admin post to facebook
     if (role === Role.super_user) {
-      let fbPostId = null;
+      fbPostId = null;
       if (includeFb) {
         fbPostId = await postToFacebook(contenu, date_debut);
 
@@ -287,70 +286,43 @@ const createArticle = async (req: Request, res: Response) => {
           return res.status(400).send({ message: fbPostId.message });
         }
       }
+    }
 
-      newArticle = await prisma.article.create({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          includeFb,
-          fbPostId,
-          creator: {
-            connect: {
-              //@ts-ignore
-              user_id: uid,
+    // insert article
+    newArticle = await prisma.article.create({
+      data: {
+        titre,
+        contenu,
+        date_debut,
+        date_fin,
+        includeFb,
+        fbPostId,
+        creator: {
+          connect: {
+            user_id: uid,
+          },
+        },
+        categorie: {
+          connectOrCreate: {
+            create: {
+              nom: categoryName,
+            },
+            where: {
+              nom: categoryName,
             },
           },
-          categorie: {
-            connectOrCreate: {
-              create: {
-                nom: categoryName,
-              },
-              where: {
-                nom: categoryName,
-              },
-            },
-          },
-          niveau,
-          state: State.approved,
         },
-        include: {
-          categorie: true,
-        },
-      });
-    } else {
-      newArticle = await prisma.article.create({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          includeFb,
-          creator: {
-            connect: {
-              //@ts-ignore
-              user_id: uid,
-            },
-          },
-          categorie: {
-            connectOrCreate: {
-              create: {
-                nom: categoryName,
-              },
-              where: {
-                nom: categoryName,
-              },
-            },
-          },
-          niveau,
-          state: State.pending,
-        },
-        include: {
-          categorie: true,
-        },
-      });
+        niveau,
+        // if the user is an admin approve the article else set it as pending
+        state: role === Role.super_user ? State.approved : State.pending,
+      },
+      include: {
+        categorie: true,
+      },
+    });
 
+    // if the user is not a (responsable d'affichage) notify all admins
+    if (role === Role.responsable_affichage) {
       pendingCountEventEmmiter.emit("newArticle", {
         article: newArticle,
       });
@@ -365,7 +337,7 @@ const createArticle = async (req: Request, res: Response) => {
 
 const editArticle = async (req: Request, res: Response) => {
   try {
-    //@ts-ignore
+    // @ts-ignore
     const { role } = req.user;
     const { id } = req.params;
     const { titre, contenu, date_debut, date_fin, niveau, categoryName } =
@@ -453,60 +425,46 @@ const deleteArticle = async (req: Request, res: Response) => {
 
 const getArticlesByUserRole = async (req: Request, res: Response) => {
   try {
-    //@ts-ignore
+    // @ts-ignore
     const { role, uid } = req.user;
 
     let articles;
+    let where;
+
     if (role === Role.super_user) {
+      console.log("first");
       // If user is an admin, fetch all articles
-      articles = await prisma.article.findMany({
-        where: {
-          state: State.pending,
-        },
-        select: {
-          article_id: true,
-          titre: true,
-          niveau: true,
-          contenu: true,
-          date_debut: true,
-          date_fin: true,
-          categorie: true,
-          created_at: true,
-          edited_at: true,
-          creator: {
-            select: {
-              nom: true,
-              prenom: true,
-            },
-          },
-        },
-      });
+      where = { state: State.pending };
     } else {
-      // If user is not an admin, fetch only published articles
-      articles = await prisma.article.findMany({
-        where: {
-          creator_id: uid,
-          state: State.pending,
-        },
-        select: {
-          article_id: true,
-          titre: true,
-          niveau: true,
-          contenu: true,
-          date_debut: true,
-          date_fin: true,
-          categorie: true,
-          created_at: true,
-          edited_at: true,
-          creator: {
-            select: {
-              nom: true,
-              prenom: true,
-            },
+      console.log("second");
+      // else fetch only published articles by him
+      where = {
+        creator_id: uid,
+        state: State.pending,
+      };
+    }
+
+    articles = await prisma.article.findMany({
+      where: where,
+      select: {
+        article_id: true,
+        titre: true,
+        niveau: true,
+        contenu: true,
+        date_debut: true,
+        date_fin: true,
+        categorie: true,
+        created_at: true,
+        edited_at: true,
+        creator: {
+          select: {
+            nom: true,
+            prenom: true,
           },
         },
-      });
-    }
+      },
+    });
+
     res.status(200).send({ data: articles });
   } catch (error) {
     console.error(error);
@@ -525,7 +483,8 @@ const getPendingArticlesCount = async (req: Request, res: Response) => {
   try {
     //remove all listeners to avoid duplicates
     pendingCountEventEmmiter.removeAllListeners("newArticle");
-    //@ts-ignore
+
+    // @ts-ignore
     const { role } = req.user;
 
     if (role !== Role.super_user)
