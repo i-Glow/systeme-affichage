@@ -37,6 +37,7 @@ type data = {
   niveau: string[];
   categoryName: string;
   includeFb: boolean;
+  importance: boolean;
 };
 
 export default function CreateArticle() {
@@ -62,6 +63,7 @@ export default function CreateArticle() {
   const [dateDebut, setDateDebut] = useState<string>();
   const [dateFin, setDateFin] = useState<string>();
   const [postToFacebook, setPostToFacebook] = useState<boolean>(false);
+  const [importance, setImportance] = useState<boolean>(false);
   //new articles
   const [newArticles, setNewArticles] = useState<data[] | undefined>([]);
 
@@ -113,6 +115,7 @@ export default function CreateArticle() {
         niveau: niveau as string[],
         categoryName: category,
         includeFb: postToFacebook,
+        importance: importance,
       };
 
       const res = await axios({
@@ -135,6 +138,7 @@ export default function CreateArticle() {
         setTitre("");
         setContenu("");
         setNiveau([]);
+        setImportance(false);
       } else if (res.status === 204) {
         messageApi.open({
           type: "success",
@@ -161,7 +165,7 @@ export default function CreateArticle() {
         headers: { Authorization: `Bearer ${token}` },
         signal: controller.signal,
       });
-
+      console.log(res.data.data);
       if (res.status === 200) {
         setTitre(res.data.data.titre);
         setContenu(res.data.data.contenu);
@@ -169,6 +173,7 @@ export default function CreateArticle() {
         setDateDebut(res.data.data.date_debut);
         setDateFin(res.data.data.date_fin);
         setCategory(res.data.data.categorie.nom);
+        setImportance(res.data.data.importance);
       }
     }
   }, []);
@@ -363,6 +368,12 @@ export default function CreateArticle() {
               onChange={() => setPostToFacebook(!postToFacebook)}
             >
               Facebook
+            </Checkbox>
+            <Checkbox
+              checked={importance}
+              onChange={() => setImportance(!importance)}
+            >
+              Importance
             </Checkbox>
           </Form.Item>
           <Form.Item label=" " colon={false}>

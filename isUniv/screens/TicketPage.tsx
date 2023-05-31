@@ -3,7 +3,6 @@
 import {useNavigation, useRoute} from '@react-navigation/native';
 import React, {useLayoutEffect} from 'react';
 import {
-  Button,
   SafeAreaView,
   StatusBar,
   StyleSheet,

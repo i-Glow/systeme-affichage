@@ -6,7 +6,7 @@
  *
  * @format
  */
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
   StatusBar,
   StyleSheet,
@@ -17,42 +17,62 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import axios from 'axios';
 
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParams} from '../App';
+import {BottomBarContext, RootStackParams} from '../App';
 import isArabic from '../utils/isArabic';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NavBar from '../components/NavBar';
 
 const {width, height} = Dimensions.get('window');
 const item_width = width * 0.9;
 const item_height = height * 0.4;
+const BottomBar = height * 0.08;
+
 function News() {
   const [affichage, setAffichage] = useState([]);
+  const [level, setLevel] = useState('');
 
-  async function fetcher() {
+  const {activeScreen, setActiveScreen} = useContext(BottomBarContext);
+
+  useFocusEffect(() => {
+    setActiveScreen('Affichage');
+  });
+
+  const autoAuth = async () => {
     try {
-      const res = await axios.get(
-        'http://192.168.113.147:8080/api/affichage/mobile?level=',
-      );
+      // Retrieve the stored authentication data
+      const authData = await AsyncStorage.getItem('authData');
 
-      setAffichage(res.data);
+      if (authData) {
+        return JSON.parse(authData);
+      }
     } catch (error) {
-      console.error({error});
+      console.error(error);
+      // Handle the error
     }
-  }
-
+  };
   useEffect(() => {
+    const fetchData = async () => {
+      const data = await autoAuth();
+      if (data) {
+        const {niveau} = data;
 
-    fetch('http://192.168.43.137:8080/api/affichage/mobile?level=')
+        setLevel(niveau);
+      }
+    };
+    fetchData();
+  }, []);
+  useEffect(() => {
+    fetch(`http://192.168.43.137:8080/api/affichage/mobile?level=${level}`)
       // fetch('https://api.sampleapis.com/coffee/hot')
       .then(res => res.json())
       .then(data => setAffichage(data))
       .catch(error => {
         console.error('Error:', error.message);
       });
-
-  }, []);
+  }, [level, activeScreen]);
 
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
@@ -129,6 +149,9 @@ function News() {
               contentContainerStyle={styles.FlatList}
             />
           </View>
+          <View style={styles.NavContainer}>
+            <NavBar />
+          </View>
         </View>
       </SafeAreaView>
     </>
@@ -141,6 +164,9 @@ const styles = StyleSheet.create({
     width: '100%',
     flex: 1,
     flexGrow: 1,
+  },
+  NavContainer: {
+    height: BottomBar,
   },
   Image: {
     width: '100%',
@@ -188,14 +214,6 @@ const styles = StyleSheet.create({
     right: 15,
     bottom: 8,
   },
-
-  /* NavContainer: {
-    position: 'absolute',
-    bottom: 20,
-    alignItems: 'center',
-    left: 0,
-    right: 0,
-  }, */
 });
 
 export default News;

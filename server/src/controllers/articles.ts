@@ -63,6 +63,7 @@ const getArticle = async (req: CustomRequest, res: Response) => {
         edited_at: true,
         state: true,
         fbPostId: true,
+        importance: true,
         creator: {
           select: {
             user_id: true,
@@ -270,6 +271,7 @@ const createArticle = async (req: Request, res: Response) => {
       niveau,
       categoryName,
       includeFb,
+      importance,
     } = req.body;
     //@ts-ignore
     const { role, uid } = req.user;
@@ -288,24 +290,51 @@ const createArticle = async (req: Request, res: Response) => {
       }
     }
 
-    // insert article
-    newArticle = await prisma.article.create({
-      data: {
-        titre,
-        contenu,
-        date_debut,
-        date_fin,
-        includeFb,
-        fbPostId,
-        creator: {
-          connect: {
-            user_id: uid,
+
+      newArticle = await prisma.article.create({
+        data: {
+          titre,
+          contenu,
+          date_debut,
+          date_fin,
+          includeFb,
+          fbPostId,
+          importance,
+          creator: {
+            connect: {
+              //@ts-ignore
+              user_id: uid,
+            },
+          },
+          categorie: {
+            connectOrCreate: {
+              create: {
+                nom: categoryName,
+              },
+              where: {
+                nom: categoryName,
+              },
+            },
+
           },
         },
-        categorie: {
-          connectOrCreate: {
-            create: {
-              nom: categoryName,
+        include: {
+          categorie: true,
+        },
+      });
+    } else {
+      newArticle = await prisma.article.create({
+        data: {
+          titre,
+          contenu,
+          date_debut,
+          date_fin,
+          includeFb,
+          importance,
+          creator: {
+            connect: {
+              //@ts-ignore
+              user_id: uid,
             },
             where: {
               nom: categoryName,
@@ -340,8 +369,15 @@ const editArticle = async (req: Request, res: Response) => {
     // @ts-ignore
     const { role } = req.user;
     const { id } = req.params;
-    const { titre, contenu, date_debut, date_fin, niveau, categoryName } =
-      req.body;
+    const {
+      titre,
+      contenu,
+      date_debut,
+      date_fin,
+      niveau,
+      categoryName,
+      importance,
+    } = req.body;
 
     if (role === Role.super_user) {
       await prisma.article.update({
@@ -352,6 +388,7 @@ const editArticle = async (req: Request, res: Response) => {
           date_fin,
           edited_at: new Date().toISOString(),
           niveau,
+          importance,
           categorie: {
             connectOrCreate: {
               create: {
@@ -376,6 +413,7 @@ const editArticle = async (req: Request, res: Response) => {
           date_fin,
           edited_at: new Date().toISOString(),
           niveau,
+          importance,
           state: State.pending,
           categorie: {
             connectOrCreate: {

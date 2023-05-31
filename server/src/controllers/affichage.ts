@@ -9,6 +9,7 @@ const getAffichage = async (req: Request, res: Response) => {
         titre: true,
         contenu: true,
         niveau: true,
+        importance: true,
       },
       where: {
         AND: {
@@ -61,10 +62,17 @@ const getMobileAffichage = async (req: Request, res: Response) => {
       },
       where: {
         niveau: level.length ? { hasSome: level } : { isEmpty: false },
+        AND: {
+          date_debut: {
+            lt: new Date().toISOString(),
+          },
+          date_fin: {
+            gt: new Date().toISOString(),
+          },
+        },
+        state: State.approved,
       },
     });
-
-    console.log(articles);
 
     res.status(200).send(articles);
   } catch (error) {

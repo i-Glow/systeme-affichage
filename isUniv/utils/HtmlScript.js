@@ -36,7 +36,7 @@ const HtmlScript = `
 <body>
 
 
-<div id="map" style="width: 100%; height: 80%;"></div>
+<div id="map" style="width: 100%; height: 100%;"></div>
 <script>
 	
 	const map = L.map('map').setView([36.814016, 7.720433], 16);

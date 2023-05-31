@@ -5,7 +5,13 @@
  * @format
  */
 
-import React, {Dispatch, SetStateAction, createContext, useState} from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useContext,
+  useState,
+} from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
@@ -21,6 +27,7 @@ import Testimonial from './screens/Testimonial';
 import SchoolCertificate from './screens/SchoolCertificate';
 import Login from './screens/LogIn';
 import Profile from './screens/Profile';
+
 export type RootStackParams = {
   News: undefined;
   Article: {
@@ -28,6 +35,7 @@ export type RootStackParams = {
     Paragh: string;
     time: string;
   };
+  Affichage: undefined;
   MenuStackPage: undefined;
   Login: undefined;
   BarCodeScanner: undefined;
@@ -37,7 +45,6 @@ export type RootStackParams = {
 export type MenuStackParams = {
   Menu: undefined;
   Map: undefined;
-  Affichage: undefined;
   SupportStackPage: undefined;
 };
 
@@ -88,7 +95,6 @@ function MenuStackPage() {
         options={{headerLeft: () => <></>, headerTitle: 'Menu'}}
       />
       <MenuStack.Screen name="Map" component={Map} />
-      <MenuStack.Screen name="Affichage" component={Affichage} />
 
       <MenuStack.Screen
         name="SupportStackPage"
@@ -123,16 +129,16 @@ function App() {
             />
 
             <AppStack.Screen
-              name="News"
-              component={News}
-              options={{headerLeft: () => <></>, headerTitle: 'News'}}
-            />
-            <AppStack.Screen name="Article" component={Article} />
-            <AppStack.Screen
               name="Profile"
               component={Profile}
               options={{headerShown: false}}
             />
+            <AppStack.Screen
+              name="Affichage"
+              component={Affichage}
+              options={{headerLeft: () => <></>, headerTitle: 'Affichage'}}
+            />
+            <AppStack.Screen name="Article" component={Article} />
 
             <AppStack.Screen
               name="MenuStackPage"

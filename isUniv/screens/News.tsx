@@ -36,7 +36,6 @@ export default function News() {
       id: 1,
       titre: 'Article1 1phasiuuhqqvnuelzt',
       image: require('../assets/PH1.png'),
-      reason: '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
       object:
         '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmssssssssssssssssssssssssssssssssssssssssssssssssssssssssssspnbkqlabyjvfsddddddddddddddddddddddddddddsssssssssssssssssssssssssssssssssssssssssssssssssstuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
     },
@@ -44,7 +43,6 @@ export default function News() {
       id: 2,
       titre: 'Article2 1phasiuuhqqvnuelzt',
       image: require('../assets/PH1.png'),
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
       object:
         'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
     },
@@ -53,7 +51,6 @@ export default function News() {
       id: 3,
       titre: 'Article3 1phasiuuhqqvnuelzt',
       image: require('../assets/PH1.png'),
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
       object:
         'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
     },
@@ -61,7 +58,6 @@ export default function News() {
       id: 4,
       titre: 'Article4 1phasiuuhqqvnuelzt',
       image: require('../assets/PH1.png'),
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
       object:
         'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
     },
@@ -70,7 +66,6 @@ export default function News() {
       id: 5,
       titre: 'Article5 1phasiuuhqqvnuelzt',
       image: require('../assets/PH1.png'),
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
       object:
         'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
     },
@@ -78,7 +73,6 @@ export default function News() {
       id: 6,
       titre: 'Article6 1phasiuuhqqvnuelzt',
       image: require('../assets/PH1.png'),
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
       object:
         'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
     },
@@ -86,7 +80,6 @@ export default function News() {
       id: 7,
       titre: 'Article7 1phasiuuhqqvnuelzt',
       image: require('../assets/PH1.png'),
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
       object:
         '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
     },
@@ -94,7 +87,6 @@ export default function News() {
       id: 8,
       titre: 'Article8 1phasiuuhqqvnuelzt',
       image: require('../assets/PH1.png'),
-      reason: 'Reason 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywc',
       object:
         'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
     },
@@ -130,15 +122,6 @@ export default function News() {
                           styles.title,
                         ]}>
                         {item.titre}
-                      </Text>
-                      <Text
-                        style={[
-                          isArabicText
-                            ? {textAlign: 'right', writingDirection: 'rtl'}
-                            : {textAlign: 'left', writingDirection: 'ltr'},
-                          styles.Reason,
-                        ]}>
-                        {item.reason}
                       </Text>
                       <Text
                         numberOfLines={16}
@@ -187,12 +170,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: 'black',
   },
-  Reason: {
-    fontSize: 18,
-    marginTop: 15,
-    fontWeight: '600',
-    color: 'black',
-  },
+
   Paragh: {
     fontSize: 18,
     marginTop: 15,
