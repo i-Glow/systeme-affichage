@@ -36,6 +36,8 @@ export default function Profile() {
     prenom: string;
     matricule: string;
     niveau: string;
+    location: string;
+    dateOfBirth: String;
   };
   const [profileData, setProfileData] = useState<ProfileData>({});
   const Levels = new Map([
@@ -161,7 +163,7 @@ export default function Profile() {
                         fontSize: 20,
                         fontWeight: 'bold',
                       }}>
-                      El-Khroub-Constantine
+                      {profileData.location}
                     </Text>
                   </View>
                 </View>
@@ -179,7 +181,7 @@ export default function Profile() {
                         fontSize: 20,
                         fontWeight: 'bold',
                       }}>
-                      2002-05-01
+                      {profileData.dateOfBirth}
                     </Text>
                   </View>
                 </View>

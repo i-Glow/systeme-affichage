@@ -17,20 +17,20 @@ function NavBar() {
         <Pressable
           style={[
             styles.Pressable,
-            activeScreen === 'News' && styles.activeButton,
+            activeScreen === 'Affichage' && styles.activeButton,
           ]}
           onPress={() => {
-            navigation.navigate('News');
+            navigation.navigate('Affichage');
           }}>
           <Image
             source={
-              activeScreen === 'News'
+              activeScreen === 'Affichage'
                 ? require('../assets/NewsBlack.png')
                 : require('../assets/NewsWhite.png')
             }
             style={[
               styles.Image,
-              activeScreen === 'News' && styles.activeImage,
+              activeScreen === 'Affichage' && styles.activeImage,
             ]}
           />
         </Pressable>

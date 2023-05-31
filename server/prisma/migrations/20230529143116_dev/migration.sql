@@ -19,6 +19,7 @@ CREATE TABLE "article" (
     "creator_id" TEXT NOT NULL,
     "categorie_id" INTEGER NOT NULL,
     "state" "State" NOT NULL,
+    "importance" BOOLEAN NOT NULL,
 
     CONSTRAINT "article_pkey" PRIMARY KEY ("article_id")
 );
@@ -52,6 +53,29 @@ CREATE TABLE "student" (
     "niveau" TEXT NOT NULL,
 
     CONSTRAINT "student_pkey" PRIMARY KEY ("matricule")
+);
+
+-- CreateTable
+CREATE TABLE "event" (
+    "event_id" TEXT NOT NULL,
+    "longitude" DECIMAL(65,30) NOT NULL,
+    "latitude" DECIMAL(65,30) NOT NULL,
+    "name" TEXT NOT NULL,
+    "description" TEXT NOT NULL,
+    "start_date" TIMESTAMP(3) NOT NULL,
+    "end_date" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "event_pkey" PRIMARY KEY ("event_id")
+);
+
+-- CreateTable
+CREATE TABLE "bloc" (
+    "bloc_id" TEXT NOT NULL,
+    "longitude" DECIMAL(65,30) NOT NULL,
+    "latitude" DECIMAL(65,30) NOT NULL,
+    "name" TEXT NOT NULL,
+
+    CONSTRAINT "bloc_pkey" PRIMARY KEY ("bloc_id")
 );
 
 -- CreateIndex

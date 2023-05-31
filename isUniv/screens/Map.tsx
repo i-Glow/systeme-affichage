@@ -7,7 +7,15 @@
  */
 
 import React, {useCallback, useEffect, useRef, useState} from 'react';
-import {Button, SafeAreaView, StatusBar, StyleSheet} from 'react-native';
+import {
+  Button,
+  Image,
+  SafeAreaView,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {WebView} from 'react-native-webview';
 import {PermissionsAndroid} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
@@ -82,11 +90,7 @@ export default function Map() {
   }, []);
 
   const [places, setPlaces] = useState([]);
-  /* {lat: 36.812725, lon: 7.719596, description: 'bloc H'},
-    {lat: 36.812764, lon: 7.719027, description: 'bloc J'},
-    {lat: 36.813889, lon: 7.717983, description: 'Department Informatique'},  {lat: 36.813299, lon: 7.718092, description: 'this is A', time: 5},
-    {lat: 36.813455, lon: 7.718817, description: 'this is B', time: 10},
-    {lat: 36.813085, lon: 7.719302, description: 'this is C', time: 15},*/
+
   const [evenment, setEvenment] = useState([]);
   const [userLocation, setUserLocation] = useState({
     lat: 0,
@@ -266,7 +270,6 @@ export default function Map() {
     if (update) {
       const watchId = Geolocation.watchPosition(
         position => {
-          console.log(position);
           const User = {...userLocation};
           User.lat = position.coords.latitude;
           User.lon = position.coords.longitude;
@@ -310,6 +313,17 @@ export default function Map() {
           allowFileAccess={true}
           onLoadEnd={onMapReady}
         />
+        <TouchableOpacity
+          style={styles.Route}
+          onPress={() => {
+            setOneTime(true);
+            setUpdate(true);
+          }}>
+          <Image source={require('../assets/emplacementWhite.png')} />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.Position} onPress={() => {}}>
+          <Image source={require('../assets/emplacement.png')} />
+        </TouchableOpacity>
         {/* <Button
           title="Get My Location"
           onPress={() => {
@@ -330,5 +344,25 @@ const styles = StyleSheet.create({
   Webview: {
     flex: 1,
     flexGrow: 1,
+  },
+  Position: {
+    position: 'absolute',
+    right: 10,
+    bottom: 120,
+    backgroundColor: 'white',
+    width: 85,
+    height: 85,
+    borderRadius: 360,
+    padding: 8,
+  },
+  Route: {
+    position: 'absolute',
+    width: 85,
+    height: 85,
+    right: 10,
+    bottom: 20,
+    backgroundColor: 'blue',
+    borderRadius: 15,
+    padding: 8,
   },
 });

@@ -4,6 +4,7 @@ export const Container = styled.div`
   display: flex;
   width: 100%;
   height: 100vh;
+  flex-direction: ${({ fd }: params) => fd};
 `;
 export const ArticlList = styled.div`
   width: 20%;
@@ -50,6 +51,8 @@ type params = {
   ga?: string;
   fd?: string;
   wd?: string;
+  jc?: string;
+  speed?: number;
   index?: number;
 };
 export const Text = styled.p`
@@ -63,9 +66,10 @@ export const Text = styled.p`
   z-index: ${({ zi }: params) => zi};
   position: ${({ po }: params) => po};
   width: ${({ wd }: params) => wd};
+  word-wrap: break-word;
 `;
 
-export const Level = styled.p`
+export const Level = styled.div`
   text-align: ${({ ta }: params) => ta};
   margin-top: auto;
   font-size: ${({ fz }: params) => fz};
@@ -80,7 +84,7 @@ export const Level = styled.p`
 
 export const Title = styled.h1`
   text-align: ${({ ta }: params) => ta};
-  margin-top: 2.5%;
+  margin-top: 20px;
   margin-bottom: 20px;
   direction: ${({ dir }: params) => dir};
   font-size: ${({ fz }: params) => fz};
@@ -100,7 +104,6 @@ export const Div = styled.div`
   height: 150px;
   min-height: 150px;
   border-left: 1px solid #d9d9d9;
-
   &::after {
     content: "";
     display: block;
@@ -157,18 +160,49 @@ export const WhiteDiv = styled.div`
   }
 `;
 
+export const BottomBar = styled.div`
+  background-color: #f07459;
+  height: 100px;
+  align-items: center;
+  display: flex;
+  width: 100%;
+  padding-left: 15px;
+  overflow: hidden;
+`;
+
 export const QrCodeContainer = styled.div`
   display: flex;
   flex-direction: column;
 `;
 
 export const TextQr = styled.div`
-  display: flex;
   padding: ${({ pd }: params) => pd};
 `;
 export const AboveQr = styled.div`
   > div {
     width: 100%;
     height: 100%;
+    justify-content: ${({ jc }: params) => jc};
+  }
+`;
+export const TextMove = styled.h1`
+  ::-webkit-scrollbar {
+    display: none;
+    height: 0px;
+  }
+  white-space: nowrap;
+  min-width: 100%;
+  animation: moveText ${({ speed = 0 }: params) => speed + speed / 2}ms linear
+    infinite;
+  @keyframes moveText {
+    0% {
+      transform: translateX(100%);
+    }
+    50% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(-100%);
+    }
   }
 `;

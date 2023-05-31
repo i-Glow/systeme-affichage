@@ -10,12 +10,6 @@ const checkStudant = async (req: Request, res: Response) => {
       where: {
         matricule: password,
       },
-      select: {
-        matricule: true,
-        nom: true,
-        prenom: true,
-        niveau: true,
-      },
     });
     if (!student) {
       // Invalid username or password

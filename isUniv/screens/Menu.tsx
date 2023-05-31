@@ -36,12 +36,6 @@ export default function Menu() {
       titre: "Carte De L'Univ",
     },
     {
-      id: 2,
-      imageUrl: require('../assets/journal.png'),
-      screen: 'Affichage',
-      titre: 'Affichage',
-    },
-    {
       id: 3,
       imageUrl: require('../assets/Support.png'),
       screen: 'SupportStackPage',

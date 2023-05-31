@@ -26,6 +26,7 @@ model article {
   categorie    categorie @relation(fields: [categorie_id], references: [category_id])
   categorie_id Int
   state        State
+  importance   Boolean
 
   @@index(fields: [titre, contenu], type: BTree)
   @@index(fields: [created_at], type: Brin)
@@ -49,10 +50,12 @@ model user {
 }
 
 model student {
-  matricule String @id
-  nom       String
-  prenom    String
-  niveau    String
+  matricule   String @id
+  nom         String
+  prenom      String
+  niveau      String
+  location    String
+  dateOfBirth String
 }
 
 model event {

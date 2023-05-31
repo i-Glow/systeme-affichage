@@ -18,18 +18,28 @@ import {
   Dimensions,
 } from 'react-native';
 
-import {useNavigation} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
-import {RootStackParams} from '../App';
+import {BottomBarContext, RootStackParams} from '../App';
 import isArabic from '../utils/isArabic';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import NavBar from '../components/NavBar';
 
 const {width, height} = Dimensions.get('window');
 const item_width = width * 0.9;
 const item_height = height * 0.4;
+const BottomBar = height * 0.08;
+
 function News() {
   const [affichage, setAffichage] = useState([]);
   const [level, setLevel] = useState('');
+
+  const {activeScreen, setActiveScreen} = useContext(BottomBarContext);
+
+  useFocusEffect(() => {
+    setActiveScreen('Affichage');
+  });
+
   const autoAuth = async () => {
     try {
       // Retrieve the stored authentication data
@@ -62,7 +72,7 @@ function News() {
       .catch(error => {
         console.error('Error:', error.message);
       });
-  }, [level]);
+  }, [level, activeScreen]);
 
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
 
@@ -139,6 +149,9 @@ function News() {
               contentContainerStyle={styles.FlatList}
             />
           </View>
+          <View style={styles.NavContainer}>
+            <NavBar />
+          </View>
         </View>
       </SafeAreaView>
     </>
@@ -151,6 +164,9 @@ const styles = StyleSheet.create({
     width: '100%',
     flex: 1,
     flexGrow: 1,
+  },
+  NavContainer: {
+    height: BottomBar,
   },
   Image: {
     width: '100%',

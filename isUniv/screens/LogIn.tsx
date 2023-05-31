@@ -15,7 +15,8 @@ import {useNavigation, StackActions} from '@react-navigation/native';
 import {RootStackParams} from '../App';
 import {StackNavigationProp} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import Toast from 'react-native-toast-message';
+import {ToastAndroid, Platform, AlertIOS} from 'react-native';
 const {height} = Dimensions.get('window');
 
 const UpperContainer = height * 0.7;
@@ -25,8 +26,8 @@ const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
-
   const [shouldLogin, setShouldLogin] = useState(false);
+
   const handleLogin = async () => {
     try {
       const response = await fetch(
@@ -45,16 +46,29 @@ const Login = () => {
       if (response.status === 200) {
         const data = await response.json();
         await AsyncStorage.setItem('authData', JSON.stringify(data.data));
-
         // Proceed with navigation or further processing
-        navigation.dispatch(StackActions.replace('News'));
+        if (Platform.OS === 'android') {
+          ToastAndroid.show('Auth successfully', ToastAndroid.SHORT);
+        } else {
+          AlertIOS.alert('Auth successfully');
+        }
+        navigation.dispatch(StackActions.replace('Affichage'));
       } else if (response.status === 401) {
         // Invalid username or password
-        console.log('Invalid username or password');
-        // Handle the error case
+        if (Platform.OS === 'android') {
+          ToastAndroid.show('Invalid username or password', ToastAndroid.SHORT);
+        } else {
+          AlertIOS.alert('Invalid username or password');
+        }
+        setPassword('');
       } else {
         // Other error occurred
         console.log(response.status, 'An error occurred');
+        if (Platform.OS === 'android') {
+          ToastAndroid.show('something wrong happend', ToastAndroid.SHORT);
+        } else {
+          AlertIOS.alert('something wrong happend');
+        }
         // Handle the error case
       }
     } catch (error) {

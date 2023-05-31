@@ -13,15 +13,14 @@ import {
   QrCodeContainer,
   TextQr,
   AboveQr,
+  BottomBar,
+  TextMove,
 } from "./styles/SlideShow.style";
 import { GoPrimitiveDot } from "react-icons/go";
 import axios from "../api";
 import isArabic from "../utils/isArabic";
 import Flex from "../components/shared/Flex";
-import { Empty, QRCode } from "antd";
-import { FaGlobeAfrica } from "react-icons/fa";
-import { IconCtn, InputContainer } from "./styles/ArticleShow.style";
-import useThrottle from "../hooks/useThrottle";
+import { QRCode } from "antd";
 
 const Levels = new Map([
   ["L1", "License 1 ليسانس"],
@@ -29,15 +28,16 @@ const Levels = new Map([
   ["L3", "License 3 ليسانس"],
   ["M1", "Master 1 ماستر"],
   ["M2", "Master 2 ماستر"],
-  ["D", "Doctorat  دكتور"],
+  ["D", "Doctorat دكتوراه"],
 ]);
 
-export default function () {
+export default function SlideShow() {
   type article = {
     titre: string;
     contenu: string;
     niveau: string[];
     duration: number;
+    importance: number;
   };
 
   const options = {
@@ -50,10 +50,11 @@ export default function () {
     second: "2-digit",
     hour12: false,
   };
+  const [index, setIndex] = useState(0);
+  const [importantData, setImportantData] = useState<article[]>();
   const [data, setData] = useState<article[]>();
-  const [index, setIndex] = useState(1);
   const [date, setDate] = useState(new Date().toLocaleString("ar-DZ", options));
-
+  const [indexImportance, setIndexImportance] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
       let objectDate = new Date();
@@ -71,32 +72,86 @@ export default function () {
       const res = await axios.get("/affichage");
 
       if (res.status === 200) {
-        setData(res.data.data);
+        const importanceArray: article[] = [];
+        const filteredData = res.data.data.filter((item: article) => {
+          if (item.importance) {
+            importanceArray.push(item);
+            return false; // Remove the item from the filtered array
+          }
+          return true; // Keep the item in the filtered array
+        });
+
+        setData(filteredData);
+        setImportantData(importanceArray);
       }
     } catch (error) {
       console.error(error);
     }
   }, []);
 
-  useEffect(() => {
-    getData();
-    //short polling
-    const interval = setInterval(() => {
-      getData(); // Fetch data at regular intervals
-    }, 300000); // Polling interval is 5 minutes in milliseconds
+  const refreshData = async () => {
+    try {
+      const res = await axios.get("/affichage");
 
-    return () => clearInterval(interval);
-  }, []);
+      if (res.status === 200) {
+        if (data && data.length > 0) {
+          const importanceArray: article[] = [];
+          const filteredData = res.data.data.filter((item: article) => {
+            if (item.importance) {
+              importanceArray.push(item);
+              return false; // Remove the item from the filtered array
+            }
+            return true; // Keep the item in the filtered array
+          });
+          setTimeout(() => {
+            setData(filteredData);
+            setImportantData(importanceArray);
+          }, data[index].duration);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    if (data && data.length > 0) {
+      if (index + 1 === data.length) {
+        refreshData();
+      }
+    } else {
+      getData();
+      setTimeout(() => {
+        getData();
+      }, 15000);
+    }
+  }, [index]);
 
   useEffect(() => {
     let slideTimer: any;
-
     if (data && data.length > 0) {
       slideTimer = setTimeout(() => {
         setIndex((index) => (index + 1 < data.length ? index + 1 : 0));
       }, data[index].duration);
-    } else return () => clearTimeout(slideTimer);
+      return () => {
+        clearTimeout(slideTimer);
+      };
+    }
   }, [data, index]);
+
+  useEffect(() => {
+    let slideTimer: any;
+    if (importantData && importantData.length > 0) {
+      slideTimer = setTimeout(() => {
+        setIndexImportance((indexImportance) =>
+          indexImportance + 1 < importantData.length ? indexImportance + 1 : 0
+        );
+      }, importantData[indexImportance].duration);
+      return () => {
+        clearTimeout(slideTimer);
+      };
+    }
+  }, [importantData, indexImportance]);
 
   ////
   const listRef = useRef<HTMLDivElement>(null);
@@ -109,97 +164,110 @@ export default function () {
     }
   }, [index]);
   return (
-    <Container>
-      <RightContainer>
-        <DateCtainer>
-          <Text fz="40px">{date.toString()}</Text>
-        </DateCtainer>
+    <Container fd="column">
+      <Container
+        style={{
+          height: importantData && importantData.length > 0 ? "95vh" : "100vh",
+        }}
+      >
+        <RightContainer>
+          <DateCtainer>
+            <Text fz="40px">{date.toString()}</Text>
+          </DateCtainer>
 
-        <Affichage>
-          {data && data.length > 0 ? (
-            <>
-              <Title ta="center" fz="48px">
-                {data[index].titre}
-              </Title>
+          <Affichage>
+            {data && data.length > 0 ? (
+              <>
+                <Title
+                  ta="center"
+                  fz={
+                    importantData && importantData.length > 0 ? "40px" : "48px"
+                  }
+                >
+                  {data[index].titre}
+                </Title>
 
-              <Content
-                content={data[index].contenu}
-                title={data[index].titre}
-              />
-              <Level
-                ta="center"
-                fz="32px"
-                mb="10px"
-                ds="flex"
-                fd="row"
-                ga="5px"
-              >
-                {data[index].niveau.map((niv, ind) => {
-                  return (
-                    <Flex>
-                      <p key={ind}> {Levels.get(niv)} </p>
-                      {ind + 1 < data[index].niveau.length ? (
-                        <GoPrimitiveDot size={15} />
-                      ) : (
-                        <></>
-                      )}
-                    </Flex>
-                  );
-                })}
-              </Level>
-            </>
-          ) : (
-            <>
-              <Title ta="center" fz="48px">
-                Pas D'affichage
-              </Title>
-            </>
-          )}
-        </Affichage>
-      </RightContainer>
-      <ArticlList ref={listRef}>
-        {data && data.length > 0 ? <WhiteDiv index={index}></WhiteDiv> : <></>}
+                <Content
+                  content={data[index].contenu}
+                  title={data[index].titre}
+                />
 
-        {data &&
-          data.map((art, key) => {
-            return (
-              <Div key={key} style={key === index ? { border: "none" } : {}}>
-                <Text ta="center" mb="15px" fz="24px" zi="1" po="relative">
-                  {art.titre}
-                </Text>
-                <Level ta="center" fz="24px" zi="1" po="relative">
-                  {art.niveau}
+                <Level
+                  ta="center"
+                  fz="32px"
+                  mb="10px"
+                  ds="flex"
+                  fd="row"
+                  ga="5px"
+                >
+                  {data[index].niveau.map((niv, ind) => {
+                    return (
+                      <Flex>
+                        <p key={ind}> {Levels.get(niv)} </p>
+                        {ind + 1 < data[index].niveau.length ? (
+                          <GoPrimitiveDot size={15} />
+                        ) : (
+                          <></>
+                        )}
+                      </Flex>
+                    );
+                  })}
                 </Level>
-              </Div>
-            );
-          })}
-      </ArticlList>
+              </>
+            ) : (
+              <>
+                <Title ta="center" fz="48px">
+                  لا يوجد اعلانات
+                </Title>
+              </>
+            )}
+          </Affichage>
+        </RightContainer>
+        <ArticlList ref={listRef}>
+          {data && data.length > 0 ? (
+            <WhiteDiv index={index}></WhiteDiv>
+          ) : (
+            <></>
+          )}
+
+          {data &&
+            data.map((art, key) => {
+              return (
+                <Div key={key} style={key === index ? { border: "none" } : {}}>
+                  <Text ta="center" mb="15px" fz="24px" zi="1" po="relative">
+                    {art.titre}
+                  </Text>
+                  <Level ta="center" fz="24px" zi="1" po="relative">
+                    {art.niveau}
+                  </Level>
+                </Div>
+              );
+            })}
+        </ArticlList>
+      </Container>
+      {importantData && importantData.length > 0 ? (
+        <BottomBar>
+          <TextMove speed={importantData[indexImportance].duration}>
+            {importantData[indexImportance].titre +
+              ": " +
+              importantData[indexImportance].contenu}
+          </TextMove>
+        </BottomBar>
+      ) : null}
     </Container>
   );
 }
 
-const qrRegex = /\[qr:(.*?)\]/g;
 const regex = /(\[url:(?:(?:https?:\/\/)?[\w-]+\.[\w-]+\S*)\])|(\[qr:.*?\])/g;
 
 function Content({ content, title }: { content: string; title: string }) {
   const parts = content.split(regex).filter(Boolean);
   const ref = useRef<HTMLDivElement>(null);
-  const reg = /^(.{300}[^\s]*).*/;
+
   const qrcode = parts
     .map((part) => part.match(/\[qr:(.*?)\]/)?.[1])
     .filter(Boolean);
 
-  // console.log(parts);
-  const text = parts.map((part) => part.replace(qrRegex, "")).filter(Boolean);
-  let text1 = "";
-  let text2 = "";
-
-  if (text[0].length >= 300 && qrcode.length > 0) {
-    const matchResult = text[0].match(reg);
-    text1 = matchResult?.[1] || " ";
-    // console.log(matchResult);
-    text2 = text[0].slice(text1.length);
-  }
   return (
     <QrCodeContainer
       ref={ref}
@@ -213,39 +281,62 @@ function Content({ content, title }: { content: string; title: string }) {
     >
       {qrcode.length > 0 ? (
         <>
-          <Text
-            fz="48px"
-            pd="30px 30px 0 30px"
-            style={{
-              // textAlign: isArabic(title) ? "end" : "start",
-              direction: isArabic(title) ? "rtl" : "ltr",
-            }}
-          >
-            {text1}
-          </Text>
-          <TextQr pd="0 30px 30px 30px">
-            <Text
-              fz="48px"
-              pd="0 0px 30px 30px"
-              wd="80%"
-              style={{
-                // textAlign: isArabic(title) ? "end" : "start",
-                direction: isArabic(title) ? "rtl" : "ltr",
-                flexGrow: 1,
-              }}
-            >
-              {text2}
-            </Text>
-            {qrcode.length > 0 && (
-              <AboveQr
-                style={{ width: "20%", margin: "0 auto", height: "auto" }}
-              >
-                <QRCode
-                  errorLevel="L"
-                  value={qrcode[0] || ""}
-                  style={{ width: "20%", margin: "0 auto", height: "auto" }}
-                />
-              </AboveQr>
+          <TextQr pd="0px 30px 0px 30px" jc="center">
+            {parts[0].length > 300 ? (
+              <>
+                <Text
+                  fz="45px"
+                  pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
+                  style={{
+                    // textAlign: isArabic(title) ? "end" : "start",
+                    direction: isArabic(title) ? "rtl" : "ltr",
+                    flexGrow: 1,
+                  }}
+                >
+                  {qrcode.length > 0 && (
+                    <QRCode
+                      size={300}
+                      errorLevel="L"
+                      value={qrcode[0] || ""}
+                      style={{
+                        width: "20%",
+                        margin: "0 auto",
+                        height: "auto",
+                        float: "right",
+                      }}
+                    />
+                  )}
+                  {parts[0]}
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text
+                  fz="45px"
+                  pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
+                  style={{
+                    // textAlign: isArabic(title) ? "end" : "start",
+                    direction: isArabic(title) ? "rtl" : "ltr",
+                    flexGrow: 1,
+                  }}
+                >
+                  {parts[0]}
+                </Text>
+                <AboveQr>
+                  {qrcode.length > 0 && (
+                    <QRCode
+                      size={300}
+                      errorLevel="L"
+                      value={qrcode[0] || ""}
+                      style={{
+                        width: "20%",
+                        margin: "0 auto",
+                        height: "auto",
+                      }}
+                    />
+                  )}
+                </AboveQr>
+              </>
             )}
           </TextQr>
         </>
@@ -258,120 +349,9 @@ function Content({ content, title }: { content: string; title: string }) {
             direction: isArabic(title) ? "rtl" : "ltr",
           }}
         >
-          {text[0]}
+          {parts[0]}
         </Text>
       )}
     </QrCodeContainer>
   );
 }
-
-/*
-function Content({ content, title }: { content: string; title: string }) {
-  const parts = content.split(regex).filter(Boolean);
-  const ref = useRef<HTMLDivElement>(null);
-
-  const qrcode = parts
-    .map((part) => part.match(/\[qr:(.*?)\]/)?.[1])
-    .filter(Boolean);
-
-  const text = parts.map((part) => part.replace(qrRegex, "")).filter(Boolean);
-
-  return (
-    <QrCodeContainer
-      ref={ref}
-      style={{
-        direction: isArabic(title) ? "rtl" : "ltr",
-        fontFamily: isArabic(title)
-          ? "'Inter', sans-serif"
-          : "'ReadexPro', sans-serif",
-        fontSize: isArabic(title) ? "22px" : "18px",
-      }}
-    >
-      {qrcode ? (
-        <>
-          <Text
-            fz="48px"
-            pd="30px"
-            style={{
-              // textAlign: isArabic(title) ? "end" : "start",
-              direction: isArabic(title) ? "rtl" : "ltr",
-              flexGrow: 1,
-            }}
-          >
-            {text.join("")}
-          </Text>
-          {qrcode.length > 0 && (
-            <QRCode
-              errorLevel="L"
-              value={qrcode[0] || ""}
-              style={{ width: "max-content", margin: "0 auto" }}
-            />
-          )}
-        </>
-      ) : (
-        <Text
-          fz="48px"
-          pd="30px"
-          style={{
-            // textAlign: isArabic(title) ? "end" : "start",
-            direction: isArabic(title) ? "rtl" : "ltr",
-          }}
-        >
-          {text.join("")}
-        </Text>
-      )}
-    </QrCodeContainer>
-  );
-}
-*/
-/* 
-  <ArticlList ref={listRef} onScroll={handleScroll}>
-      {data &&
-        data.slice(0, index + 1).map((art, key) => (
-          <Div
-            key={key}
-            style={key === index ? { border: "none" } : {}}
-          >
-            <Text ta="center" mb="15px" fz="24px" zi="1" po="relative">
-              {art.titre}
-            </Text>
-            <Level ta="center" fz="24px" zi="1" po="relative">
-              {art.niveau}
-            </Level>
-          </Div>
-        ))}
-      {index < data.length - 1 && <LoadingText>Loading...</LoadingText>}
-    </ArticlList>
-*/
-
-/* 
-  {parts.map((part, key) => {
-        if (part.match(qrRegex)) {
-          let qrcode = part.split(qrRegex)[1];
-
-          return (
-            <>
-              <p>{part}</p>
-              <QRCode
-                errorLevel="L"
-                key={key}
-                value={qrcode}
-                style={{ width: "max-content", margin: "0 auto" }}
-              />
-            </>
-          );
-        } else
-          return (
-            <Text
-              fz="48px"
-              pd="30px"
-              style={{
-                textAlign: isArabic(title) ? "end" : "start",
-              }}
-              key={key}
-            >
-              {part}
-            </Text>
-          );
-      })}
-*/
