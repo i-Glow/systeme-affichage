@@ -136,25 +136,27 @@ export default function Archive() {
 
   //fetches search results
   useEffect(() => {
-    if (debouncedSearchTerm) {
+    getArchive({
+      page: currentPage,
+      pageSize: PAGE_SIZE,
+      search: searchTerm,
+      creator,
+      levels,
+    });
+  }, [currentPage, creator, levels]);
+
+  useEffect(() => {
+    if (currentPage > 1) {
       setCurrentPage(1);
       getArchive({
-        page: currentPage,
+        page: 1,
         pageSize: PAGE_SIZE,
         search: debouncedSearchTerm,
         creator,
         levels,
       });
-    } else {
-      getArchive({
-        page: currentPage,
-        pageSize: PAGE_SIZE,
-        search: searchTerm,
-        creator,
-        levels,
-      });
     }
-  }, [debouncedSearchTerm, currentPage, creator, levels]);
+  }, [debouncedSearchTerm]);
 
   // fetches all creators
   useEffect(() => {
@@ -278,7 +280,6 @@ export default function Archive() {
           render={(article: article) =>
             article.niveau.map((niv, key) => (
               <Tag color={levelColors.get(niv)} key={key}>
-                {" "}
                 {/* give each tag a color */}
                 {niv}
               </Tag>

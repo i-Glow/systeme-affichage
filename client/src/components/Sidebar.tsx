@@ -80,7 +80,9 @@ export default function Sidebar() {
   const getCurrentPath = useCallback((): number => {
     const path = pathname.split("/")[1];
 
-    return routes.findIndex((link) => link.link === "/" + path);
+    const index = routes.findIndex((link) => link.link === "/" + path);
+
+    return index > 0 ? index : 0;
   }, [pathname]);
 
   const [openTab, setOpenTab] = useState<number>(getCurrentPath);

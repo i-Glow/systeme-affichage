@@ -256,9 +256,6 @@ export default function CreateArticle() {
               >
                 QR
               </Button>
-              <Button type="text" size="small">
-                URL
-              </Button>
             </Flex>
             <Input.TextArea
               value={contenu}

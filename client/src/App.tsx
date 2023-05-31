@@ -14,7 +14,6 @@ import Articles from "./pages/Articles";
 import ArticleDetails from "./pages/ArticleDetails";
 import CreateArticle from "./pages/CreateArticle";
 import SlideShow from "./pages/SlideShow";
-import ArticleShow from "./pages/Affichage";
 import Signin from "./pages/Signin";
 import Users from "./pages/Users";
 import { roles } from "./utils/roles";
@@ -33,6 +32,7 @@ function App() {
         <Routes>
           <Route element={<ProtectedRoute redirectPath="/signin" />}>
             <Route path="/" element={<Layout />}>
+              <Route path="" element={<Articles />} />
               <Route path="/articles" element={<Articles />} />
               <Route path="articles/:archiveId" element={<ArticleDetails />} />
               <Route path="articles/nouveau" element={<CreateArticle />} />
