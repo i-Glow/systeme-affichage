@@ -290,51 +290,25 @@ const createArticle = async (req: Request, res: Response) => {
       }
     }
 
-
-      newArticle = await prisma.article.create({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          includeFb,
-          fbPostId,
-          importance,
-          creator: {
-            connect: {
-              //@ts-ignore
-              user_id: uid,
-            },
-          },
-          categorie: {
-            connectOrCreate: {
-              create: {
-                nom: categoryName,
-              },
-              where: {
-                nom: categoryName,
-              },
-            },
-
+    // insert article
+    newArticle = await prisma.article.create({
+      data: {
+        titre,
+        contenu,
+        date_debut,
+        date_fin,
+        includeFb,
+        fbPostId,
+        importance,
+        creator: {
+          connect: {
+            user_id: uid,
           },
         },
-        include: {
-          categorie: true,
-        },
-      });
-    } else {
-      newArticle = await prisma.article.create({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          includeFb,
-          importance,
-          creator: {
-            connect: {
-              //@ts-ignore
-              user_id: uid,
+        categorie: {
+          connectOrCreate: {
+            create: {
+              nom: categoryName,
             },
             where: {
               nom: categoryName,

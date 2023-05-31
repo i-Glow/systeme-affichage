@@ -192,7 +192,7 @@ export const TextMove = styled.h1`
   }
   white-space: nowrap;
   min-width: 100%;
-  animation: moveText ${({ speed = 0 }: params) => speed + speed / 2}ms linear
+  animation: moveText ${({ speed = 0 }: params) => speed * 2.5}ms linear
     infinite;
   @keyframes moveText {
     0% {
