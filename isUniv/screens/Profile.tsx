@@ -39,7 +39,7 @@ export default function Profile() {
     location: string;
     dateOfBirth: String;
   };
-  const [profileData, setProfileData] = useState<ProfileData>({});
+  const [profileData, setProfileData] = useState<ProfileData>({} as any);
   const Levels = new Map([
     ['L1', 'License 1 ليسانس'],
     ['L2', 'License 2 ليسانس'],
@@ -105,6 +105,7 @@ export default function Profile() {
                       handleLogout();
                     }}>
                     <Text
+                      // @ts-expect-error
                       style={{color: 'white', fontSize: 16, fontWeight: 600}}>
                       Logout
                     </Text>
@@ -114,7 +115,7 @@ export default function Profile() {
                     onPress={() => {
                       setModalVisible(false);
                     }}>
-                    <Text>Cancel</Text>
+                    <Text style={{color: 'gray'}}>Cancel</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -141,7 +142,7 @@ export default function Profile() {
                   source={require('../assets/userProfile.png')}
                 />
                 <View>
-                  <Text>Nom & Prenom</Text>
+                  <Text style={styles.textStyle}>Nom & Prenom</Text>
                   <Text
                     style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
                     {profileData.nom + ' ' + profileData.prenom}
@@ -156,7 +157,7 @@ export default function Profile() {
                     source={require('../assets/location.png')}
                   />
                   <View>
-                    <Text>Lieu de naissance</Text>
+                    <Text style={styles.textStyle}>Lieu de naissance</Text>
                     <Text
                       style={{
                         color: 'black',
@@ -174,7 +175,7 @@ export default function Profile() {
                     source={require('../assets/calendar.png')}
                   />
                   <View>
-                    <Text>Date de naissance</Text>
+                    <Text style={styles.textStyle}>Date de naissance</Text>
                     <Text
                       style={{
                         color: 'black',
@@ -194,7 +195,7 @@ export default function Profile() {
                   source={require('../assets/userProfile.png')}
                 />
                 <View>
-                  <Text>Matricule</Text>
+                  <Text style={styles.textStyle}>Matricule</Text>
                   <Text
                     style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
                     {profileData.matricule}
@@ -208,7 +209,7 @@ export default function Profile() {
                   source={require('../assets/userProfile.png')}
                 />
                 <View>
-                  <Text>Niveau</Text>
+                  <Text style={styles.textStyle}>Niveau</Text>
                   <Text
                     style={{color: 'black', fontSize: 20, fontWeight: 'bold'}}>
                     {Levels.get(profileData.niveau)}
@@ -263,6 +264,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: '2%',
     borderRadius: 8,
+  },
+  textStyle: {
+    color: 'black',
   },
   IdentifiantStyleBox2: {
     borderWidth: 1,

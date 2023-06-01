@@ -39,16 +39,15 @@ export async function requestLocationPermission() {
     Geolocation.requestAuthorization();
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+      // @ts-ignore
       {
         title: 'IsUniv',
         message: 'Allow IsUniv to access your location ?',
       },
     );
     if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      // console.log('You can use the location');
-      // alert('You can use the location');
     } else {
-      console.log('location permission denied');
+      // @ts-ignore
       alert('Location permission denied');
     }
   } catch (err) {
@@ -72,14 +71,12 @@ export default function Map() {
 
   useEffect(() => {
     fetch('http://192.168.43.137:8080/api/map/bloc')
-      // fetch('https://api.sampleapis.com/coffee/hot')
       .then(res => res.json())
       .then(data => setPlaces(data))
       .catch(error => {
         console.error('Error:', error.message);
       });
     fetch('http://192.168.43.137:8080/api/map/event')
-      // fetch('https://api.sampleapis.com/coffee/hot')
       .then(res => res.json())
       .then(data => setEvenment(data))
       .catch(error => {
@@ -161,7 +158,7 @@ export default function Map() {
   );
 
   const createUserLocationMarker = useCallback(
-    ({lat, lon, description}: Position) => {
+    ({lat, lon, description}: any) => {
       // go to userLocation
       if (mapRef && mapRef.current) {
         mapRef.current.injectJavaScript(`
@@ -183,7 +180,7 @@ export default function Map() {
   );
 
   const updateUserLocationMarker = useCallback(
-    ({lat, lon, description}: Position) => {
+    ({lat, lon, description}: any) => {
       // go to userLocation
       if (mapRef && mapRef.current) {
         /* mapRef.current.injectJavaScript(`
@@ -319,13 +316,6 @@ export default function Map() {
         <TouchableOpacity style={styles.Position} onPress={() => {}}>
           <Image source={require('../assets/emplacement.png')} />
         </TouchableOpacity>
-        {/* <Button
-          title="Get My Location"
-          onPress={() => {
-            setOneTime(true);
-            setUpdate(true);
-          }}
-        /> */}
       </SafeAreaView>
     </>
   );

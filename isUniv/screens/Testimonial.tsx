@@ -46,7 +46,6 @@ export default function Testimonial() {
             renderItem={({item}) => (
               <TouchableOpacity
                 onPress={() => {
-                  //it work juste fine
                   navigation.navigate('TicketPage', {
                     type: item.titre,
                   });
