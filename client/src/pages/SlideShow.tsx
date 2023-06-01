@@ -53,13 +53,15 @@ export default function SlideShow() {
   const [index, setIndex] = useState(0);
   const [importantData, setImportantData] = useState<article[]>();
   const [data, setData] = useState<article[]>();
-  const [date, setDate] = useState(new Date().toLocaleString("ar-DZ", options));
+  const [date, setDate] = useState(
+    new Date().toLocaleString("ar-DZ", options as any)
+  );
   const [indexImportance, setIndexImportance] = useState(0);
   useEffect(() => {
     const interval = setInterval(() => {
       let objectDate = new Date();
 
-      let dateString = objectDate.toLocaleString("ar-DZ", options);
+      let dateString = objectDate.toLocaleString("ar-DZ", options as any);
       dateString = dateString.replace("،", ""); // Remove comma
       setDate(dateString);
     }, 1000); // update the date state every second
@@ -94,19 +96,18 @@ export default function SlideShow() {
       const res = await axios.get("/affichage");
 
       if (res.status === 200) {
-        if (data && data.length > 0) {
-          const importanceArray: article[] = [];
-          const filteredData = res.data.data.filter((item: article) => {
-            if (item.importance) {
-              importanceArray.push(item);
-              return false; // Remove the item from the filtered array
-            }
-            return true; // Keep the item in the filtered array
-          });
-          setTimeout(() => {
+        if (data) {
+          const filteredData = res.data.data.filter(
+            (item: article) => !item.importance
+          );
+
+          if (data.length > 0) {
+            setTimeout(() => {
+              setData(filteredData);
+            }, data[index].duration);
+          } else {
             setData(filteredData);
-            setImportantData(importanceArray);
-          }, data[index].duration);
+          }
         }
       }
     } catch (error) {
@@ -114,17 +115,61 @@ export default function SlideShow() {
     }
   };
 
+  const refreshImportant = async () => {
+    try {
+      const res = await axios.get("/affichage");
+      if (res.status === 200) {
+        if (importantData) {
+          let importanceArray: article[] = [];
+          importanceArray = res.data.data.filter(
+            (item: article) => item.importance
+          );
+
+          if (importantData.length > 0)
+            setTimeout(() => {
+              setImportantData(importanceArray);
+              setIndexImportance(0);
+            }, importantData[indexImportance].duration);
+          else setImportantData(importanceArray);
+        }
+      }
+    } catch {}
+  };
+
   useEffect(() => {
+    let interval: number;
+    if (importantData && importantData.length > 0) {
+      if (indexImportance + 1 === importantData.length) {
+        refreshImportant();
+      }
+    } else {
+      refreshImportant();
+      interval = setInterval(() => {
+        refreshImportant();
+      }, 15000);
+    }
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [indexImportance]);
+
+  useEffect(() => {
+    let interval: number;
     if (data && data.length > 0) {
       if (index + 1 === data.length) {
         refreshData();
       }
     } else {
       getData();
-      setTimeout(() => {
+      interval = setInterval(() => {
         getData();
       }, 15000);
     }
+
+    return () => {
+      clearInterval(interval);
+    };
   }, [index]);
 
   useEffect(() => {
@@ -202,7 +247,7 @@ export default function SlideShow() {
                 >
                   {data[index].niveau.map((niv, ind) => {
                     return (
-                      <Flex>
+                      <Flex key={ind}>
                         <p key={ind}> {Levels.get(niv)} </p>
                         {ind + 1 < data[index].niveau.length ? (
                           <GoPrimitiveDot size={15} />

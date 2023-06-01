@@ -290,51 +290,24 @@ const createArticle = async (req: Request, res: Response) => {
       }
     }
 
-
-      newArticle = await prisma.article.create({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          includeFb,
-          fbPostId,
-          importance,
-          creator: {
-            connect: {
-              //@ts-ignore
-              user_id: uid,
-            },
-          },
-          categorie: {
-            connectOrCreate: {
-              create: {
-                nom: categoryName,
-              },
-              where: {
-                nom: categoryName,
-              },
-            },
-
+    newArticle = await prisma.article.create({
+      data: {
+        titre,
+        contenu,
+        date_debut,
+        date_fin,
+        includeFb,
+        fbPostId,
+        importance,
+        creator: {
+          connect: {
+            user_id: uid,
           },
         },
-        include: {
-          categorie: true,
-        },
-      });
-    } else {
-      newArticle = await prisma.article.create({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          includeFb,
-          importance,
-          creator: {
-            connect: {
-              //@ts-ignore
-              user_id: uid,
+        categorie: {
+          connectOrCreate: {
+            create: {
+              nom: categoryName,
             },
             where: {
               nom: categoryName,
@@ -379,62 +352,37 @@ const editArticle = async (req: Request, res: Response) => {
       importance,
     } = req.body;
 
-    if (role === Role.super_user) {
-      await prisma.article.update({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          edited_at: new Date().toISOString(),
-          niveau,
-          importance,
-          categorie: {
-            connectOrCreate: {
-              create: {
-                nom: categoryName,
-              },
-              where: {
-                nom: categoryName,
-              },
+    const article = await prisma.article.update({
+      data: {
+        titre,
+        contenu,
+        date_debut,
+        date_fin,
+        edited_at: new Date().toISOString(),
+        niveau,
+        importance,
+        state: role === Role.super_user ? State.approved : State.pending,
+        categorie: {
+          connectOrCreate: {
+            create: {
+              nom: categoryName,
+            },
+            where: {
+              nom: categoryName,
             },
           },
         },
-        where: {
-          article_id: id,
-        },
-      });
-    } else {
-      const article = await prisma.article.update({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          edited_at: new Date().toISOString(),
-          niveau,
-          importance,
-          state: State.pending,
-          categorie: {
-            connectOrCreate: {
-              create: {
-                nom: categoryName,
-              },
-              where: {
-                nom: categoryName,
-              },
-            },
-          },
-        },
-        where: {
-          article_id: id,
-        },
-      });
+      },
+      where: {
+        article_id: id,
+      },
+    });
 
+    if (role === Role.responsable_affichage)
       pendingCountEventEmmiter.emit("newArticle", {
         article,
       });
-    }
+
     res.sendStatus(204);
   } catch (error) {
     console.error(error);
@@ -470,11 +418,9 @@ const getArticlesByUserRole = async (req: Request, res: Response) => {
     let where;
 
     if (role === Role.super_user) {
-      console.log("first");
       // If user is an admin, fetch all articles
       where = { state: State.pending };
     } else {
-      console.log("second");
       // else fetch only published articles by him
       where = {
         creator_id: uid,

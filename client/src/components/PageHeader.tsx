@@ -1,6 +1,6 @@
 import { Breadcrumb, Button } from "antd";
 import { AiOutlinePlusSquare } from "react-icons/ai";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { DivSpaceBettwen, SvgPosition } from "./Style/Style";
 
 type props = {
@@ -9,6 +9,7 @@ type props = {
 
 export default function PageHeader({ page }: props) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   return (
     <DivSpaceBettwen>
@@ -16,7 +17,7 @@ export default function PageHeader({ page }: props) {
       <Button
         type="primary"
         onClick={() => {
-          navigate("nouveau");
+          navigate(`${pathname === "/" ? "articles/" : ""}nouveau`);
         }}
       >
         <SvgPosition>

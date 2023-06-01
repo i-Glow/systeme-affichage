@@ -14,9 +14,11 @@ import { DeleteIcon, Div } from "./styles/Archive.style";
 //types
 import { article } from "../types";
 import { AxiosRequestConfig } from "axios";
+import { useLocation } from "react-router";
 
 export default function Archive() {
   const { token } = useAuth();
+  const { pathname } = useLocation();
   const axios = useAxios();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -27,10 +29,13 @@ export default function Archive() {
 
   const columnActionsRenderer = (_: any, record: article) => (
     <Space size="middle">
-      <Link to={`edit/${record.article_id}`} state={{ data: record }}>
+      <Link
+        to={`${pathname === "/" ? "articles/" : ""}edit/${record.article_id}`}
+        state={{ data: record }}
+      >
         <AiOutlineEdit fontSize={18} />
       </Link>
-      <Link to={record.article_id}>
+      <Link to={`${pathname === "/" ? "articles/" : ""}${record.article_id}`}>
         <VscOpenPreview fontSize={18} cursor="pointer" />
       </Link>
       <Popconfirm
