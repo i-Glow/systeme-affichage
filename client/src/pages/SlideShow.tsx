@@ -99,13 +99,16 @@ export default function SlideShow() {
             }, data[index].duration);
           } else {
             setData(filteredData);
+
           }
+
         }
       }
     } catch (error) {
       console.error(error);
     }
   };
+
 
   const refreshImportant = async () => {
     try {
@@ -128,6 +131,7 @@ export default function SlideShow() {
   };
 
   // refresh important data
+
   useEffect(() => {
     let timeout: number;
     if (importantData && importantData.length > 0) {
