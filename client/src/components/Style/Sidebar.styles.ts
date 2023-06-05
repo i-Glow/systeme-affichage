@@ -63,7 +63,7 @@ export const LinkContainer = styled(Link)`
 
 export const Notification = styled.div`
   min-width: 20px;
-  min-height: 20px;
+  aspect-ratio: 1/1;
   font-size: 12px;
   background-color: rgb(var(--blue));
   color: white;
@@ -74,7 +74,11 @@ export const Notification = styled.div`
   position: absolute;
   right: 10px;
   top: 11px;
-  /* margin-left: auto; */
+  @media (max-width: 768px) {
+    top: 0px;
+    right: 0px;
+    transform: scale(80%);
+  }
 `;
 
 type params = {
@@ -84,11 +88,19 @@ type params = {
 export const Logout = styled.div`
   display: flex;
   align-items: center;
+  justify-content: start;
   gap: 10px;
   margin-top: auto;
   padding-left: 25px;
   color: gray;
   cursor: pointer;
+
+  @media (max-width: 768px) {
+    padding-left: 20px;
+    & p {
+      display: none;
+    }
+  }
 `;
 
 export const RouteName = styled.p`
