@@ -105,7 +105,6 @@ export default function SlideShow() {
           });
           setTimeout(() => {
             setData(filteredData);
-            setImportantData(importanceArray);
           }, data[index].duration);
         }
       }
@@ -114,6 +113,39 @@ export default function SlideShow() {
     }
   };
 
+  /* const refreshImportant = async () => {
+    try {
+      const res = await axios.get("/affichage");
+      if (res.status === 200) {
+        if (importantData && importantData.length > 0) {
+          const importanceArray: article[] = [];
+          const filteredData = res.data.data.filter((item: article) => {
+            if (item.importance) {
+              importanceArray.push(item);
+              return false; // Remove the item from the filtered array
+            }
+            return true; // Keep the item in the filtered array
+          });
+          setTimeout(() => {
+            setImportantData(importanceArray);
+          }, importantData[indexImportance].duration);
+        }
+      }
+    } catch {}
+  };
+ */
+  /* useEffect(() => {
+    if (importantData && importantData.length > 0) {
+      if (indexImportance + 1 === importantData.length) {
+        refreshImportant();
+      }
+    } else {
+      getData();
+      setTimeout(() => {
+        refreshImportant();
+      }, 15000);
+    }
+  }, [indexImportance]); */
   useEffect(() => {
     if (data && data.length > 0) {
       if (index + 1 === data.length) {

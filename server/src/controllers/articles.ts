@@ -444,11 +444,9 @@ const getArticlesByUserRole = async (req: Request, res: Response) => {
     let where;
 
     if (role === Role.super_user) {
-      console.log("first");
       // If user is an admin, fetch all articles
       where = { state: State.pending };
     } else {
-      console.log("second");
       // else fetch only published articles by him
       where = {
         creator_id: uid,
