@@ -15,6 +15,7 @@ import {useNavigation, StackActions} from '@react-navigation/native';
 import {RootStackParams} from '../App';
 import {StackNavigationProp} from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+//@ts-ignore
 import {ToastAndroid, Platform, AlertIOS} from 'react-native';
 const {height} = Dimensions.get('window');
 
@@ -30,7 +31,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await fetch(
-        'http://192.168.43.137:8080/api/student/checkStudent',
+        'http://192.168.209.147:8080/api/student/checkStudent',
         {
           method: 'POST',
           headers: {
@@ -89,9 +90,6 @@ const Login = () => {
     }
   };
   useEffect(() => {
-    // const clearLocalStorage = async () => {
-    //   await AsyncStorage.clear();
-    // };
     const fetchData = async () => {
       const data = await autoAuth();
       if (data) {
@@ -129,6 +127,7 @@ const Login = () => {
               <View style={styles.lineToTheLeft} />
               <TextInput
                 placeholder="Username"
+                placeholderTextColor={'gray'}
                 value={username}
                 onChangeText={text => setUsername(text)}
                 style={styles.Input}
@@ -142,6 +141,7 @@ const Login = () => {
               <View style={styles.lineToTheLeft} />
               <TextInput
                 placeholder="Password"
+                placeholderTextColor={'gray'}
                 secureTextEntry
                 value={password}
                 onChangeText={text => setPassword(text)}
@@ -224,6 +224,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 2,
     width: '70%',
     padding: 0,
+    color: 'black',
   },
   LowerContainer: {
     height: '15%',

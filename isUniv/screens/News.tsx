@@ -1,6 +1,6 @@
 /*eslint-disable prettier/prettier*/
 
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -14,83 +14,19 @@ import {
   Linking,
 } from 'react-native';
 import NavBar from '../components/NavBar';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {BottomBarContext, RootStackParams} from '../App';
+import {useFocusEffect} from '@react-navigation/native';
+import {BottomBarContext} from '../App';
 import isArabic from '../utils/isArabic';
 const {height} = Dimensions.get('window');
 const BottomBar = height * 0.08;
 const contentHeight = height - BottomBar;
 
 export default function News() {
-  const navigation = useNavigation<StackNavigationProp<RootStackParams>>();
-
   const {setActiveScreen} = useContext(BottomBarContext);
 
   useFocusEffect(() => {
     setActiveScreen('News');
   });
-
-  const Articles = [
-    {
-      id: 1,
-      titre: 'Article1 1phasiuuhqqvnuelzt',
-      image: require('../assets/PH1.png'),
-      object:
-        '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmssssssssssssssssssssssssssssssssssssssssssssssssssssssssssspnbkqlabyjvfsddddddddddddddddddddddddddddsssssssssssssssssssssssssssssssssssssssssssssssssstuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexcObject 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-    {
-      id: 2,
-      titre: 'Article2 1phasiuuhqqvnuelzt',
-      image: require('../assets/PH1.png'),
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-
-    {
-      id: 3,
-      titre: 'Article3 1phasiuuhqqvnuelzt',
-      image: require('../assets/PH1.png'),
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-    {
-      id: 4,
-      titre: 'Article4 1phasiuuhqqvnuelzt',
-      image: require('../assets/PH1.png'),
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-
-    {
-      id: 5,
-      titre: 'Article5 1phasiuuhqqvnuelzt',
-      image: require('../assets/PH1.png'),
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-    {
-      id: 6,
-      titre: 'Article6 1phasiuuhqqvnuelzt',
-      image: require('../assets/PH1.png'),
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-    {
-      id: 7,
-      titre: 'Article7 1phasiuuhqqvnuelzt',
-      image: require('../assets/PH1.png'),
-      object:
-        '1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-    {
-      id: 8,
-      titre: 'Article8 1phasiuuhqqvnuelzt',
-      image: require('../assets/PH1.png'),
-      object:
-        'Object 1phasiuuhqqvnujxivrjtmjnsgxqznuontzzdiywcrmpnbkqlabyjvftuwnensbjfmvoyzyqbkexccifneehgxwdopfyyrqyvxcgbiqdwxceojurvqrnziflhdxlcmzkkzpckgufflzdrxvxuvpdretkfbzuibsjeiuurjljidhnlslbrfsdfipywahjhwxakvnixiuelzt',
-    },
-  ];
 
   return (
     <>
@@ -99,7 +35,7 @@ export default function News() {
         <View style={styles.Container}>
           <View style={styles.Container}>
             <FlatList
-              data={Articles}
+              data={[]}
               keyExtractor={(item: any) => item.id}
               contentContainerStyle={styles.FlatList}
               scrollEventThrottle={16}

@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Container,
   RightContainer,
@@ -31,15 +31,15 @@ const Levels = new Map([
   ["D", "Doctorat دكتوراه"],
 ]);
 
-export default function SlideShow() {
-  type article = {
-    titre: string;
-    contenu: string;
-    niveau: string[];
-    duration: number;
-    importance: number;
-  };
+type article = {
+  titre: string;
+  contenu: string;
+  niveau: string[];
+  duration: number;
+  importance: number;
+};
 
+export default function SlideShow() {
   const options = {
     weekday: "long",
     year: "numeric",
@@ -50,24 +50,18 @@ export default function SlideShow() {
     second: "2-digit",
     hour12: false,
   };
+
   const [index, setIndex] = useState(0);
   const [importantData, setImportantData] = useState<article[]>();
   const [data, setData] = useState<article[]>();
-  const [date, setDate] = useState(new Date().toLocaleString("ar-DZ", options));
+  const [date, setDate] = useState(
+    new Date().toLocaleString("ar-DZ", options as any)
+  );
   const [indexImportance, setIndexImportance] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      let objectDate = new Date();
 
-      let dateString = objectDate.toLocaleString("ar-DZ", options);
-      dateString = dateString.replace("،", ""); // Remove comma
-      setDate(dateString);
-    }, 1000); // update the date state every second
+  const listRef = useRef<HTMLDivElement>(null);
 
-    return () => clearInterval(interval);
-  }, []);
-
-  const getData = useCallback(async () => {
+  const getData = useCallback(async (type: "IMPORTANT" | "NORMAL") => {
     try {
       const res = await axios.get("/affichage");
 
@@ -81,8 +75,8 @@ export default function SlideShow() {
           return true; // Keep the item in the filtered array
         });
 
-        setData(filteredData);
-        setImportantData(importanceArray);
+        if (type === "IMPORTANT") setImportantData(importanceArray);
+        else if (type === "NORMAL") setData(filteredData);
       }
     } catch (error) {
       console.error(error);
@@ -94,18 +88,16 @@ export default function SlideShow() {
       const res = await axios.get("/affichage");
 
       if (res.status === 200) {
+        const filteredData = res.data.data.filter(
+          (item: article) => !item.importance
+        );
+
         if (data && data.length > 0) {
-          const importanceArray: article[] = [];
-          const filteredData = res.data.data.filter((item: article) => {
-            if (item.importance) {
-              importanceArray.push(item);
-              return false; // Remove the item from the filtered array
-            }
-            return true; // Keep the item in the filtered array
-          });
           setTimeout(() => {
             setData(filteredData);
           }, data[index].duration);
+        } else {
+          setData(filteredData);
         }
       }
     } catch (error) {
@@ -113,6 +105,7 @@ export default function SlideShow() {
     }
   };
 
+<<<<<<< HEAD
   /* const refreshImportant = async () => {
     try {
       const res = await axios.get("/affichage");
@@ -177,16 +170,115 @@ export default function SlideShow() {
       slideTimer = setTimeout(() => {
         setIndexImportance((indexImportance) =>
           indexImportance + 1 < importantData.length ? indexImportance + 1 : 0
+=======
+  const refreshImportant = async () => {
+    try {
+      const res = await axios.get("/affichage");
+      if (res.status === 200) {
+        let importanceArray: article[] = [];
+        importanceArray = res.data.data.filter(
+          (item: article) => item.importance
+>>>>>>> e710660d8d74069913d56298987682f99f68d7d0
         );
-      }, importantData[indexImportance].duration);
+
+        if (importantData && importantData.length > 0)
+          setTimeout(() => {
+            setImportantData(importanceArray);
+          }, importantData[indexImportance].duration);
+        else {
+          setImportantData(importanceArray);
+        }
+      }
+    } catch (e) {}
+  };
+
+  //important data fetcher and controller
+  useEffect(() => {
+    // runs first time only
+    if (!importantData) {
+      getData("IMPORTANT");
+      // runs in an interval when there is no articles
+    } else if (importantData.length === 0) {
+      const interval = setTimeout(() => {
+        getData("IMPORTANT");
+      }, 10000);
+
+      return () => {
+        clearTimeout(interval);
+      };
+      // controls the rotation and refreshes
+    } else {
+      let slideTimer: number;
+      // refresh data when last article starts displaying
+      if (indexImportance + 1 === importantData.length) {
+        refreshImportant();
+        if (indexImportance !== 0)
+          slideTimer = setTimeout(() => {
+            setIndexImportance(0);
+          }, importantData[index].duration);
+        // else increment the rotator
+      } else {
+        slideTimer = setTimeout(() => {
+          setIndexImportance(indexImportance + 1);
+        }, importantData[index].duration);
+      }
+
       return () => {
         clearTimeout(slideTimer);
       };
     }
   }, [importantData, indexImportance]);
 
-  ////
-  const listRef = useRef<HTMLDivElement>(null);
+  // normal data fetcher and non important articles controller
+  useEffect(() => {
+    // runs first time only
+    if (!data) {
+      getData("NORMAL");
+      // runs in an interval when there is no articles
+    } else if (data.length === 0) {
+      const interval = setTimeout(() => {
+        getData("NORMAL");
+      }, 10000);
+
+      return () => {
+        clearTimeout(interval);
+      };
+      // controls the rotation and refreshes
+    } else {
+      let slideTimer: number;
+      // refresh data when last article starts displaying
+      if (index + 1 === data.length) {
+        refreshData();
+        if (index !== 0)
+          slideTimer = setTimeout(() => {
+            setIndex(0);
+          }, data[index]?.duration);
+        // else increment the rotator
+      } else {
+        slideTimer = setTimeout(() => {
+          setIndex(index + 1);
+        }, data[index].duration);
+      }
+
+      return () => {
+        clearTimeout(slideTimer);
+      };
+    }
+  }, [data, index]);
+
+  // clock
+  useEffect(() => {
+    const interval = setInterval(() => {
+      let objectDate = new Date();
+
+      let dateString = objectDate.toLocaleString("ar-DZ", options as any);
+      dateString = dateString.replace("،", ""); // Remove comma
+      setDate(dateString);
+    }, 1000); // update the date state every second
+
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (listRef.current) {
       if (index % 6 === 0) {
@@ -195,6 +287,7 @@ export default function SlideShow() {
       }
     }
   }, [index]);
+
   return (
     <Container fd="column">
       <Container
@@ -206,7 +299,6 @@ export default function SlideShow() {
           <DateCtainer>
             <Text fz="40px">{date.toString()}</Text>
           </DateCtainer>
-
           <Affichage>
             {data && data.length > 0 ? (
               <>
@@ -218,12 +310,10 @@ export default function SlideShow() {
                 >
                   {data[index].titre}
                 </Title>
-
                 <Content
                   content={data[index].contenu}
                   title={data[index].titre}
                 />
-
                 <Level
                   ta="center"
                   fz="32px"
@@ -234,7 +324,7 @@ export default function SlideShow() {
                 >
                   {data[index].niveau.map((niv, ind) => {
                     return (
-                      <Flex>
+                      <Flex key={ind}>
                         <p key={ind}> {Levels.get(niv)} </p>
                         {ind + 1 < data[index].niveau.length ? (
                           <GoPrimitiveDot size={15} />
@@ -247,11 +337,9 @@ export default function SlideShow() {
                 </Level>
               </>
             ) : (
-              <>
-                <Title ta="center" fz="48px">
-                  لا يوجد اعلانات
-                </Title>
-              </>
+              <Title ta="center" fz="48px">
+                لا يوجد اعلانات
+              </Title>
             )}
           </Affichage>
         </RightContainer>
@@ -261,7 +349,6 @@ export default function SlideShow() {
           ) : (
             <></>
           )}
-
           {data &&
             data.map((art, key) => {
               return (
@@ -312,72 +399,65 @@ function Content({ content, title }: { content: string; title: string }) {
       }}
     >
       {qrcode.length > 0 ? (
-        <>
-          <TextQr pd="0px 30px 0px 30px" jc="center">
-            {parts[0].length > 300 ? (
-              <>
-                <Text
-                  fz="45px"
-                  pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
+        <TextQr pd="0px 30px 0px 30px" jc="center">
+          {parts[0].length > 300 ? (
+            <Text
+              fz="45px"
+              pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
+              style={{
+                direction: isArabic(title) ? "rtl" : "ltr",
+                flexGrow: 1,
+              }}
+            >
+              {qrcode.length > 0 && (
+                <QRCode
+                  size={300}
+                  errorLevel="L"
+                  value={qrcode[0] || ""}
                   style={{
-                    // textAlign: isArabic(title) ? "end" : "start",
-                    direction: isArabic(title) ? "rtl" : "ltr",
-                    flexGrow: 1,
+                    width: "20%",
+                    margin: "0 auto",
+                    height: "auto",
+                    float: "right",
                   }}
-                >
-                  {qrcode.length > 0 && (
-                    <QRCode
-                      size={300}
-                      errorLevel="L"
-                      value={qrcode[0] || ""}
-                      style={{
-                        width: "20%",
-                        margin: "0 auto",
-                        height: "auto",
-                        float: "right",
-                      }}
-                    />
-                  )}
-                  {parts[0]}
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text
-                  fz="45px"
-                  pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
-                  style={{
-                    // textAlign: isArabic(title) ? "end" : "start",
-                    direction: isArabic(title) ? "rtl" : "ltr",
-                    flexGrow: 1,
-                  }}
-                >
-                  {parts[0]}
-                </Text>
-                <AboveQr>
-                  {qrcode.length > 0 && (
-                    <QRCode
-                      size={300}
-                      errorLevel="L"
-                      value={qrcode[0] || ""}
-                      style={{
-                        width: "20%",
-                        margin: "0 auto",
-                        height: "auto",
-                      }}
-                    />
-                  )}
-                </AboveQr>
-              </>
-            )}
-          </TextQr>
-        </>
+                />
+              )}
+              {parts[0]}
+            </Text>
+          ) : (
+            <>
+              <Text
+                fz="45px"
+                pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
+                style={{
+                  direction: isArabic(title) ? "rtl" : "ltr",
+                  flexGrow: 1,
+                }}
+              >
+                {parts[0]}
+              </Text>
+              <AboveQr>
+                {qrcode.length > 0 && (
+                  <QRCode
+                    size={300}
+                    errorLevel="L"
+                    value={qrcode[0] || ""}
+                    style={{
+                      width: "20%",
+                      margin: "0 auto",
+                      height: "auto",
+                    }}
+                  />
+                )}
+              </AboveQr>
+            </>
+          )}
+        </TextQr>
       ) : (
         <Text
           fz="48px"
           pd="30px"
           style={{
-            // textAlign: isArabic(title) ? "end" : "start",
             direction: isArabic(title) ? "rtl" : "ltr",
           }}
         >

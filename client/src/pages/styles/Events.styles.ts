@@ -20,3 +20,10 @@ export const Description = styled.p`
   -webkit-line-clamp: 3; /* Number of lines to display */
   -webkit-box-orient: vertical;
 `;
+
+export const MapWrapper = styled.div`
+  & .bloc {
+    white-space: nowrap;
+    font-size: 10px;
+  }
+`;

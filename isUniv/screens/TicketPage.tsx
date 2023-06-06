@@ -13,7 +13,8 @@ import {
 
 export default function TicketPage() {
   const route = useRoute();
-  const {type}: {type: string} = route.params;
+  // @ts-expect-error
+  const {type} = route.params;
 
   const navigation = useNavigation();
 
@@ -32,7 +33,9 @@ export default function TicketPage() {
             <Text style={{fontWeight: 'bold'}}>{type}</Text> please Validate
             your choise By Submiting on the Button
           </Text>
-          <Text>Note:in case you do this as a joke you will be called</Text>
+          <Text style={{color: 'gray'}}>
+            Note:in case you do this as a joke you will be called
+          </Text>
 
           <TouchableOpacity style={styles.ButtonStyle}>
             <Text style={{color: 'white', fontSize: 16}}>Create a Ticket</Text>
@@ -46,7 +49,7 @@ const styles = StyleSheet.create({
   Container: {
     flex: 1,
     flexGrow: 1,
-    padding: '2%',
+    padding: 20,
   },
   StyleText: {
     color: 'black',
@@ -56,7 +59,7 @@ const styles = StyleSheet.create({
   ButtonStyle: {
     marginTop: 15,
     backgroundColor: '#e13333ef',
-    width: '30%',
+    width: '40%',
     height: 40,
     borderRadius: 15,
     justifyContent: 'center',

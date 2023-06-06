@@ -5,7 +5,7 @@ WORKDIR /usr/server
 COPY package.json .
 COPY package-lock.json .
 
-ENV DATABASE_URL=postgresql://postgres:111002@postgres:5432/sys-affichage?schema=public
+ENV DATABASE_URL=postgresql://user:password@host:port/sys-affichage?schema=public
 
 COPY prisma /usr/server/prisma
 

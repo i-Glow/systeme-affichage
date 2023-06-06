@@ -65,8 +65,7 @@ function News() {
     fetchData();
   }, []);
   useEffect(() => {
-    fetch(`http://192.168.43.137:8080/api/affichage/mobile?level=${level}`)
-      // fetch('https://api.sampleapis.com/coffee/hot')
+    fetch(`http://192.168.209.147:8080/api/affichage/mobile?level=${level}`)
       .then(res => res.json())
       .then(data => setAffichage(data))
       .catch(error => {
@@ -175,6 +174,7 @@ const styles = StyleSheet.create({
   },
   CardContainer: {
     flex: 1,
+    flexGrow: 1,
     width: '100%',
     backgroundColor: 'white',
   },
@@ -183,16 +183,11 @@ const styles = StyleSheet.create({
   },
   OneArticle: {
     padding: '5%',
-    height: item_height,
+    maxHeight: item_height,
     width: item_width,
     backgroundColor: 'whitesmoke',
     marginTop: '10%',
     borderRadius: 15,
-    shadowColor: '#000',
-    shadowOffset: {width: 20, height: 20},
-    shadowOpacity: 0.8,
-    shadowRadius: 100,
-    elevation: 10,
   },
   title: {
     fontSize: 24,

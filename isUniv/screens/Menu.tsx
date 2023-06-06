@@ -58,7 +58,7 @@ export default function Menu() {
               renderItem={({item}) => (
                 <TouchableOpacity
                   onPress={() => {
-                    //it work juste fine
+                    //@ts-expect-error
                     navigation.navigate(item.screen);
                   }}
                   style={styles.OneCard}>

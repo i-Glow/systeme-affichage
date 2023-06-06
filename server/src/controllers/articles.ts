@@ -290,7 +290,10 @@ const createArticle = async (req: Request, res: Response) => {
       }
     }
 
+<<<<<<< HEAD
     // insert article
+=======
+>>>>>>> e710660d8d74069913d56298987682f99f68d7d0
     newArticle = await prisma.article.create({
       data: {
         titre,
@@ -353,62 +356,37 @@ const editArticle = async (req: Request, res: Response) => {
       importance,
     } = req.body;
 
-    if (role === Role.super_user) {
-      await prisma.article.update({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          edited_at: new Date().toISOString(),
-          niveau,
-          importance,
-          categorie: {
-            connectOrCreate: {
-              create: {
-                nom: categoryName,
-              },
-              where: {
-                nom: categoryName,
-              },
+    const article = await prisma.article.update({
+      data: {
+        titre,
+        contenu,
+        date_debut,
+        date_fin,
+        edited_at: new Date().toISOString(),
+        niveau,
+        importance,
+        state: role === Role.super_user ? State.approved : State.pending,
+        categorie: {
+          connectOrCreate: {
+            create: {
+              nom: categoryName,
+            },
+            where: {
+              nom: categoryName,
             },
           },
         },
-        where: {
-          article_id: id,
-        },
-      });
-    } else {
-      const article = await prisma.article.update({
-        data: {
-          titre,
-          contenu,
-          date_debut,
-          date_fin,
-          edited_at: new Date().toISOString(),
-          niveau,
-          importance,
-          state: State.pending,
-          categorie: {
-            connectOrCreate: {
-              create: {
-                nom: categoryName,
-              },
-              where: {
-                nom: categoryName,
-              },
-            },
-          },
-        },
-        where: {
-          article_id: id,
-        },
-      });
+      },
+      where: {
+        article_id: id,
+      },
+    });
 
+    if (role === Role.responsable_affichage)
       pendingCountEventEmmiter.emit("newArticle", {
         article,
       });
-    }
+
     res.sendStatus(204);
   } catch (error) {
     console.error(error);

@@ -114,9 +114,9 @@ mapContainer.appendChild(customElement);
           ;
         marks.bindTooltip("text here", { permanent: true, offset: [0, 12] }).addTo(map);
 */
-  const createMark = useCallback(({latitude, longitude, name}: Position) => {
+  const createMark = useCallback(({latitude, longitude, name}: any) => {
     if (mapRef && mapRef.current) {
-      const htmlString = `<div>${name}</div>`;
+      const htmlString = <div>${name}</div>;
       mapRef.current.injectJavaScript(`
         const customIcon = L.divIcon({
           className: 'custom-icon',
@@ -253,6 +253,7 @@ mapContainer.appendChild(customElement);
       return;
     }
     if (places && Array.isArray(places)) {
+      console.log(places);
       places.forEach(place => {
         createMark(place);
       });

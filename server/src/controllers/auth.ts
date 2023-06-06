@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import prisma from "../db";
 import bcrypt from "bcrypt";
 import { createAccessToken } from "../utils/auth";
+import CustomRequest from "../types/CustomRquest";
 
 const signin = async (req: Request, res: Response) => {
   try {
@@ -44,10 +45,16 @@ const signin = async (req: Request, res: Response) => {
   }
 };
 
-const creatUser = async (req: Request, res: Response) => {
+const creatUser = async (req: CustomRequest, res: Response) => {
   try {
     const { nom, prenom, username, password, role } = req.body;
     const alreadyExists = await prisma.user.findUnique({ where: { username } });
+
+    if (req.user?.role !== Role.super_user) {
+      return res
+        .status(403)
+        .send({ message: "you cannot perform this action" });
+    }
 
     if (alreadyExists)
       return res.status(400).send({ message: "username already exists" });
