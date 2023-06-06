@@ -253,7 +253,6 @@ mapContainer.appendChild(customElement);
       return;
     }
     if (places && Array.isArray(places)) {
-      console.log(places);
       places.forEach(place => {
         createMark(place);
       });
