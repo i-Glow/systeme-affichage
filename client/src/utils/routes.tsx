@@ -35,6 +35,13 @@ export default [
     icon: <TbUsers size={18} style={{ minWidth: "20px" }} />,
   },
   {
+    key: 2,
+    name: "students",
+    link: "/students",
+    authorization: roles.affichage,
+    icon: <TbUsers size={18} style={{ minWidth: "20px" }} />,
+  },
+  {
     key: 3,
     name: "archive",
     link: "/archive",

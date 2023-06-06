@@ -192,17 +192,16 @@ export const TextMove = styled.h1`
   }
   white-space: nowrap;
   min-width: 100%;
-  animation: moveText ${({ speed = 0 }: params) => speed + speed / 2}ms linear
-    infinite;
+  animation: moveText ${({ speed = 0 }: params) => speed}ms linear infinite;
   @keyframes moveText {
     0% {
-      transform: translateX(100%);
+      transform: translateX(100vw);
     }
     50% {
-      transform: translateX(-50%);
+      /* transform: translateX(-50%); */
     }
     100% {
-      transform: translateX(-100%);
+      transform: translateX(-100vw);
     }
   }
 `;

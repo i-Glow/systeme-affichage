@@ -24,6 +24,8 @@ import Archive from "./pages/Archive";
 import Events from "./pages/Events";
 import CreateEvent from "./pages/CreateEvent";
 import CreateBloc from "./pages/CreateBloc";
+import CreateStudent from "./pages/CreateStudents";
+import Students from "./pages/Students";
 
 function App() {
   return (
@@ -41,6 +43,8 @@ function App() {
                 <Route path="/users" element={<Users />} />
                 <Route path="/users/nouveau" element={<CreateUser />} />
               </Route>
+              <Route path="/students" element={<Students />} />
+              <Route path="/students/nouveau" element={<CreateStudent />} />
               <Route path="/pendingarticles" element={<PendingArticle />} />
               <Route
                 path="/pendingarticles/:PendingActicleDetail"
