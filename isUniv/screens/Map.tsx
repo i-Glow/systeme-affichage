@@ -18,11 +18,12 @@ import {WebView} from 'react-native-webview';
 import {PermissionsAndroid} from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import HtmlScript from '../utils/HtmlScript';
+import {ToastAndroid, Platform} from 'react-native';
 
 type Position = {
   latitude: number;
   longitude: number;
-  name: string;
+  description: string;
 };
 
 type Event = {
@@ -88,18 +89,43 @@ export default function Map() {
 
   const [evenment, setEvenment] = useState([]);
   const [userLocation, setUserLocation] = useState({
-    lat: 0,
-    lon: 0,
+    latitude: 0,
+    longitude: 0,
     description: 'current Poistion',
   });
 
+  /* const mapContainer = map.getContainer();
+const latLng = L.latLng(latitude, longitude);
+const layerPoint = map.latLngToLayerPoint(latLng);
+
+// Create a custom HTML element for the text
+const customElement = L.DomUtil.create('div', 'map-text');
+customElement.innerHTML = description;
+
+// Set the position of the custom element using CSS styles
+customElement.style.position = 'absolute';
+customElement.style.left = ${layerPoint.x}px;
+customElement.style.top = ${layerPoint.y}px;
+
+// Add the custom element to the map container
+mapContainer.appendChild(customElement); 
+
+  const marks = L.marker([${latitude}, ${longitude}])
+          ;
+        marks.bindTooltip("text here", { permanent: true, offset: [0, 12] }).addTo(map);
+*/
   const createMark = useCallback(({latitude, longitude, name}: Position) => {
     if (mapRef && mapRef.current) {
+      const htmlString = <div>${name}</div>;
       mapRef.current.injectJavaScript(`
-        L.marker([${latitude}, ${longitude}])
-          .addTo(map)
-          .bindPopup('${name}');
-      `);
+        const customIcon = L.divIcon({
+          className: 'custom-icon',
+          html: '${htmlString}'
+        });
+
+        L.marker([${latitude}, ${longitude}], { icon: customIcon })
+          .addTo(map);
+`);
     } else {
       console.error('mapRef is null or undefined');
     }
@@ -158,19 +184,18 @@ export default function Map() {
   );
 
   const createUserLocationMarker = useCallback(
-    ({lat, lon, description}: any) => {
+    ({latitude, longitude, description}: Position) => {
       // go to userLocation
       if (mapRef && mapRef.current) {
         mapRef.current.injectJavaScript(`
-      map.flyTo([${lat}, ${lon}], 16)
+        map.flyTo([${latitude}, ${longitude}], 16)
       `);
-        // update & create a marker for the user's current location
+        // create a marker for the user's current location
         mapRef.current.injectJavaScript(`
-      L.marker([${lat}, ${lon}],{className: 'user-location-marker'})
+       let marker = L.marker([${latitude}, ${longitude}])
         .addTo(map)
         .bindPopup('${description}')
         .openPopup();
-        
     `);
       } else {
         console.error('mapRef is null or undefined');
@@ -180,7 +205,7 @@ export default function Map() {
   );
 
   const updateUserLocationMarker = useCallback(
-    ({lat, lon, description}: any) => {
+    ({latitude, longitude, description}: Position) => {
       // go to userLocation
       if (mapRef && mapRef.current) {
         /* mapRef.current.injectJavaScript(`
@@ -189,15 +214,15 @@ export default function Map() {
 
         //remove the old marker
         mapRef.current.injectJavaScript(`
-        const existingMarkers = document.querySelectorAll('.user-location-marker');
-        existingMarkers.forEach(marker => marker.remove());
+          map.removeLayer(marker);
         `);
+
         //  update & create a marker for the user's current location
-        /*  mapRef.current.injectJavaScript(`
-      L.marker([${lat}, ${lon}],{className: 'user-location-marker'})
+        mapRef.current.injectJavaScript(`
+        marker = L.marker([${latitude}, ${longitude}])
         .addTo(map)
         .bindPopup('${description}')
-    `); */
+    `);
       } else {
         console.error('mapRef is null or undefined');
       }
@@ -228,6 +253,7 @@ export default function Map() {
       return;
     }
     if (places && Array.isArray(places)) {
+      console.log(places);
       places.forEach(place => {
         createMark(place);
       });
@@ -242,33 +268,53 @@ export default function Map() {
       Geolocation.getCurrentPosition(
         position => {
           const User = {...userLocation};
-          User.lat = position.coords.latitude;
-          User.lon = position.coords.longitude;
+          User.latitude = position.coords.latitude;
+          User.longitude = position.coords.longitude;
+
           setUserLocation(User);
-          createUserLocationMarker(userLocation);
-          setOneTime(false);
+          setUpdate(true);
+
+          createUserLocationMarker(User);
         },
         error => {
           console.error(error);
         },
         {
           enableHighAccuracy: true,
-          timeout: 5000,
+          timeout: 10000,
           maximumAge: 0,
         },
       );
+      setOneTime(false);
     }
 
     if (update) {
       const watchId = Geolocation.watchPosition(
         position => {
           const User = {...userLocation};
-          User.lat = position.coords.latitude;
-          User.lon = position.coords.longitude;
+          User.latitude = position.coords.latitude;
+          User.longitude = position.coords.longitude;
           setUserLocation(User);
           updateUserLocationMarker(userLocation);
         },
-        error => console.log(error),
+        error => {
+          if (error.code === 1) {
+            if (Platform.OS === 'android') {
+              ToastAndroid.show(
+                'please allow gealocation access',
+                ToastAndroid.SHORT,
+              );
+            }
+          } else {
+            if (Platform.OS === 'android') {
+              ToastAndroid.show(
+                'can not get current location',
+                ToastAndroid.SHORT,
+              );
+            }
+          }
+          console.log(error);
+        },
         {
           enableHighAccuracy: true,
           timeout: 5000,
@@ -305,15 +351,14 @@ export default function Map() {
           allowFileAccess={true}
           onLoadEnd={onMapReady}
         />
-        <TouchableOpacity
-          style={styles.Route}
-          onPress={() => {
-            setOneTime(true);
-            setUpdate(true);
-          }}>
+        <TouchableOpacity style={styles.Route} onPress={() => {}}>
           <Image source={require('../assets/emplacementWhite.png')} />
         </TouchableOpacity>
-        <TouchableOpacity style={styles.Position} onPress={() => {}}>
+        <TouchableOpacity
+          style={styles.Position}
+          onPress={() => {
+            setOneTime(true);
+          }}>
           <Image source={require('../assets/emplacement.png')} />
         </TouchableOpacity>
       </SafeAreaView>
