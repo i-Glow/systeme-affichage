@@ -71,13 +71,13 @@ export default function Map() {
   const [update, setUpdate] = useState(false);
 
   useEffect(() => {
-    fetch('http://192.168.43.137:8080/api/map/bloc')
+    fetch('http://192.168.28.1:8080/api/map/bloc')
       .then(res => res.json())
       .then(data => setPlaces(data))
       .catch(error => {
         console.error('Error:', error.message);
       });
-    fetch('http://192.168.43.137:8080/api/map/event')
+    fetch('http://192.168.28.1:8080/api/map/event')
       .then(res => res.json())
       .then(data => setEvenment(data))
       .catch(error => {
@@ -116,7 +116,7 @@ mapContainer.appendChild(customElement);
 */
   const createMark = useCallback(({latitude, longitude, name}: any) => {
     if (mapRef && mapRef.current) {
-      const htmlString = <div>${name}</div>;
+      const htmlString = `<div>${name}</div>`;
       mapRef.current.injectJavaScript(`
         const customIcon = L.divIcon({
           className: 'custom-icon',
@@ -253,7 +253,6 @@ mapContainer.appendChild(customElement);
       return;
     }
     if (places && Array.isArray(places)) {
-      console.log(places);
       places.forEach(place => {
         createMark(place);
       });
@@ -351,9 +350,6 @@ mapContainer.appendChild(customElement);
           allowFileAccess={true}
           onLoadEnd={onMapReady}
         />
-        <TouchableOpacity style={styles.Route} onPress={() => {}}>
-          <Image source={require('../assets/emplacementWhite.png')} />
-        </TouchableOpacity>
         <TouchableOpacity
           style={styles.Position}
           onPress={() => {
@@ -378,21 +374,11 @@ const styles = StyleSheet.create({
   Position: {
     position: 'absolute',
     right: 10,
-    bottom: 120,
+    bottom: 20,
     backgroundColor: 'white',
     width: 85,
     height: 85,
     borderRadius: 360,
-    padding: 8,
-  },
-  Route: {
-    position: 'absolute',
-    width: 85,
-    height: 85,
-    right: 10,
-    bottom: 20,
-    backgroundColor: 'blue',
-    borderRadius: 15,
     padding: 8,
   },
 });

@@ -105,72 +105,6 @@ export default function SlideShow() {
     }
   };
 
-<<<<<<< HEAD
-  /* const refreshImportant = async () => {
-    try {
-      const res = await axios.get("/affichage");
-      if (res.status === 200) {
-        if (importantData && importantData.length > 0) {
-          const importanceArray: article[] = [];
-          const filteredData = res.data.data.filter((item: article) => {
-            if (item.importance) {
-              importanceArray.push(item);
-              return false; // Remove the item from the filtered array
-            }
-            return true; // Keep the item in the filtered array
-          });
-          setTimeout(() => {
-            setImportantData(importanceArray);
-          }, importantData[indexImportance].duration);
-        }
-      }
-    } catch {}
-  };
- */
-  /* useEffect(() => {
-    if (importantData && importantData.length > 0) {
-      if (indexImportance + 1 === importantData.length) {
-        refreshImportant();
-      }
-    } else {
-      getData();
-      setTimeout(() => {
-        refreshImportant();
-      }, 15000);
-    }
-  }, [indexImportance]); */
-  useEffect(() => {
-    if (data && data.length > 0) {
-      if (index + 1 === data.length) {
-        refreshData();
-      }
-    } else {
-      getData();
-      setTimeout(() => {
-        getData();
-      }, 15000);
-    }
-  }, [index]);
-
-  useEffect(() => {
-    let slideTimer: any;
-    if (data && data.length > 0) {
-      slideTimer = setTimeout(() => {
-        setIndex((index) => (index + 1 < data.length ? index + 1 : 0));
-      }, data[index].duration);
-      return () => {
-        clearTimeout(slideTimer);
-      };
-    }
-  }, [data, index]);
-
-  useEffect(() => {
-    let slideTimer: any;
-    if (importantData && importantData.length > 0) {
-      slideTimer = setTimeout(() => {
-        setIndexImportance((indexImportance) =>
-          indexImportance + 1 < importantData.length ? indexImportance + 1 : 0
-=======
   const refreshImportant = async () => {
     try {
       const res = await axios.get("/affichage");
@@ -178,7 +112,6 @@ export default function SlideShow() {
         let importanceArray: article[] = [];
         importanceArray = res.data.data.filter(
           (item: article) => item.importance
->>>>>>> e710660d8d74069913d56298987682f99f68d7d0
         );
 
         if (importantData && importantData.length > 0)
