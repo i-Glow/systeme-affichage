@@ -83,7 +83,7 @@ export default function SlideShow() {
     }
   }, []);
 
-  const refreshData = async () => {
+  /* const refreshData = async () => {
     try {
       const res = await axios.get("/affichage");
 
@@ -124,7 +124,7 @@ export default function SlideShow() {
       }
     } catch (e) {}
   };
-
+ */
   //important data fetcher and controller
   useEffect(() => {
     // runs first time only
@@ -144,16 +144,19 @@ export default function SlideShow() {
       let slideTimer: number;
       // refresh data when last article starts displaying
       if (indexImportance + 1 === importantData.length) {
-        refreshImportant();
+        setTimeout(() => {
+          getData("IMPORTANT");
+        }, importantData[indexImportance].duration);
         if (indexImportance !== 0)
           slideTimer = setTimeout(() => {
             setIndexImportance(0);
-          }, importantData[index].duration);
+          }, importantData[indexImportance].duration);
+
         // else increment the rotator
       } else {
         slideTimer = setTimeout(() => {
           setIndexImportance(indexImportance + 1);
-        }, importantData[index].duration);
+        }, importantData[indexImportance].duration);
       }
 
       return () => {
@@ -181,11 +184,14 @@ export default function SlideShow() {
       let slideTimer: number;
       // refresh data when last article starts displaying
       if (index + 1 === data.length) {
-        refreshData();
+        setTimeout(() => {
+          getData("NORMAL");
+        }, data[index].duration);
         if (index !== 0)
           slideTimer = setTimeout(() => {
             setIndex(0);
           }, data[index]?.duration);
+
         // else increment the rotator
       } else {
         slideTimer = setTimeout(() => {
