@@ -31,7 +31,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await fetch(
-        'http://192.168.209.147:8080/api/student/checkStudent',
+        'http://192.168.43.6:8080/api/student/checkStudent',
         {
           method: 'POST',
           headers: {

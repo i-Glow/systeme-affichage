@@ -65,7 +65,7 @@ function News() {
     fetchData();
   }, []);
   useEffect(() => {
-    fetch(`http://192.168.209.147:8080/api/affichage/mobile?level=${level}`)
+    fetch(`http://192.168.43.6:8080/api/affichage/mobile?level=${level}`)
       .then(res => res.json())
       .then(data => setAffichage(data))
       .catch(error => {

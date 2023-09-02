@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled, { keyframes } from "styled-components";
 
 export const Container = styled.div`
   display: flex;
@@ -185,6 +185,16 @@ export const AboveQr = styled.div`
     justify-content: ${({ jc }: params) => jc};
   }
 `;
+
+const moveText = keyframes`
+  from {
+    transform: translateX(100vw);
+  }
+  to {
+    transform: translateX(-100vw);
+  }
+`;
+
 export const TextMove = styled.h1`
   ::-webkit-scrollbar {
     display: none;
@@ -192,16 +202,5 @@ export const TextMove = styled.h1`
   }
   white-space: nowrap;
   min-width: 100%;
-  animation: moveText ${({ speed = 0 }: params) => speed}ms linear infinite;
-  @keyframes moveText {
-    0% {
-      transform: translateX(100vw);
-    }
-    50% {
-      /* transform: translateX(-50%); */
-    }
-    100% {
-      transform: translateX(-100vw);
-    }
-  }
+  animation: ${moveText} ${({ speed = 0 }: params) => speed}ms linear infinite;
 `;

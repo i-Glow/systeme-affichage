@@ -71,13 +71,13 @@ export default function Map() {
   const [update, setUpdate] = useState(false);
 
   useEffect(() => {
-    fetch('http://192.168.43.137:8080/api/map/bloc')
+    fetch('http://192.168.43.6:8080/api/map/bloc')
       .then(res => res.json())
       .then(data => setPlaces(data))
       .catch(error => {
         console.error('Error:', error.message);
       });
-    fetch('http://192.168.43.137:8080/api/map/event')
+    fetch('http://192.168.43.6:8080/api/map/event')
       .then(res => res.json())
       .then(data => setEvenment(data))
       .catch(error => {
@@ -116,7 +116,7 @@ mapContainer.appendChild(customElement);
 */
   const createMark = useCallback(({latitude, longitude, name}: any) => {
     if (mapRef && mapRef.current) {
-      const htmlString = <div>${name}</div>;
+      const htmlString = `<div>${name}</div>`;
       mapRef.current.injectJavaScript(`
         const customIcon = L.divIcon({
           className: 'custom-icon',

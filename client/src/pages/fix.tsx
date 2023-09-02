@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useEffect,
-  useReducer,
-  useRef,
-  useState,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Container,
   RightContainer,
@@ -42,12 +36,10 @@ type article = {
   contenu: string;
   niveau: string[];
   duration: number;
-  importance: boolean;
+  importance: number;
 };
 
 export default function SlideShow() {
-  const [ignored, forceUpdate] = useReducer((x) => x + 1, 0);
-
   const options = {
     weekday: "long",
     year: "numeric",
@@ -59,18 +51,17 @@ export default function SlideShow() {
     hour12: false,
   };
 
-  const [articlesIndex, setArticlesIndex] = useState(0);
-  const [importantArticlesIndex, setImportantArticlesIndex] = useState(0);
-
-  const [importantArticles, setImportantArticles] = useState<article[]>();
-  const [articles, setArticles] = useState<article[]>();
+  const [index, setIndex] = useState(0);
+  const [importantData, setImportantData] = useState<article[]>();
+  const [data, setData] = useState<article[]>();
   const [date, setDate] = useState(
     new Date().toLocaleString("ar-DZ", options as any)
   );
+  const [indexImportance, setIndexImportance] = useState(0);
 
   const listRef = useRef<HTMLDivElement>(null);
 
-  const getData = useCallback(async () => {
+  const getData = useCallback(async (type: "IMPORTANT" | "NORMAL") => {
     try {
       const res = await axios.get("/affichage");
 
@@ -84,130 +75,157 @@ export default function SlideShow() {
           return true; // Keep the item in the filtered array
         });
 
-        setImportantArticles(importanceArray);
-        setArticles(filteredData);
+        if (type === "IMPORTANT") setImportantData(importanceArray);
+        else if (type === "NORMAL") setData(filteredData);
       }
     } catch (error) {
       console.error(error);
     }
   }, []);
 
-  const retryArticles = useCallback(async () => {
+  const refreshData = async () => {
     try {
       const res = await axios.get("/affichage");
 
       if (res.status === 200) {
         const filteredData = res.data.data.filter(
-          (item: article) => item.importance === false
+          (item: article) => !item.importance
         );
 
-        // time to wait before refreshing the data array
-        let duration: number;
-        if (articles && articles[articlesIndex].duration)
-          duration = articles[articlesIndex].duration;
-        else duration = 15000;
-
-        setTimeout(() => {
-          setArticles(filteredData);
-          setArticlesIndex(0);
-        }, duration);
+        if (data && data.length > 0) {
+          setTimeout(() => {
+            setData(filteredData);
+          }, data[index].duration);
+        } else {
+          setData(filteredData);
+        }
       }
     } catch (error) {
       console.error(error);
     }
-  }, []);
+  };
 
-  const retryImportantArticles = useCallback(async () => {
+  const refreshImportant = async () => {
     try {
       const res = await axios.get("/affichage");
-
       if (res.status === 200) {
-        const filteredData = res.data.data.filter(
-          (item: article) => item.importance === true
+        let importanceArray: article[] = [];
+        importanceArray = res.data.data.filter(
+          (item: article) => item.importance
         );
-        // time to wait before refreshing the data array
-        let duration: number;
-        if (
-          importantArticles &&
-          importantArticles[importantArticlesIndex].duration
-        )
-          duration = importantArticles[importantArticlesIndex].duration;
-        else duration = 15000;
 
-        setTimeout(() => {
-          setImportantArticles(filteredData);
-          setImportantArticlesIndex(0);
-        }, duration);
+        if (importantData && importantData.length > 0)
+          setTimeout(() => {
+            setImportantData(importanceArray);
+          }, importantData[indexImportance].duration);
+        else {
+          setImportantData(importanceArray);
+        }
       }
-    } catch (error) {
-      console.error(error);
+    } catch (e) {}
+  };
+
+  //important data fetcher and controller
+  useEffect(() => {
+    // runs first time only
+    if (!importantData) {
+      getData("IMPORTANT");
+      // runs in an interval when there is no articles
+    } else if (importantData.length === 0) {
+      const interval = setTimeout(() => {
+        getData("IMPORTANT");
+      }, 10000);
+
+      return () => {
+        clearTimeout(interval);
+      };
+      // controls the rotation and refreshes
+    } else {
+      let slideTimer: number;
+      // refresh data when last article starts displaying
+      if (indexImportance + 1 === importantData.length) {
+        refreshImportant();
+        if (indexImportance !== 0)
+          slideTimer = setTimeout(() => {
+            setIndexImportance(0);
+          }, importantData[index].duration);
+        // else increment the rotator
+      } else {
+        slideTimer = setTimeout(() => {
+          setIndexImportance(indexImportance + 1);
+        }, importantData[index].duration);
+      }
+
+      return () => {
+        clearTimeout(slideTimer);
+      };
     }
+  }, [importantData, indexImportance]);
+
+  // normal data fetcher and non important articles controller
+  useEffect(() => {
+    // runs first time only
+    if (!data) {
+      getData("NORMAL");
+      // runs in an interval when there is no articles
+    } else if (data.length === 0) {
+      const interval = setTimeout(() => {
+        getData("NORMAL");
+      }, 10000);
+
+      return () => {
+        clearTimeout(interval);
+      };
+      // controls the rotation and refreshes
+    } else {
+      let slideTimer: number;
+      // refresh data when last article starts displaying
+      if (index + 1 === data.length) {
+        refreshData();
+        if (index !== 0)
+          slideTimer = setTimeout(() => {
+            setIndex(0);
+          }, data[index]?.duration);
+        // else increment the rotator
+      } else {
+        slideTimer = setTimeout(() => {
+          setIndex(index + 1);
+        }, data[index].duration);
+      }
+
+      return () => {
+        clearTimeout(slideTimer);
+      };
+    }
+  }, [data, index]);
+
+  // clock
+  useEffect(() => {
+    const interval = setInterval(() => {
+      let objectDate = new Date();
+
+      let dateString = objectDate.toLocaleString("ar-DZ", options as any);
+      dateString = dateString.replace("،", ""); // Remove comma
+      setDate(dateString);
+    }, 1000); // update the date state every second
+
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
-    getData();
-  }, []);
-
-  useEffect(() => {
-    if (articles?.length === 0) {
-      retryArticles();
+    if (listRef.current) {
+      if (index % 6 === 0) {
+        const scrollTop = index * 150; // calculate the desired scroll position
+        listRef.current.scrollTop = scrollTop;
+      }
     }
-  }, [articles]);
-
-  useEffect(() => {
-    if (importantArticles?.length === 0) {
-      retryImportantArticles();
-    }
-  }, [importantArticles]);
-
-  useEffect(() => {
-    if (articles?.length) {
-      const timeout = setTimeout(() => {
-        // if the rotation is at last element we refresh the data array, then we reset the index back to 0
-        if (articlesIndex === articles.length - 1 || articles.length === 1) {
-          retryArticles();
-        } else {
-          setArticlesIndex(articlesIndex + 1);
-        }
-
-        if (articles.length === 1) forceUpdate();
-      }, articles[articlesIndex].duration);
-
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-  }, [articlesIndex, articles]);
-
-  useEffect(() => {
-    if (importantArticles?.length) {
-      const timeout = setTimeout(() => {
-        if (
-          importantArticlesIndex === importantArticles.length - 1 ||
-          importantArticles.length === 1
-        ) {
-          retryImportantArticles();
-        } else {
-          setImportantArticlesIndex(importantArticlesIndex + 1);
-        }
-
-        if (importantArticles.length === 1) forceUpdate();
-      }, importantArticles[importantArticlesIndex].duration);
-
-      return () => {
-        clearTimeout(timeout);
-      };
-    }
-  }, [importantArticlesIndex, importantArticles]);
+  }, [index]);
 
   return (
     <Container fd="column">
       <Container
         style={{
-          height:
-            importantArticles && importantArticles.length > 0
-              ? "95vh"
-              : "100vh",
+          height: importantData && importantData.length > 0 ? "95vh" : "100vh",
         }}
       >
         <RightContainer>
@@ -215,21 +233,19 @@ export default function SlideShow() {
             <Text fz="40px">{date.toString()}</Text>
           </DateCtainer>
           <Affichage>
-            {articles && articles.length > 0 ? (
+            {data && data.length > 0 ? (
               <>
                 <Title
                   ta="center"
                   fz={
-                    importantArticles && importantArticles.length > 0
-                      ? "40px"
-                      : "48px"
+                    importantData && importantData.length > 0 ? "40px" : "48px"
                   }
                 >
-                  {articles[articlesIndex].titre}
+                  {data[index].titre}
                 </Title>
                 <Content
-                  content={articles[articlesIndex].contenu}
-                  title={articles[articlesIndex].titre}
+                  content={data[index].contenu}
+                  title={data[index].titre}
                 />
                 <Level
                   ta="center"
@@ -239,11 +255,11 @@ export default function SlideShow() {
                   fd="row"
                   ga="5px"
                 >
-                  {articles[articlesIndex].niveau.map((niv, ind) => {
+                  {data[index].niveau.map((niv, ind) => {
                     return (
                       <Flex key={ind}>
                         <p key={ind}> {Levels.get(niv)} </p>
-                        {ind + 1 < articles[articlesIndex].niveau.length ? (
+                        {ind + 1 < data[index].niveau.length ? (
                           <GoPrimitiveDot size={15} />
                         ) : (
                           <></>
@@ -261,18 +277,15 @@ export default function SlideShow() {
           </Affichage>
         </RightContainer>
         <ArticlList ref={listRef}>
-          {articles && articles.length > 0 ? (
-            <WhiteDiv index={articlesIndex}></WhiteDiv>
+          {data && data.length > 0 ? (
+            <WhiteDiv index={index}></WhiteDiv>
           ) : (
             <></>
           )}
-          {articles &&
-            articles.map((art, key) => {
+          {data &&
+            data.map((art, key) => {
               return (
-                <Div
-                  key={key}
-                  style={key === articlesIndex ? { border: "none" } : {}}
-                >
+                <Div key={key} style={key === index ? { border: "none" } : {}}>
                   <Text ta="center" mb="15px" fz="24px" zi="1" po="relative">
                     {art.titre}
                   </Text>
@@ -284,21 +297,16 @@ export default function SlideShow() {
             })}
         </ArticlList>
       </Container>
-      {importantArticles && importantArticles.length > 0 ? (
+      {importantData && importantData.length > 0 ? (
         <BottomBar>
-          <Marquee
-            speed={importantArticles[importantArticlesIndex].duration}
-            article={importantArticles[importantArticlesIndex]}
-          />
+          <TextMove speed={importantData[indexImportance].duration}>
+            {importantData[indexImportance].titre +
+              ": " +
+              importantData[indexImportance].contenu}
+          </TextMove>
         </BottomBar>
       ) : null}
     </Container>
-  );
-}
-
-function Marquee({ speed, article }: { speed: number; article: article }) {
-  return (
-    <TextMove speed={speed}>{article.titre + ": " + article.contenu}</TextMove>
   );
 }
 
