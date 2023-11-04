@@ -35,4 +35,29 @@ const checkStudant = async (req: Request, res: Response) => {
   }
 };
 
-export { checkStudant };
+const createStudent = async (req: Request, res: Response) => {
+  try {
+    const data = req.body;
+
+    await prisma.student.create({
+      data: data,
+    });
+
+    res.sendStatus(204);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send({ message: "Server error" });
+  }
+};
+
+const getStudents = async (req: Request, res: Response) => {
+  try {
+    const students = await prisma.student.findMany();
+
+    res.status(200).send({ data: students });
+  } catch (error) {
+    res.status(500).send({ message: "server error" });
+  }
+};
+
+export { checkStudant, createStudent, getStudents };

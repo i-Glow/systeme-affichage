@@ -65,7 +65,7 @@ function News() {
     fetchData();
   }, []);
   useEffect(() => {
-    fetch(`http://192.168.209.147:8080/api/affichage/mobile?level=${level}`)
+    fetch(`http://192.168.28.1:8080/api/affichage/mobile?level=${level}`)
       .then(res => res.json())
       .then(data => setAffichage(data))
       .catch(error => {
@@ -107,7 +107,11 @@ function News() {
         style={styles.OneArticle}>
         <Text style={styles.title}>{item.titre}</Text>
         <Text
-          numberOfLines={9}
+
+          numberOfLines={item.titre.length > 27 ? 8 : 9}
+
+          //numberOfLines={9}
+
           style={[
             isArabicText ? {textAlign: 'right'} : {textAlign: 'left'},
             styles.Paragh,
@@ -204,10 +208,8 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   TimeParagh: {
-    flex: 1,
-    position: 'absolute',
-    right: 15,
-    bottom: 8,
+    alignSelf: 'flex-end',
+    marginTop: 5,
   },
 });
 

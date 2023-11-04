@@ -61,7 +61,7 @@ export default function SlideShow() {
 
   const listRef = useRef<HTMLDivElement>(null);
 
-  const getData = useCallback(async () => {
+  const getData = useCallback(async (type: "IMPORTANT" | "NORMAL") => {
     try {
       const res = await axios.get("/affichage");
 
@@ -75,128 +75,97 @@ export default function SlideShow() {
           return true; // Keep the item in the filtered array
         });
 
-        setData(filteredData);
-        setImportantData(importanceArray);
+        if (type === "IMPORTANT") setImportantData(importanceArray);
+        else if (type === "NORMAL") setData(filteredData);
       }
     } catch (error) {
       console.error(error);
     }
   }, []);
 
-  const refreshData = async () => {
-    try {
-      const res = await axios.get("/affichage");
-
-      if (res.status === 200) {
-        if (data) {
-          const filteredData = res.data.data.filter(
-            (item: article) => !item.importance
-          );
-
-          if (data.length > 0) {
-            setTimeout(() => {
-              setData(filteredData);
-            }, data[index].duration);
-          } else {
-            setData(filteredData);
-
-          }
-
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-
-  const refreshImportant = async () => {
-    try {
-      const res = await axios.get("/affichage");
-      if (res.status === 200) {
-        if (importantData) {
-          let importanceArray: article[] = [];
-          importanceArray = res.data.data.filter(
-            (item: article) => item.importance
-          );
-
-          if (importantData.length > 0)
-            setTimeout(() => {
-              setImportantData(importanceArray);
-            }, importantData[indexImportance].duration);
-          else setImportantData(importanceArray);
-        }
-      }
-    } catch (e) {}
-  };
+ 
 
   // refresh important data
 
+
   useEffect(() => {
-    let timeout: number;
-    if (importantData && importantData.length > 0) {
+    // runs first time only
+    if (!importantData) {
+      getData("IMPORTANT");
+      // runs in an interval when there is no articles
+    } else if (importantData.length === 0) {
+      const interval = setTimeout(() => {
+        getData("IMPORTANT");
+      }, 10000);
+
+      return () => {
+        clearTimeout(interval);
+      };
+      // controls the rotation and refreshes
+    } else {
+      let slideTimer: number;
+      // refresh data when last article starts displaying
       if (indexImportance + 1 === importantData.length) {
-        refreshImportant();
+        setTimeout(() => {
+          getData("IMPORTANT");
+        }, importantData[indexImportance].duration);
+        if (indexImportance !== 0)
+          slideTimer = setTimeout(() => {
+            setIndexImportance(0);
+          }, importantData[indexImportance].duration);
+
+        // else increment the rotator
+      } else {
+        slideTimer = setTimeout(() => {
+          setIndexImportance(indexImportance + 1);
+        }, importantData[indexImportance].duration);
       }
-    } else {
-      refreshImportant();
-      timeout = setTimeout(() => {
-        refreshImportant();
-      }, 15000);
+
+      return () => {
+        clearTimeout(slideTimer);
+      };
     }
+  }, [importantData, indexImportance]);
 
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [indexImportance]);
-
-  // refresh data
+  // normal data fetcher and non important articles controller
   useEffect(() => {
-    let timeout: number;
-    if (data && data.length > 0) {
+    // runs first time only
+    if (!data) {
+      getData("NORMAL");
+      // runs in an interval when there is no articles
+    } else if (data.length === 0) {
+      const interval = setTimeout(() => {
+        getData("NORMAL");
+      }, 10000);
+
+      return () => {
+        clearTimeout(interval);
+      };
+      // controls the rotation and refreshes
+    } else {
+      let slideTimer: number;
+      // refresh data when last article starts displaying
       if (index + 1 === data.length) {
-        refreshData();
+        setTimeout(() => {
+          getData("NORMAL");
+        }, data[index].duration);
+        if (index !== 0)
+          slideTimer = setTimeout(() => {
+            setIndex(0);
+          }, data[index]?.duration);
+
+        // else increment the rotator
+      } else {
+        slideTimer = setTimeout(() => {
+          setIndex(index + 1);
+        }, data[index].duration);
       }
-    } else {
-      getData();
-      timeout = setTimeout(() => {
-        getData();
-      }, 1000);
-    }
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [index]);
-
-  // rotate data
-  useEffect(() => {
-    let slideTimer: any;
-    if (data && data.length > 0) {
-      slideTimer = setTimeout(() => {
-        setIndex((prev) => (prev + 1 < data.length ? prev + 1 : 0));
-      }, data[index].duration);
 
       return () => {
         clearTimeout(slideTimer);
       };
     }
   }, [data, index]);
-
-  // rotate important data
-  useEffect(() => {
-    let slideTimer: any;
-    if (importantData && importantData.length > 0) {
-      slideTimer = setTimeout(() => {
-        setIndexImportance((indexImportance) =>
-          indexImportance + 1 < importantData.length ? indexImportance + 1 : 0
-        );
-      }, importantData[indexImportance].duration);
-      return () => {
-        clearTimeout(slideTimer);
-      };
-    }
-  }, [importantData, indexImportance]);
 
   // clock
   useEffect(() => {

@@ -71,13 +71,13 @@ export default function Map() {
   const [update, setUpdate] = useState(false);
 
   useEffect(() => {
-    fetch('http://192.168.43.137:8080/api/map/bloc')
+    fetch('http://192.168.28.1:8080/api/map/bloc')
       .then(res => res.json())
       .then(data => setPlaces(data))
       .catch(error => {
         console.error('Error:', error.message);
       });
-    fetch('http://192.168.43.137:8080/api/map/event')
+    fetch('http://192.168.28.1:8080/api/map/event')
       .then(res => res.json())
       .then(data => setEvenment(data))
       .catch(error => {
@@ -94,6 +94,45 @@ export default function Map() {
     description: 'current Poistion',
   });
 
+
+  /* const mapContainer = map.getContainer();
+const latLng = L.latLng(latitude, longitude);
+const layerPoint = map.latLngToLayerPoint(latLng);
+
+// Create a custom HTML element for the text
+const customElement = L.DomUtil.create('div', 'map-text');
+customElement.innerHTML = description;
+
+// Set the position of the custom element using CSS styles
+customElement.style.position = 'absolute';
+customElement.style.left = `${layerPoint.x}px`;
+customElement.style.top = `${layerPoint.y}px`;
+
+// Add the custom element to the map container
+mapContainer.appendChild(customElement); 
+
+  const marks = L.marker([${latitude}, ${longitude}])
+          ;
+        marks.bindTooltip("text here", { permanent: true, offset: [0, 12] }).addTo(map);
+*/
+  const createMark = useCallback(({latitude, longitude, name}: any) => {
+    if (mapRef && mapRef.current) {
+      const htmlString = `<div>${name}</div>`;
+      mapRef.current.injectJavaScript(`
+        const customIcon = L.divIcon({
+          className: 'custom-icon',
+          html: '${htmlString}'
+        });
+
+        L.marker([${latitude}, ${longitude}], { icon: customIcon })
+          .addTo(map);
+`);
+    } else {
+      console.error('mapRef is null or undefined');
+    }
+  }, []);
+
+  /* if the upove dont work then this does 
   const createMark = useCallback(
     ({latitude, longitude, description}: Position) => {
       if (mapRef && mapRef.current) {
@@ -108,6 +147,7 @@ export default function Map() {
     },
     [],
   );
+*/
 
   const createEvent = useCallback(
     ({latitude, longitude, description, name, endDate}: Event) => {
@@ -172,7 +212,11 @@ export default function Map() {
       `);
         // create a marker for the user's current location
         mapRef.current.injectJavaScript(`
-        L.marker([${latitude}, ${longitude}])
+
+       let marker = L.marker([${latitude}, ${longitude}])
+
+       // mb it work L.marker([${latitude}, ${longitude}])
+
         .addTo(map)
         .bindPopup('${description}')
         .openPopup();
@@ -200,7 +244,11 @@ export default function Map() {
 
         //  update & create a marker for the user's current location
         mapRef.current.injectJavaScript(`
-        L.marker([${latitude}, ${longitude}])
+
+        marker = L.marker([${latitude}, ${longitude}])
+
+     //mb it work   L.marker([${latitude}, ${longitude}])
+
         .addTo(map)
         .bindPopup('${description}')
     `);
@@ -250,16 +298,23 @@ export default function Map() {
           const User = {...userLocation};
           User.latitude = position.coords.latitude;
           User.longitude = position.coords.longitude;
+
+
           setUserLocation(User);
-          createUserLocationMarker(userLocation);
           setUpdate(true);
+          createUserLocationMarker(User);
+
+         
+        // mb this work  createUserLocationMarker(userLocation);
+          
+
         },
         error => {
           console.error(error);
         },
         {
           enableHighAccuracy: true,
-          timeout: 5000,
+          timeout: 10000,
           maximumAge: 0,
         },
       );
@@ -356,21 +411,11 @@ const styles = StyleSheet.create({
   Position: {
     position: 'absolute',
     right: 10,
-    bottom: 120,
+    bottom: 20,
     backgroundColor: 'white',
     width: 85,
     height: 85,
     borderRadius: 360,
-    padding: 8,
-  },
-  Route: {
-    position: 'absolute',
-    width: 85,
-    height: 85,
-    right: 10,
-    bottom: 20,
-    backgroundColor: 'blue',
-    borderRadius: 15,
     padding: 8,
   },
 });

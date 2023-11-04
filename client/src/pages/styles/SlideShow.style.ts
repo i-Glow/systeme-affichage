@@ -195,10 +195,10 @@ export const TextMove = styled.h1`
   animation: moveText ${({ speed = 0 }: params) => speed}ms linear infinite;
   @keyframes moveText {
     0% {
-      transform: translateX(100%);
+      transform: translateX(100vw);
     }
     100% {
-      transform: translateX(-100%);
+      transform: translateX(-100vw);
     }
   }
 `;

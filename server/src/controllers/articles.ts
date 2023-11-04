@@ -290,6 +290,10 @@ const createArticle = async (req: Request, res: Response) => {
       }
     }
 
+<<<<<<< HEAD
+    // insert article
+=======
+>>>>>>> e710660d8d74069913d56298987682f99f68d7d0
     newArticle = await prisma.article.create({
       data: {
         titre,

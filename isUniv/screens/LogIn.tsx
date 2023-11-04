@@ -1,6 +1,6 @@
 /*eslint-disable prettier/prettier*/
 
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   View,
   TextInput,
@@ -31,7 +31,7 @@ const Login = () => {
   const handleLogin = async () => {
     try {
       const response = await fetch(
-        'http://192.168.209.147:8080/api/student/checkStudent',
+        'http://192.168.28.1:8080/api/student/checkStudent',
         {
           method: 'POST',
           headers: {
@@ -63,7 +63,7 @@ const Login = () => {
         setPassword('');
       } else {
         // Other error occurred
-        console.log(response.status, 'An error occurred');
+
         if (Platform.OS === 'android') {
           ToastAndroid.show('something wrong happend', ToastAndroid.SHORT);
         } else {
@@ -93,7 +93,6 @@ const Login = () => {
     const fetchData = async () => {
       const data = await autoAuth();
       if (data) {
-        console.log('Auto authentication successful');
         // Extract the username and password from the stored authentication data
         const {nom, matricule} = data;
         setUsername(nom);
