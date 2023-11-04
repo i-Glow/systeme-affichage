@@ -83,49 +83,11 @@ export default function SlideShow() {
     }
   }, []);
 
-  /* const refreshData = async () => {
-    try {
-      const res = await axios.get("/affichage");
+ 
 
-      if (res.status === 200) {
-        const filteredData = res.data.data.filter(
-          (item: article) => !item.importance
-        );
+  // refresh important data
 
-        if (data && data.length > 0) {
-          setTimeout(() => {
-            setData(filteredData);
-          }, data[index].duration);
-        } else {
-          setData(filteredData);
-        }
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
-  const refreshImportant = async () => {
-    try {
-      const res = await axios.get("/affichage");
-      if (res.status === 200) {
-        let importanceArray: article[] = [];
-        importanceArray = res.data.data.filter(
-          (item: article) => item.importance
-        );
-
-        if (importantData && importantData.length > 0)
-          setTimeout(() => {
-            setImportantData(importanceArray);
-          }, importantData[indexImportance].duration);
-        else {
-          setImportantData(importanceArray);
-        }
-      }
-    } catch (e) {}
-  };
- */
-  //important data fetcher and controller
   useEffect(() => {
     // runs first time only
     if (!importantData) {

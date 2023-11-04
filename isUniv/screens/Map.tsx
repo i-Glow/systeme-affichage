@@ -94,6 +94,7 @@ export default function Map() {
     description: 'current Poistion',
   });
 
+
   /* const mapContainer = map.getContainer();
 const latLng = L.latLng(latitude, longitude);
 const layerPoint = map.latLngToLayerPoint(latLng);
@@ -130,6 +131,23 @@ mapContainer.appendChild(customElement);
       console.error('mapRef is null or undefined');
     }
   }, []);
+
+  /* if the upove dont work then this does 
+  const createMark = useCallback(
+    ({latitude, longitude, description}: Position) => {
+      if (mapRef && mapRef.current) {
+        mapRef.current.injectJavaScript(`
+        L.marker([${latitude}, ${longitude}])
+          .addTo(map)
+          .bindPopup('${description}');
+      `);
+      } else {
+        console.error('mapRef is null or undefined');
+      }
+    },
+    [],
+  );
+*/
 
   const createEvent = useCallback(
     ({latitude, longitude, description, name, endDate}: Event) => {
@@ -184,7 +202,9 @@ mapContainer.appendChild(customElement);
   );
 
   const createUserLocationMarker = useCallback(
+
     ({latitude, longitude, description}: Position) => {
+
       // go to userLocation
       if (mapRef && mapRef.current) {
         mapRef.current.injectJavaScript(`
@@ -192,7 +212,11 @@ mapContainer.appendChild(customElement);
       `);
         // create a marker for the user's current location
         mapRef.current.injectJavaScript(`
+
        let marker = L.marker([${latitude}, ${longitude}])
+
+       // mb it work L.marker([${latitude}, ${longitude}])
+
         .addTo(map)
         .bindPopup('${description}')
         .openPopup();
@@ -206,6 +230,7 @@ mapContainer.appendChild(customElement);
 
   const updateUserLocationMarker = useCallback(
     ({latitude, longitude, description}: Position) => {
+
       // go to userLocation
       if (mapRef && mapRef.current) {
         /* mapRef.current.injectJavaScript(`
@@ -219,7 +244,11 @@ mapContainer.appendChild(customElement);
 
         //  update & create a marker for the user's current location
         mapRef.current.injectJavaScript(`
+
         marker = L.marker([${latitude}, ${longitude}])
+
+     //mb it work   L.marker([${latitude}, ${longitude}])
+
         .addTo(map)
         .bindPopup('${description}')
     `);
@@ -270,10 +299,15 @@ mapContainer.appendChild(customElement);
           User.latitude = position.coords.latitude;
           User.longitude = position.coords.longitude;
 
+
           setUserLocation(User);
           setUpdate(true);
-
           createUserLocationMarker(User);
+
+         
+        // mb this work  createUserLocationMarker(userLocation);
+          
+
         },
         error => {
           console.error(error);
@@ -350,6 +384,9 @@ mapContainer.appendChild(customElement);
           allowFileAccess={true}
           onLoadEnd={onMapReady}
         />
+        <TouchableOpacity style={styles.Route} onPress={() => {}}>
+          <Image source={require('../assets/emplacementWhite.png')} />
+        </TouchableOpacity>
         <TouchableOpacity
           style={styles.Position}
           onPress={() => {

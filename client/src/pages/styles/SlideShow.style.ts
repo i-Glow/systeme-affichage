@@ -197,9 +197,6 @@ export const TextMove = styled.h1`
     0% {
       transform: translateX(100vw);
     }
-    50% {
-      /* transform: translateX(-50%); */
-    }
     100% {
       transform: translateX(-100vw);
     }
