@@ -107,7 +107,7 @@ function News() {
         style={styles.OneArticle}>
         <Text style={styles.title}>{item.titre}</Text>
         <Text
-          numberOfLines={10}
+          numberOfLines={9}
           style={[
             isArabicText ? {textAlign: 'right'} : {textAlign: 'left'},
             styles.Paragh,

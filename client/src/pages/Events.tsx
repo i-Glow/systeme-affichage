@@ -1,5 +1,5 @@
 import { Button, Card, Collapse, message, Popconfirm, Tabs, Tag } from "antd";
-import React, { useEffect, useState, useReducer } from "react";
+import React, { useEffect, useState, useReducer, useRef } from "react";
 import { AiOutlineEdit } from "react-icons/ai";
 import { GrMapLocation } from "react-icons/gr";
 import { MdOutlineDeleteOutline } from "react-icons/md";
@@ -7,7 +7,8 @@ import { MapContainer, Marker, TileLayer } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import Flex from "../components/shared/Flex";
 import useAxios from "../hooks/useAxios";
-import { Description, Wrapper } from "./styles/Events.styles";
+import { Description, MapWrapper, Wrapper } from "./styles/Events.styles";
+import L, { Map } from "leaflet";
 
 function eventsReducer(state: any, action: any) {
   switch (action.type) {
@@ -143,7 +144,6 @@ function Event() {
                   okText="Delete"
                   okType="danger"
                   cancelText="Cancel"
-                  // okButtonProps={{ loading: confirmLoading }}
                   onConfirm={() => deleteEvent(el.event_id)}
                 >
                   <MdOutlineDeleteOutline
@@ -191,6 +191,8 @@ function Bloc() {
   const axios = useAxios();
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
+
+  const mapRef = useRef<Map | null>(null);
 
   const [state, dispatch] = useReducer(eventsReducer, {
     blocs: [],
@@ -247,8 +249,27 @@ function Bloc() {
     getEvents();
   }, []);
 
+  useEffect(() => {
+    if (blocs.length && mapRef.current) {
+      const map = mapRef.current;
+
+      blocs.map((bloc: any) => {
+        // Create a custom icon with the text
+        const textIcon = L.divIcon({
+          className: "bloc",
+          html: `<div>${bloc.name}</div>`,
+        });
+
+        // Add the icon to the map at the desired position
+        L.marker([bloc.latitude, bloc.longitude], {
+          icon: textIcon,
+        }).addTo(map);
+      });
+    }
+  }, [blocs]);
+
   return (
-    <>
+    <MapWrapper>
       <Flex jc="space-between" mb="20px">
         <h2>Blocs</h2>
         <Button type="primary" size="middle" onClick={() => navigate("bloc")}>
@@ -262,18 +283,12 @@ function Bloc() {
           zoom={17}
           scrollWheelZoom={false}
           style={{ flex: 1, height: 360, width: "100%" }}
+          ref={mapRef}
         >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          {blocs.length > 0 &&
-            blocs.map((bloc: any) => (
-              <Marker
-                key={bloc.bloc_id}
-                position={[bloc.latitude, bloc.longitude]}
-              ></Marker>
-            ))}
         </MapContainer>
       </Flex>
-    </>
+    </MapWrapper>
   );
 }
 

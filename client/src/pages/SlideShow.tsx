@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Container,
   RightContainer,
@@ -31,15 +31,15 @@ const Levels = new Map([
   ["D", "Doctorat دكتوراه"],
 ]);
 
-export default function SlideShow() {
-  type article = {
-    titre: string;
-    contenu: string;
-    niveau: string[];
-    duration: number;
-    importance: number;
-  };
+type article = {
+  titre: string;
+  contenu: string;
+  niveau: string[];
+  duration: number;
+  importance: number;
+};
 
+export default function SlideShow() {
   const options = {
     weekday: "long",
     year: "numeric",
@@ -50,6 +50,7 @@ export default function SlideShow() {
     second: "2-digit",
     hour12: false,
   };
+
   const [index, setIndex] = useState(0);
   const [importantData, setImportantData] = useState<article[]>();
   const [data, setData] = useState<article[]>();
@@ -57,17 +58,8 @@ export default function SlideShow() {
     new Date().toLocaleString("ar-DZ", options as any)
   );
   const [indexImportance, setIndexImportance] = useState(0);
-  useEffect(() => {
-    const interval = setInterval(() => {
-      let objectDate = new Date();
 
-      let dateString = objectDate.toLocaleString("ar-DZ", options as any);
-      dateString = dateString.replace("،", ""); // Remove comma
-      setDate(dateString);
-    }, 1000); // update the date state every second
-
-    return () => clearInterval(interval);
-  }, []);
+  const listRef = useRef<HTMLDivElement>(null);
 
   const getData = useCallback(async () => {
     try {
@@ -107,13 +99,16 @@ export default function SlideShow() {
             }, data[index].duration);
           } else {
             setData(filteredData);
+
           }
+
         }
       }
     } catch (error) {
       console.error(error);
     }
   };
+
 
   const refreshImportant = async () => {
     try {
@@ -128,62 +123,67 @@ export default function SlideShow() {
           if (importantData.length > 0)
             setTimeout(() => {
               setImportantData(importanceArray);
-              setIndexImportance(0);
             }, importantData[indexImportance].duration);
           else setImportantData(importanceArray);
         }
       }
-    } catch {}
+    } catch (e) {}
   };
 
+  // refresh important data
+
   useEffect(() => {
-    let interval: number;
+    let timeout: number;
     if (importantData && importantData.length > 0) {
       if (indexImportance + 1 === importantData.length) {
         refreshImportant();
       }
     } else {
       refreshImportant();
-      interval = setInterval(() => {
+      timeout = setTimeout(() => {
         refreshImportant();
       }, 15000);
     }
 
     return () => {
-      clearInterval(interval);
+      clearTimeout(timeout);
     };
   }, [indexImportance]);
 
+  // refresh data
   useEffect(() => {
-    let interval: number;
+    let timeout: number;
     if (data && data.length > 0) {
       if (index + 1 === data.length) {
         refreshData();
       }
     } else {
       getData();
-      interval = setInterval(() => {
+      timeout = setTimeout(() => {
         getData();
-      }, 15000);
+      }, 1000);
     }
 
     return () => {
-      clearInterval(interval);
+      clearTimeout(timeout);
     };
   }, [index]);
 
+  // rotate data
   useEffect(() => {
     let slideTimer: any;
     if (data && data.length > 0) {
       slideTimer = setTimeout(() => {
-        setIndex((index) => (index + 1 < data.length ? index + 1 : 0));
+        setIndex((prev) => (prev + 1 < data.length ? prev + 1 : 0));
       }, data[index].duration);
+
       return () => {
         clearTimeout(slideTimer);
       };
     }
   }, [data, index]);
 
+  // rotate important data
   useEffect(() => {
     let slideTimer: any;
     if (importantData && importantData.length > 0) {
@@ -198,8 +198,19 @@ export default function SlideShow() {
     }
   }, [importantData, indexImportance]);
 
-  ////
-  const listRef = useRef<HTMLDivElement>(null);
+  // clock
+  useEffect(() => {
+    const interval = setInterval(() => {
+      let objectDate = new Date();
+
+      let dateString = objectDate.toLocaleString("ar-DZ", options as any);
+      dateString = dateString.replace("،", ""); // Remove comma
+      setDate(dateString);
+    }, 1000); // update the date state every second
+
+    return () => clearInterval(interval);
+  }, []);
+
   useEffect(() => {
     if (listRef.current) {
       if (index % 6 === 0) {
@@ -208,6 +219,7 @@ export default function SlideShow() {
       }
     }
   }, [index]);
+
   return (
     <Container fd="column">
       <Container
@@ -219,7 +231,6 @@ export default function SlideShow() {
           <DateCtainer>
             <Text fz="40px">{date.toString()}</Text>
           </DateCtainer>
-
           <Affichage>
             {data && data.length > 0 ? (
               <>
@@ -231,12 +242,10 @@ export default function SlideShow() {
                 >
                   {data[index].titre}
                 </Title>
-
                 <Content
                   content={data[index].contenu}
                   title={data[index].titre}
                 />
-
                 <Level
                   ta="center"
                   fz="32px"
@@ -260,11 +269,9 @@ export default function SlideShow() {
                 </Level>
               </>
             ) : (
-              <>
-                <Title ta="center" fz="48px">
-                  لا يوجد اعلانات
-                </Title>
-              </>
+              <Title ta="center" fz="48px">
+                لا يوجد اعلانات
+              </Title>
             )}
           </Affichage>
         </RightContainer>
@@ -274,7 +281,6 @@ export default function SlideShow() {
           ) : (
             <></>
           )}
-
           {data &&
             data.map((art, key) => {
               return (
@@ -325,72 +331,65 @@ function Content({ content, title }: { content: string; title: string }) {
       }}
     >
       {qrcode.length > 0 ? (
-        <>
-          <TextQr pd="0px 30px 0px 30px" jc="center">
-            {parts[0].length > 300 ? (
-              <>
-                <Text
-                  fz="45px"
-                  pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
+        <TextQr pd="0px 30px 0px 30px" jc="center">
+          {parts[0].length > 300 ? (
+            <Text
+              fz="45px"
+              pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
+              style={{
+                direction: isArabic(title) ? "rtl" : "ltr",
+                flexGrow: 1,
+              }}
+            >
+              {qrcode.length > 0 && (
+                <QRCode
+                  size={300}
+                  errorLevel="L"
+                  value={qrcode[0] || ""}
                   style={{
-                    // textAlign: isArabic(title) ? "end" : "start",
-                    direction: isArabic(title) ? "rtl" : "ltr",
-                    flexGrow: 1,
+                    width: "20%",
+                    margin: "0 auto",
+                    height: "auto",
+                    float: "right",
                   }}
-                >
-                  {qrcode.length > 0 && (
-                    <QRCode
-                      size={300}
-                      errorLevel="L"
-                      value={qrcode[0] || ""}
-                      style={{
-                        width: "20%",
-                        margin: "0 auto",
-                        height: "auto",
-                        float: "right",
-                      }}
-                    />
-                  )}
-                  {parts[0]}
-                </Text>
-              </>
-            ) : (
-              <>
-                <Text
-                  fz="45px"
-                  pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
-                  style={{
-                    // textAlign: isArabic(title) ? "end" : "start",
-                    direction: isArabic(title) ? "rtl" : "ltr",
-                    flexGrow: 1,
-                  }}
-                >
-                  {parts[0]}
-                </Text>
-                <AboveQr>
-                  {qrcode.length > 0 && (
-                    <QRCode
-                      size={300}
-                      errorLevel="L"
-                      value={qrcode[0] || ""}
-                      style={{
-                        width: "20%",
-                        margin: "0 auto",
-                        height: "auto",
-                      }}
-                    />
-                  )}
-                </AboveQr>
-              </>
-            )}
-          </TextQr>
-        </>
+                />
+              )}
+              {parts[0]}
+            </Text>
+          ) : (
+            <>
+              <Text
+                fz="45px"
+                pd={isArabic(title) ? "0 0px 30px 15px" : "0 15px 30px 0"}
+                style={{
+                  direction: isArabic(title) ? "rtl" : "ltr",
+                  flexGrow: 1,
+                }}
+              >
+                {parts[0]}
+              </Text>
+              <AboveQr>
+                {qrcode.length > 0 && (
+                  <QRCode
+                    size={300}
+                    errorLevel="L"
+                    value={qrcode[0] || ""}
+                    style={{
+                      width: "20%",
+                      margin: "0 auto",
+                      height: "auto",
+                    }}
+                  />
+                )}
+              </AboveQr>
+            </>
+          )}
+        </TextQr>
       ) : (
         <Text
           fz="48px"
           pd="30px"
           style={{
-            // textAlign: isArabic(title) ? "end" : "start",
             direction: isArabic(title) ? "rtl" : "ltr",
           }}
         >
